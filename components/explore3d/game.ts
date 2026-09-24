@@ -2,7 +2,10 @@ import * as THREE from "three";
 
 export type Collider = { x: number; z: number; r: number } | { x: number; z: number; hw: number; hd: number };
 
-export type HeroAction = "cheer" | "kick" | "spray" | "interact";
+export type HeroAction = "cheer" | "kick" | "spray" | "interact" | "slash" | "climb";
+
+/** Walkable area that replaces the world bounds, e.g. a rooftop. */
+export type Zone = { minX: number; maxX: number; minZ: number; maxZ: number; y: number };
 
 /**
  * Per-frame game state shared between the hero, camera and gameplay objects.
@@ -19,6 +22,18 @@ export const game = {
   sprayTarget: null as THREE.Vector3 | null,
   /** Set by the HUD action button, consumed by the world's mission logic. */
   actionRequest: false,
+  /** Set by the jump button or the J key, consumed by the hero. */
+  jumpRequest: false,
+  /** Vertical speed, for jumps and kart ramps. */
+  vy: 0,
+  /** While set, the hero walks here instead of the world (a rooftop). */
+  zone: null as Zone | null,
+  /** A mission is moving the hero itself (climbing a ladder). */
+  cinematic: false,
+  /** Kart turbo lasts until this time (performance.now ms). */
+  boostUntil: 0,
+  /** Current kart speed, for effects and sounds. */
+  speed: 0,
 };
 
 export function resetGame(spawn: [number, number, number]) {
@@ -31,6 +46,17 @@ export function resetGame(spawn: [number, number, number]) {
   game.action = null;
   game.sprayTarget = null;
   game.actionRequest = false;
+  game.jumpRequest = false;
+  game.vy = 0;
+  game.zone = null;
+  game.cinematic = false;
+  game.boostUntil = 0;
+  game.speed = 0;
+}
+
+/** Height of the floor under the hero. */
+export function groundY() {
+  return game.zone?.y ?? 0;
 }
 
 export function startAction(kind: HeroAction, seconds: number, face?: THREE.Vector3) {

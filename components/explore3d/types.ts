@@ -4,7 +4,7 @@ import { Collider } from "./game";
 export type Vec3 = [number, number, number];
 
 /** The contextual action button shown in the HUD. */
-export type ActionPrompt = "spray" | "kick";
+export type ActionPrompt = "spray" | "kick" | "slash" | "climb" | "descend" | "wave" | "turbo";
 
 export type MissionProps = {
   onScore: () => void;
@@ -13,6 +13,8 @@ export type MissionProps = {
 
 export type WorldDef = {
   spawn: Vec3;
+  /** Direction the hero faces at the start (radians around Y); defaults to facing north. */
+  spawnYaw?: number;
   /** Walkable area: a circle around the origin or an axis-aligned rectangle. */
   bounds: { kind: "circle"; r: number } | { kind: "rect"; minX: number; maxX: number; minZ: number; maxZ: number };
   colliders: Collider[];
@@ -24,4 +26,8 @@ export type WorldDef = {
   Scene: ComponentType;
   /** Mission-specific gameplay (fires, ball...). Scored through onScore. */
   Mission?: ComponentType<MissionProps>;
+  /** Picking up a star counts towards the mission (the kingdom). */
+  starsScore?: boolean;
+  /** The hero drives a kart in this world. */
+  vehicle?: boolean;
 };

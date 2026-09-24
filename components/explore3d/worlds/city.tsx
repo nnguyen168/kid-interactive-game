@@ -5,7 +5,7 @@ import { seeded } from "../game";
 import { Vec3, WorldDef } from "../types";
 import { Clouds, collidersOf, Instanced, Placed, Props } from "./common";
 import { FireStation, FireTruck, Ladder } from "./firehouse";
-import { FireMission } from "./fires";
+import { FireMission, LADDER_AT } from "./fires";
 
 const T = 5; // tile size in world units
 const C = 2.5; // City Builder Bits tiles are 2 units wide
@@ -31,12 +31,13 @@ for (const [i, j] of [
 
 const rand = seeded(11);
 const buildings: Placed[] = [];
-function building(i: number, j: number, collide: boolean) {
-  const name = BUILDINGS[Math.floor(rand() * BUILDINGS.length)];
+function building(i: number, j: number, collide: boolean, fixed?: string) {
+  const name = fixed ?? BUILDINGS[Math.floor(rand() * BUILDINGS.length)];
+  const rotation = Math.floor(rand() * 4) * (Math.PI / 2);
   buildings.push({
     model: CITY(`building_${name}`),
     position: at(i, j),
-    rotation: Math.floor(rand() * 4) * (Math.PI / 2),
+    rotation: fixed ? 0 : rotation,
     scale: C,
     collide: collide ? [HALF, HALF] : undefined,
   });
@@ -47,7 +48,8 @@ for (let j = -4; j <= -1; j++) {
   for (const i of [-5, -4, 4, 5]) building(i, j, false);
 }
 for (const i of [-2, -1, 1, 2]) building(i, -3, true);
-for (let i = -2; i <= 2; i++) building(i, -4, i === 0);
+// The low, flat-roofed building at the end of the avenue is where the cat is stuck.
+for (let i = -2; i <= 2; i++) building(i, -4, i === 0, i === 0 ? "A" : undefined);
 for (let i = -5; i <= 5; i++) building(i, -5, false);
 
 const props: Placed[] = [
@@ -102,7 +104,7 @@ function CityScene() {
       <group position-y={0.25}>
         <FireStation position={STATION_AT} />
         <FireTruck position={TRUCK_AT} />
-        <Ladder position={[1.8, 0, -17.2]} />
+        <Ladder position={LADDER_AT} />
         <Props items={props} />
         <Instanced items={greenery} />
       </group>
@@ -127,7 +129,7 @@ export const city: WorldDef = {
     camion: [-4.3, 0, -5.8],
     caserne: [-11, 0, -6.6],
     bouche: [4.5, 0, 4],
-    echelle: [0.4, 0, -15.6],
+    echelle: [-1.2, 0, -16.4],
   },
   sky: { top: "#4b8fe0", horizon: "#ffe2b8", fog: "#f2dcc2", fogNear: 40, fogFar: 130 },
   camera: { height: 8.5, distance: 11.5 },

@@ -17,6 +17,17 @@ function mat(color: string, extra: THREE.MeshStandardMaterialParameters = {}) {
 }
 
 const LOOKS: Record<ThemeId, Look> = {
+  course: {
+    hide: KNIGHT_ONLY,
+    paint: {
+      Knight_Body: "#ea580c",
+      Knight_ArmLeft: "#ea580c",
+      Knight_ArmRight: "#ea580c",
+      Knight_LegLeft: "#1f2937",
+      Knight_LegRight: "#1f2937",
+    },
+    dress: (head) => racingHelmet(head),
+  },
   chevalier: {
     hide: [],
     paint: {},
@@ -75,6 +86,26 @@ const LOOKS: Record<ThemeId, Look> = {
     },
   },
 };
+
+function racingHelmet(head: THREE.Object3D) {
+  const helmet = new THREE.Group();
+  const shell = new THREE.Mesh(new THREE.SphereGeometry(0.74, 32, 20), mat("#f8fafc", { roughness: 0.2, metalness: 0.1 }));
+  shell.scale.set(1, 1.02, 1.05);
+  const stripe = new THREE.Mesh(
+    new THREE.SphereGeometry(0.75, 32, 20, Math.PI * 0.44, Math.PI * 0.12, 0, Math.PI * 0.62),
+    mat("#ea580c", { roughness: 0.25 }),
+  );
+  stripe.scale.copy(shell.scale);
+  const visor = new THREE.Mesh(
+    new THREE.SphereGeometry(0.77, 32, 16, Math.PI * 0.2, Math.PI * 0.6, Math.PI * 0.36, Math.PI * 0.22),
+    mat("#0f172a", { roughness: 0.05, metalness: 0.6 }),
+  );
+  visor.rotation.y = Math.PI;
+  visor.scale.copy(shell.scale);
+  helmet.add(shell, stripe, visor);
+  helmet.position.set(0, 0.5, 0);
+  head.add(helmet);
+}
 
 /** Clones the knight rig and dresses it up for the chosen theme. */
 export function dressHero(source: THREE.Object3D, themeId: ThemeId, paint?: Record<string, string>) {

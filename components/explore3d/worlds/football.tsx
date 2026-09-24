@@ -15,7 +15,7 @@ export const GOAL_HALF = 3.6;
 export const BALL_BAG_AT: Vec3 = [10.2, 0, 9];
 
 /** Shared between the mission and the crowd so fans jump when a goal goes in. */
-export const stadiumFx = { cheerUntil: 0 };
+export const stadiumFx = { cheerUntil: 0, waveAt: 0 };
 
 const R = 0.42;
 const WALL_X = 12.2;
@@ -166,7 +166,10 @@ export function FootballMission({ onScore, onPrompt }: MissionProps) {
       v.z = push.z * speed;
     }
 
-    const want: ActionPrompt | null = scoredAt.current === null && d < KICK_REACH && !game.paused ? "kick" : null;
+    // Near the stands, the footballer can wave to the fans and start a Mexican wave.
+    const nearFans = Math.abs(game.hero.x) > 9.5 || game.hero.z > 14.5;
+    let want: ActionPrompt | null = scoredAt.current === null && d < KICK_REACH ? "kick" : nearFans ? "wave" : null;
+    if (game.paused) want = null;
     if (want !== shown.current) {
       shown.current = want;
       onPrompt(want);
@@ -178,6 +181,11 @@ export function FootballMission({ onScore, onPrompt }: MissionProps) {
         game.target = null;
         startAction("kick", 0.75, p.clone());
         kickAt.current = now + 0.28;
+      } else if (want === "wave" && !game.action) {
+        game.target = null;
+        startAction("cheer", 1.6);
+        stadiumFx.waveAt = performance.now();
+        sfx.cheer();
       }
     }
     if (kickAt.current !== null && now >= kickAt.current) {

@@ -4,8 +4,8 @@ export const THEMES: Record<ThemeId, Theme> = {
   chevalier: {
     id: "chevalier",
     name: "Chevalier",
-    mascotName: "Léo le Chevalier",
-    greeting: "Salut ! Je suis Léo le Chevalier. Prêt pour l'aventure au château ?",
+    mascotName: "Loukas le Chevalier",
+    greeting: "Salut ! Je suis Loukas le Chevalier. Prêt pour l'aventure au château ?",
     iconArt: "shield",
     colors: {
       primary: "#7C3AED",
@@ -27,8 +27,8 @@ export const THEMES: Record<ThemeId, Theme> = {
   pompier: {
     id: "pompier",
     name: "Pompier",
-    mascotName: "Max le Pompier",
-    greeting: "Salut ! Je suis Max le Pompier. On part en mission ensemble ?",
+    mascotName: "Loukas le Pompier",
+    greeting: "Salut ! Je suis Loukas le Pompier. On part en mission ensemble ?",
     iconArt: "helmet",
     colors: {
       primary: "#DC2626",
@@ -50,8 +50,8 @@ export const THEMES: Record<ThemeId, Theme> = {
   foot: {
     id: "foot",
     name: "Foot",
-    mascotName: "Théo le Footballeur",
-    greeting: "Salut ! Je suis Théo le Footballeur. On va marquer plein de buts ?",
+    mascotName: "Loukas le Footballeur",
+    greeting: "Salut ! Je suis Loukas le Footballeur. On va marquer plein de buts ?",
     iconArt: "ball",
     colors: {
       primary: "#16A34A",
@@ -70,6 +70,29 @@ export const THEMES: Record<ThemeId, Theme> = {
     badgeArt: "trophy",
     challenge: { mover: "ball", target: "goal", win: "BUUUT ! Tu as marqué !" },
   },
+  course: {
+    id: "course",
+    name: "Pilote",
+    mascotName: "Loukas le Pilote",
+    greeting: "Salut ! Je suis Loukas le Pilote. Attache ta ceinture, on fait la course ?",
+    iconArt: "racing-car",
+    colors: {
+      primary: "#EA580C",
+      secondary: "#0EA5E9",
+      soft: "#FFEDD5",
+      text: "#7C2D12",
+    },
+    sky: { top: "#38BDF8", bottom: "#FEF3C7" },
+    items: [
+      { art: "racing-car", singular: "voiture", plural: "voitures" },
+      { art: "checkered-flag", singular: "drapeau", plural: "drapeaux" },
+      { art: "wheel", singular: "roue", plural: "roues" },
+      { art: "trophy", singular: "coupe", plural: "coupes" },
+    ],
+    badgeName: "coupe du pilote",
+    badgeArt: "checkered-flag",
+    challenge: { mover: "racing-car", target: "checkered-flag", win: "Drapeau à damier ! Tu as gagné la course !" },
+  },
 };
 
-export const THEME_ORDER: ThemeId[] = ["chevalier", "pompier", "foot"];
+export const THEME_ORDER: ThemeId[] = ["chevalier", "pompier", "foot", "course"];

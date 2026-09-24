@@ -6,6 +6,7 @@ import { Level, Subject, ThemeId } from "./types";
 const STORAGE_KEY = "kid-app-progress";
 
 export type ProgressState = {
+  /** Lifetime stars per subject; they decide the difficulty level. */
   stars: Record<Subject, number>;
   level: Record<Subject, Level>;
   badges: string[];
@@ -20,7 +21,7 @@ const DEFAULT_STATE: ProgressState = {
   badges: [],
   sessionsCompleted: 0,
   lastSessionDate: null,
-  explored: { chevalier: [], pompier: [], foot: [] },
+  explored: { chevalier: [], pompier: [], foot: [], course: [] },
 };
 
 // Stars needed to reach level 2 and level 3.
@@ -36,8 +37,11 @@ type ProgressContextValue = {
   progress: ProgressState;
   ready: boolean;
   addStars: (subject: Subject, amount: number) => { leveledUp: boolean; level: Level };
+  /** Stars won in J'explore: they count for this visit but not for levels. */
+  addBonusStars: (amount: number) => void;
   addBadge: (badgeId: string) => void;
   recordSession: () => void;
+  /** Stars earned since the page was opened; starts at zero on every visit. */
   totalStars: number;
   collectHotspot: (themeId: ThemeId, hotspotId: string) => void;
 };
@@ -50,13 +54,16 @@ export function ProgressProvider({ children }: { children: ReactNode }) {
   // Mutators read the latest committed state from here, so several updates in
   // one event handler (e.g. addBadge + recordSession) don't overwrite each other.
   const latest = useRef<ProgressState>(DEFAULT_STATE);
+  // Deliberately not persisted: every visit (page refresh) is a fresh session.
+  const [sessionStars, setSessionStars] = useState(0);
 
   useEffect(() => {
     try {
       const stored = window.localStorage.getItem(STORAGE_KEY);
       if (stored) {
         const parsed = JSON.parse(stored) as Partial<ProgressState>;
-        const loaded = { ...DEFAULT_STATE, ...parsed };
+        // Merge nested maps too, so data saved before a new theme existed still loads.
+        const loaded = { ...DEFAULT_STATE, ...parsed, explored: { ...DEFAULT_STATE.explored, ...parsed.explored } };
         latest.current = loaded;
         // Read after mount (not in a lazy useState initializer) so server and
         // client agree on the first render; only then adopt the stored value.
@@ -85,7 +92,12 @@ export function ProgressProvider({ children }: { children: ReactNode }) {
     const prevLevel = p.level[subject];
     const nextLevel = levelForStars(nextStars[subject]);
     persist({ ...p, stars: nextStars, level: { ...p.level, [subject]: nextLevel } });
+    setSessionStars((n) => n + amount);
     return { leveledUp: nextLevel > prevLevel, level: nextLevel };
+  }
+
+  function addBonusStars(amount: number) {
+    setSessionStars((n) => n + amount);
   }
 
   function addBadge(badgeId: string) {
@@ -105,11 +117,11 @@ export function ProgressProvider({ children }: { children: ReactNode }) {
     persist({ ...p, explored: { ...p.explored, [themeId]: [...p.explored[themeId], hotspotId] } });
   }
 
-  const totalStars = progress.stars.maths + progress.stars.francais;
+  const totalStars = sessionStars;
 
   return (
     <ProgressContext.Provider
-      value={{ progress, ready, addStars, addBadge, recordSession, totalStars, collectHotspot }}
+      value={{ progress, ready, addStars, addBonusStars, addBadge, recordSession, totalStars, collectHotspot }}
     >
       {children}
     </ProgressContext.Provider>

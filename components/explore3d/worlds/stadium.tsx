@@ -259,8 +259,15 @@ function Crowd({ seats }: { seats: Seat[] }) {
   useFrame(({ clock }) => {
     const t = clock.elapsedTime;
     const cheering = performance.now() < stadiumFx.cheerUntil;
+    // A Mexican wave runs once around the stadium after the hero waves.
+    const waveT = (performance.now() - stadiumFx.waveAt) / 1000;
+    const waveFront = waveT < 3.2 ? waveT * 2.2 - Math.PI : null;
     seats.forEach((s, i) => {
-      const bob = cheering ? Math.abs(Math.sin(t * 9 + s.phase)) * 0.7 : Math.max(0, Math.sin(t * 2 + s.phase)) * 0.08;
+      let bob = cheering ? Math.abs(Math.sin(t * 9 + s.phase)) * 0.7 : Math.max(0, Math.sin(t * 2 + s.phase)) * 0.08;
+      if (waveFront !== null) {
+        const gap = Math.abs(Math.atan2(s.z, s.x) - waveFront);
+        if (gap < 0.5) bob = Math.max(bob, (1 - gap / 0.5) * 0.9);
+      }
       tmp.position.set(s.x, s.y + 0.45 + bob, s.z);
       tmp.rotation.set(0, s.ry, 0);
       tmp.scale.set(1, 1, 1);

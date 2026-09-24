@@ -1,18 +1,43 @@
 "use client";
 
 import { useFrame } from "@react-three/fiber";
-import { MutableRefObject, useLayoutEffect, useMemo, useRef } from "react";
+import { MutableRefObject, useLayoutEffect, useRef } from "react";
 import * as THREE from "three";
 import { sfx } from "@/lib/sfx";
-import { distance2D, game, startAction } from "../game";
+import { shuffle } from "@/lib/random";
+import { useLazyGenerated } from "@/lib/useLazyGenerated";
+import { distance2D, game, startAction, Zone } from "../game";
 import { ActionPrompt, MissionProps, Vec3 } from "../types";
 
-/** The fires the hero must put out, each in front of a building wall. */
-export const FIRES: Vec3[] = [
-  [11.6, 0, -5],
+/** Places in front of building walls where a fire can start; three are picked each round. */
+const FIRE_SPOTS: Vec3[] = [
+  [11.6, 0, -4.2],
+  [11.6, 0, -11.2],
   [10, 0, -11.9],
+  [6.6, 0, -11.9],
+  [2, 0, -13.2],
+  [-2, 0, -13.8],
   [-11.7, 0, -3.2],
 ];
+
+function pickFires(): Vec3[] {
+  const chosen: Vec3[] = [];
+  for (const p of shuffle(FIRE_SPOTS)) {
+    if (chosen.every((c) => Math.hypot(c[0] - p[0], c[2] - p[2]) > 5)) chosen.push(p);
+    if (chosen.length === 3) break;
+  }
+  return chosen;
+}
+
+// The rescue: a ladder against the tall building at the end of the avenue, a cat on its roof.
+export const LADDER_AT: Vec3 = [1.8, 0, -17.2];
+export const ROOF_Y = 3.9;
+const ROOF: Zone = { minX: -2.4, maxX: 2.4, minZ: -22.4, maxZ: -17.7, y: ROOF_Y };
+const LADDER_BASE = new THREE.Vector3(1.8, 0, -16.4);
+const LADDER_TOP = new THREE.Vector3(1.8, ROOF_Y, -18.3);
+const LADDER_FACE = new THREE.Vector3(1.8, 0, -30);
+const CAT_AT = new THREE.Vector3(-1.2, ROOF_Y, -21);
+const CLIMB_TIME = 2.2;
 
 const REACH = 5;
 const BURN_TIME = 2.4; // seconds of spraying to put out a fire
@@ -168,26 +193,164 @@ function WaterJet() {
   );
 }
 
+function meow() {
+  sfx.meow();
+}
+
+/** A little orange cat, drawn with simple shapes. */
+function Cat({ state }: { state: MutableRefObject<{ phase: Phase; carried: boolean; saved: boolean; at: number }> }) {
+  const root = useRef<THREE.Group>(null);
+  const tail = useRef<THREE.Mesh>(null);
+  const bubble = useRef<THREE.Group>(null);
+  useFrame(({ clock }) => {
+    const g = root.current;
+    if (!g) return;
+    const st = state.current;
+    const t = clock.elapsedTime;
+    if (st.carried) {
+      // Riding on the firefighter's shoulders.
+      g.position.set(game.hero.x, game.hero.y + 1.55, game.hero.z);
+      g.rotation.y = Math.atan2(game.heroDir.x, game.heroDir.z);
+    } else if (st.saved) {
+      g.position.set(LADDER_BASE.x - 1.6, Math.abs(Math.sin(t * 5)) * 0.25, LADDER_BASE.z + 0.6);
+      g.rotation.y = t * 1.5;
+    } else {
+      g.position.copy(CAT_AT);
+      g.rotation.y = Math.sin(t * 0.7) * 0.6 + 0.4;
+    }
+    if (tail.current) tail.current.rotation.z = Math.sin(t * 4) * 0.4;
+    if (bubble.current) {
+      bubble.current.visible = !st.carried;
+      bubble.current.position.y = 1.35 + Math.sin(t * 3) * 0.08;
+    }
+  });
+  const fur = <meshStandardMaterial color="#f59e0b" roughness={0.8} />;
+  return (
+    <group ref={root} position={CAT_AT}>
+      <mesh position={[0, 0.35, 0]} rotation-x={Math.PI / 2} castShadow>
+        <capsuleGeometry args={[0.22, 0.45, 6, 12]} />
+        {fur}
+      </mesh>
+      <mesh position={[0, 0.62, 0.38]} castShadow>
+        <sphereGeometry args={[0.24, 16, 12]} />
+        {fur}
+      </mesh>
+      {[-0.12, 0.12].map((x) => (
+        <mesh key={x} position={[x, 0.86, 0.36]} rotation-z={x > 0 ? -0.2 : 0.2}>
+          <coneGeometry args={[0.07, 0.16, 8]} />
+          {fur}
+        </mesh>
+      ))}
+      {[-0.08, 0.08].map((x) => (
+        <mesh key={x} position={[x, 0.66, 0.6]}>
+          <sphereGeometry args={[0.035, 8, 6]} />
+          <meshStandardMaterial color="#111827" />
+        </mesh>
+      ))}
+      <mesh position={[0, 0.58, 0.62]}>
+        <sphereGeometry args={[0.03, 8, 6]} />
+        <meshStandardMaterial color="#f472b6" />
+      </mesh>
+      <mesh ref={tail} position={[0, 0.45, -0.42]} rotation-x={-0.9}>
+        <capsuleGeometry args={[0.05, 0.45, 4, 8]} />
+        {fur}
+      </mesh>
+      {[-0.12, 0.12].flatMap((x) =>
+        [-0.18, 0.2].map((z) => (
+          <mesh key={`${x}${z}`} position={[x, 0.1, z]}>
+            <capsuleGeometry args={[0.05, 0.12, 4, 8]} />
+            {fur}
+          </mesh>
+        )),
+      )}
+      <group ref={bubble}>
+        <mesh>
+          <sphereGeometry args={[0.28, 16, 12]} />
+          <meshStandardMaterial color="#ffffff" emissive="#ffffff" emissiveIntensity={0.3} />
+        </mesh>
+        <mesh position-z={0.26}>
+          <torusGeometry args={[0.1, 0.035, 8, 16]} />
+          <meshStandardMaterial color="#ef4444" />
+        </mesh>
+      </group>
+    </group>
+  );
+}
+
+type Phase = "ground" | "up" | "roof" | "down";
+
+/** Firefighter mission: three fires at random places, and a cat to bring down from a roof. */
 export function FireMission({ onScore, onPrompt }: MissionProps) {
-  const health = useRef<number[]>(FIRES.map(() => 1));
+  const [fires] = useLazyGenerated(true, pickFires);
+  const health = useRef<number[]>([1, 1, 1]);
   const target = useRef<number | null>(null);
   const shown = useRef<ActionPrompt | null>(null);
-  const targets = useMemo(() => FIRES.map((p) => new THREE.Vector3(...p)), []);
+  const rescue = useRef<{ phase: Phase; carried: boolean; saved: boolean; at: number }>({ phase: "ground", carried: false, saved: false, at: 0 });
+  const nextMeow = useRef(0);
 
-  useFrame((_, rawDelta) => {
+  useFrame(({ clock }, rawDelta) => {
+    if (!fires) return;
     const delta = Math.min(rawDelta, 0.1);
+    const now = clock.elapsedTime;
+    const r = rescue.current;
+
+    // Climbing up or down the ladder: the mission moves the hero.
+    if (r.phase === "up" || r.phase === "down") {
+      const k = Math.min(1, (now - r.at) / CLIMB_TIME);
+      const from = r.phase === "up" ? LADDER_BASE : LADDER_TOP;
+      const to = r.phase === "up" ? LADDER_TOP : LADDER_BASE;
+      game.hero.lerpVectors(from, to, k);
+      if (k >= 1) {
+        game.cinematic = false;
+        game.action = null;
+        if (r.phase === "up") {
+          r.phase = "roof";
+          game.zone = ROOF;
+          game.hero.set(LADDER_TOP.x, ROOF_Y, LADDER_TOP.z - 0.3);
+        } else {
+          r.phase = "ground";
+          game.zone = null;
+          game.hero.set(LADDER_BASE.x, 0, LADDER_BASE.z + 0.2);
+          if (r.carried) {
+            r.carried = false;
+            r.saved = true;
+            meow();
+            sfx.correct();
+            startAction("cheer", 1.8);
+            onScore();
+          }
+        }
+      }
+    }
+
+    // The cat meows now and then until it is safe.
+    if (!r.saved && !r.carried && now > nextMeow.current && distance2D(game.hero, CAT_AT.x, CAT_AT.z) < 14) {
+      nextMeow.current = now + 6;
+      meow();
+    }
+    if (r.phase === "roof" && !r.carried && !r.saved && distance2D(game.hero, CAT_AT.x, CAT_AT.z) < 1.3) {
+      r.carried = true;
+      meow();
+      sfx.star();
+    }
+
     let nearest = -1;
     let best = REACH;
-    FIRES.forEach((p, i) => {
-      if (health.current[i] <= 0) return;
-      const d = distance2D(game.hero, p[0], p[2]);
-      if (d < best) {
-        best = d;
-        nearest = i;
-      }
-    });
-
-    const want: ActionPrompt | null = nearest >= 0 && !game.paused ? "spray" : null;
+    if (r.phase === "ground") {
+      fires.forEach((p, i) => {
+        if (health.current[i] <= 0) return;
+        const d = distance2D(game.hero, p[0], p[2]);
+        if (d < best) {
+          best = d;
+          nearest = i;
+        }
+      });
+    }
+    const atLadder = r.phase === "ground" && distance2D(game.hero, LADDER_BASE.x, LADDER_BASE.z) < 1.8 && !r.saved;
+    const atTop = r.phase === "roof" && distance2D(game.hero, LADDER_TOP.x, LADDER_TOP.z) < 1.6;
+    // Standing right at the ladder means "climb", even if a fire burns nearby.
+    let want: ActionPrompt | null = atLadder ? "climb" : nearest >= 0 ? "spray" : atTop ? "descend" : null;
+    if (game.paused || game.cinematic) want = null;
     if (want !== shown.current) {
       shown.current = want;
       onPrompt(want);
@@ -195,12 +358,20 @@ export function FireMission({ onScore, onPrompt }: MissionProps) {
 
     if (game.actionRequest) {
       game.actionRequest = false;
-      if (nearest >= 0) {
+      if (want === "spray") {
+        const spot = new THREE.Vector3(...fires[nearest]);
         target.current = nearest;
         game.target = null;
-        game.sprayTarget = targets[nearest];
-        startAction("spray", 1.9, targets[nearest]);
+        game.sprayTarget = spot;
+        startAction("spray", 1.9, spot);
         sfx.splash();
+      } else if (want === "climb" || want === "descend") {
+        r.phase = want === "climb" ? "up" : "down";
+        r.at = now;
+        game.target = null;
+        game.cinematic = true;
+        game.vy = 0;
+        startAction("climb", 60, LADDER_FACE);
       }
     }
 
@@ -219,12 +390,14 @@ export function FireMission({ onScore, onPrompt }: MissionProps) {
     if (game.action?.kind !== "spray") game.sprayTarget = null;
   });
 
+  if (!fires) return null;
   return (
     <>
-      {FIRES.map((p, i) => (
+      {fires.map((p, i) => (
         <Fire key={i} position={p} index={i} health={health} />
       ))}
       <WaterJet />
+      <Cat state={rescue} />
     </>
   );
 }

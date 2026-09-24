@@ -1,22 +1,34 @@
 # L'Aventure du Vendredi
 
 A small French-language educational game built for a 15-minute Friday-night ritual
-with a 5-year-old learning maths and French in *CP* (first grade). Pick a hero
-(Léo le Chevalier, Max le Pompier or Théo le Footballeur), learn a little, discover
+with a 5-year-old learning maths and French in *CP* (first grade). Pick a hero —
+Loukas the knight, firefighter, footballer or racing driver — learn a little, discover
 how the world works, then play.
 
-- **Les nombres / Les lettres** — counting (tap each object to count it out loud),
-  addition, subtraction and comparisons; letter sounds, word–picture matching and
-  missing letters. Rounds of 8 questions end with a 3-star result screen, and
-  difficulty levels up automatically as stars are earned.
+- **Les nombres** — counting (tap each object to count it out loud), number words up
+  to sixty, "what comes next", written additions and subtractions up to 20, making 10,
+  doubles, counting by 2s and 10s, comparing numbers and little spoken story problems.
+- **Les lettres** — first letters and first syllables, upper/lower case, reading words
+  (with look-alike distractors), clapping syllables, finding a sound (*on, ou, an, in,
+  oi, ch*), rhymes, the alphabet, and missing letters or syllables — over a bank of
+  about 100 illustrated words.
+- Rounds of 8 questions end with a 3-star result screen. Difficulty levels up
+  automatically (three answers at level 1, four afterwards), and recent questions are
+  not repeated.
 - **Le monde** — a bookshelf of narrated picture-books ("D'où vient l'eau du
   robinet ?", "Comment fait-on de l'eau qui pétille ?", ...) with a spoken quiz.
 - **Le défi** — a themed challenge with hearts: every answer moves the ball toward
   the goal, the fire truck toward the fire, or the horse toward the castle.
 - **J'explore** — a little 3D adventure game for each hero. Tap the ground (or use the
-  arrow keys) to walk around; glowing spots tell fun facts. The knight collects 10 stars
-  in his kingdom, the firefighter puts out 3 fires in the city with the *Arroser* button,
-  and the footballer dribbles and shoots 3 goals past the keeper in a packed stadium.
+  arrow keys) to walk around, *Sauter* (J) to jump; glowing spots tell fun facts.
+  - The knight collects 10 stars in his kingdom, swinging his sword (*Épée*) to break
+    barrels with stars inside and to knock the training dummies.
+  - The firefighter puts out 3 fires (a different place each round) with *Arroser*,
+    and climbs a ladder onto a roof to rescue a cat.
+  - The footballer dribbles and shoots 3 goals past the keeper, and can start a
+    Mexican wave in the stands (*Saluer*).
+  - The racing driver drives a kart for 3 laps through the arches, with turbo pads,
+    a jump ramp, cones to knock over and a *Turbo* button.
 - **L'aventure** — the guided 15-minute session: learn → story → challenge → reward.
 
 Designed for a child who is just learning to read: every question is read aloud
@@ -26,7 +38,8 @@ speaker to hear each word. A wrong answer is never punished — the child simply
 tries again, and after two misses the right answer glows. Sounds are synthesized
 in the browser, so there are no audio files.
 
-All progress (stars, levels, badges) is saved locally in the browser
+The star counter starts at zero on every visit (refreshing the page starts a new
+session). Levels, badges and discovered facts are saved locally in the browser
 (`localStorage`) — there's no account, no backend, and no data collection.
 
 ## Playing with the keyboard

@@ -51,7 +51,7 @@ function HeroPortrait({ themeId, selected, onPick }: { themeId: ThemeId; selecte
   return (
     <button type="button" onClick={onPick} aria-label={t.mascotName} className="flex flex-col items-center gap-1 rounded-3xl" data-nav>
       <span
-        className={`block h-20 w-20 overflow-hidden rounded-full border-4 bg-white transition-transform sm:h-24 sm:w-24 lg:h-28 lg:w-28 ${
+        className={`block h-16 w-16 overflow-hidden rounded-full border-4 bg-white transition-transform sm:h-24 sm:w-24 lg:h-28 lg:w-28 ${
           selected ? "scale-110 shadow-[0_6px_0_rgba(0,0,0,0.15)]" : "opacity-80 hover:opacity-100"
         }`}
         style={{ borderColor: selected ? t.colors.primary : "#FFFFFF", background: t.colors.soft }}
@@ -59,7 +59,7 @@ function HeroPortrait({ themeId, selected, onPick }: { themeId: ThemeId; selecte
         <Mascot themeId={themeId} talking={false} shadow={false} className="-ml-[15%] -mt-[6%] w-[130%] max-w-none" />
       </span>
       <span
-        className={`rounded-full px-3 py-0.5 text-base font-bold lg:text-xl ${selected ? "text-white" : "bg-white/80 text-slate-600"}`}
+        className={`rounded-full px-2 py-0.5 text-sm font-bold sm:px-3 sm:text-base lg:text-xl ${selected ? "text-white" : "bg-white/80 text-slate-600"}`}
         style={selected ? { background: t.colors.primary } : undefined}
       >
         {t.name}
@@ -158,7 +158,7 @@ export default function Home() {
             speakText={theme.greeting}
             autoSpeak={false}
           />
-          <div className="flex items-end justify-center gap-4 rounded-[2rem] bg-white/60 px-4 pb-3 pt-4 backdrop-blur-sm sm:gap-6">
+          <div className="flex items-end justify-center gap-2 rounded-[2rem] bg-white/60 px-3 pb-3 pt-4 backdrop-blur-sm sm:gap-6 sm:px-4">
             {THEME_ORDER.map((id) => (
               <HeroPortrait key={id} themeId={id} selected={id === themeId} onPick={() => pickHero(id)} />
             ))}

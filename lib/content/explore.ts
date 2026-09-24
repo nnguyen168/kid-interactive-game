@@ -34,22 +34,28 @@ export const EXPLORE_FACTS: Record<ThemeId, ExploreFact[]> = {
     { id: "trophee", art: "trophy", fact: "La Coupe du Monde de foot a lieu tous les 4 ans entre les meilleures équipes du monde." },
     { id: "tribune", art: "megaphone", fact: "Un match de foot dure normalement 90 minutes, avec une pause à la mi-temps." },
   ],
+  course: [
+    { id: "feux", art: "traffic-light", fact: "Au départ, les feux rouges s'allument un par un. Quand ils s'éteignent tous : c'est parti !" },
+    { id: "pneus", art: "wheel", fact: "Les voitures de course ont des pneus très larges et tout lisses pour bien coller à la piste." },
+    { id: "chrono", art: "stopwatch", fact: "Le chronomètre mesure le temps des pilotes au centième de seconde près, c'est super précis !" },
+    { id: "drapeau", art: "checkered-flag", fact: "Le drapeau à damier noir et blanc annonce la fin de la course. Le premier à le voir a gagné !" },
+  ],
 };
 
 export const MISSIONS: Record<ThemeId, Mission> = {
   chevalier: {
-    intro: "Bienvenue au royaume ! Trouve les 4 secrets du château et ramasse toutes les étoiles dorées.",
+    intro: "Bienvenue au royaume ! Ramasse les étoiles dorées et frappe les tonneaux avec ton épée : des étoiles sont cachées dedans !",
     goalLabel: "Étoiles",
     goalArt: "glowing-star",
     goalCount: 10,
     win: "Bravo chevalier ! Tu as exploré tout le royaume !",
   },
   pompier: {
-    intro: "Alerte ! Il y a trois feux dans la ville. Approche-toi et appuie sur le bouton pour arroser !",
-    goalLabel: "Feux éteints",
+    intro: "Alerte ! Trois feux dans la ville, et un petit chat coincé sur un toit ! Arrose les feux, puis grimpe à l'échelle pour sauver le chat.",
+    goalLabel: "Sauvetages",
     goalArt: "fire",
-    goalCount: 3,
-    win: "Mission réussie ! Tu as éteint tous les feux, bravo pompier !",
+    goalCount: 4,
+    win: "Mission réussie ! Les feux sont éteints et le chat est sauvé. Bravo pompier !",
   },
   foot: {
     intro: "C'est le match ! Pousse le ballon dans le but pour marquer trois buts.",
@@ -57,5 +63,12 @@ export const MISSIONS: Record<ThemeId, Mission> = {
     goalArt: "ball",
     goalCount: 3,
     win: "Trois buts ! Tu es le champion du stade !",
+  },
+  course: {
+    intro: "En piste, pilote ! Fais trois tours du circuit en passant sous toutes les arches. Les flèches jaunes te donnent un turbo !",
+    goalLabel: "Tours",
+    goalArt: "checkered-flag",
+    goalCount: 3,
+    win: "Trois tours ! Drapeau à damier, tu as gagné la course !",
   },
 };

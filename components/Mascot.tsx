@@ -21,6 +21,7 @@ const OUTFITS: Record<ThemeId, Outfit> = {
   chevalier: { torso: "#D6DEE8", arm: "#C3CEDC", leg: "#64748B", boot: "#475569" },
   pompier: { torso: "#1E3A8A", arm: "#1E3A8A", leg: "#1E3A8A", boot: "#111827" },
   foot: { torso: "#16A34A", arm: "#16A34A", leg: "#15803D", boot: "#111827" },
+  course: { torso: "#EA580C", arm: "#EA580C", leg: "#EA580C", boot: "#111827" },
 };
 
 function Arm({ side, outfit, themeId }: { side: "l" | "r"; outfit: Outfit; themeId: ThemeId }) {
@@ -37,8 +38,9 @@ function Arm({ side, outfit, themeId }: { side: "l" | "r"; outfit: Outfit; theme
         )}
         <rect x={-11} y={0} width={22} height={50} rx={11} fill={outfit.arm} />
         {themeId === "pompier" && <rect x={-11} y={30} width={22} height={6} fill="#FACC15" />}
+        {themeId === "course" && <rect x={-11} y={8} width={22} height={5} fill="#FFFFFF" />}
         {themeId === "chevalier" && <rect x={-11} y={22} width={22} height={5} fill="#94A3B8" opacity={0.6} />}
-        <circle cx={0} cy={54} r={12} fill={themeId === "chevalier" ? "#94A3B8" : SKIN} />
+        <circle cx={0} cy={54} r={12} fill={themeId === "chevalier" ? "#94A3B8" : themeId === "course" ? "#1F2937" : SKIN} />
         {side === "l" && themeId === "chevalier" && (
           <g transform="translate(-12 34)">
             <path d="M0 -20 L18 -14 C18 4 11 15 0 20 C-11 15 -18 4 -18 -14 Z" fill="#7C3AED" stroke="#FBBF24" strokeWidth={4} />
@@ -83,6 +85,23 @@ function Headgear({ themeId }: { themeId: ThemeId }) {
       </g>
     );
   }
+  if (themeId === "course") {
+    return (
+      <g>
+        {/* full racing helmet, visor pushed up */}
+        <path d="M30 104 C26 46 60 20 100 20 C140 20 174 46 170 104 L156 108 C156 70 134 50 100 50 C66 50 44 70 44 108 Z" fill="#F8FAFC" />
+        <path d="M44 106 C44 72 64 52 100 52 C136 52 156 72 156 106" stroke="#CBD5E1" strokeWidth={3} fill="none" />
+        <path d="M60 24 C74 18 88 16 100 16 C112 16 126 18 140 24 L140 40 L60 40 Z" fill="#EA580C" />
+        <rect x={52} y={40} width={96} height={18} rx={9} fill="#0F172A" />
+        <path d="M60 44 C76 42 92 42 108 43" stroke="#38BDF8" strokeWidth={4} strokeLinecap="round" opacity={0.8} />
+        <circle cx={150} cy={82} r={13} fill="#FFFFFF" stroke="#EA580C" strokeWidth={3} />
+        <text x={150} y={88} textAnchor="middle" fontSize={16} fontWeight={800} fill="#EA580C" fontFamily="Arial, sans-serif">
+          1
+        </text>
+        <path d="M48 64 C52 50 62 40 74 34" stroke="#FFFFFF" strokeWidth={5} strokeLinecap="round" opacity={0.7} fill="none" />
+      </g>
+    );
+  }
   return (
     <g>
       <path
@@ -114,6 +133,17 @@ function Torso({ themeId, outfit }: { themeId: ThemeId; outfit: Outfit }) {
           <rect x={58} y={190} width={84} height={4} fill="#E5E7EB" />
           <rect x={97} y={142} width={6} height={68} fill="#0F1E4D" />
           <circle cx={112} cy={158} r={6} fill="#FBBF24" />
+        </g>
+      )}
+      {themeId === "course" && (
+        <g>
+          <rect x={92} y={140} width={16} height={70} fill="#FFFFFF" />
+          <rect x={58} y={194} width={84} height={10} fill="#111827" />
+          {[0, 1, 2, 3, 4, 5, 6, 7, 8, 9].map((i) => (
+            <rect key={i} x={58 + i * 8.4} y={i % 2 ? 194 : 199} width={8.4} height={5} fill="#FFFFFF" />
+          ))}
+          <circle cx={75} cy={162} r={9} fill="#FACC15" />
+          <path d="M75 156 L77 160.5 L81.8 161 L78.2 164.2 L79.3 169 L75 166.5 L70.7 169 L71.8 164.2 L68.2 161 L73 160.5 Z" fill="#FFFFFF" />
         </g>
       )}
       {themeId === "foot" && (
@@ -230,6 +260,9 @@ export default function Mascot({
       </g>
       {themeId === "foot" && (
         <image href="/art/ball.png" x={140} y={214} width={42} height={42} />
+      )}
+      {themeId === "course" && (
+        <image href="/art/checkered-flag.png" x={138} y={200} width={54} height={54} />
       )}
     </svg>
   );

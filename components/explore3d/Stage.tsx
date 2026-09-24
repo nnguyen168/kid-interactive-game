@@ -127,6 +127,7 @@ export function GroundClick() {
   const pressing = useRef(false);
   const marker = useRef<THREE.Group>(null);
   const ring = useRef<THREE.Mesh>(null);
+  const floor = useRef<THREE.Mesh>(null);
 
   useEffect(() => {
     const release = () => {
@@ -141,16 +142,18 @@ export function GroundClick() {
   }, []);
 
   function aim(point: THREE.Vector3) {
-    if (game.paused) return;
+    if (game.paused || game.cinematic) return;
     game.target = new THREE.Vector3(point.x, 0, point.z);
   }
 
   useFrame(({ clock }) => {
+    // The invisible floor rises to the rooftop when the hero is up there.
+    if (floor.current) floor.current.position.y = (game.zone?.y ?? 0) + 0.01;
     const m = marker.current;
     if (!m) return;
     m.visible = game.target !== null;
     if (game.target) {
-      m.position.set(game.target.x, 0.06, game.target.z);
+      m.position.set(game.target.x, (game.zone?.y ?? 0) + 0.06, game.target.z);
       const pulse = 1 + Math.sin(clock.elapsedTime * 8) * 0.12;
       ring.current?.scale.setScalar(pulse);
     }
@@ -159,6 +162,7 @@ export function GroundClick() {
   return (
     <>
       <mesh
+        ref={floor}
         rotation-x={-Math.PI / 2}
         position-y={0.01}
         onPointerDown={(e) => {

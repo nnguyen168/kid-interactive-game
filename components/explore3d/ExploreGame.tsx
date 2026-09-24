@@ -1,11 +1,13 @@
 "use client";
 
 import { PerformanceMonitor, useProgress as useLoadProgress } from "@react-three/drei";
-import { Canvas, useFrame } from "@react-three/fiber";
+import { Canvas, useFrame, useThree } from "@react-three/fiber";
 import { Suspense, useEffect, useRef, useState } from "react";
 import Art from "@/components/Art";
 import { candyStyle, CANDY_PRESS } from "@/components/ui/CandyButton";
 import { EXPLORE_FACTS, MISSIONS } from "@/lib/content/explore";
+import { ArtKey } from "@/lib/art";
+import { useProgress } from "@/lib/ProgressContext";
 import { sfx } from "@/lib/sfx";
 import { ThemeId } from "@/lib/types";
 import { THEMES } from "@/lib/themes";
@@ -16,23 +18,48 @@ import { CameraRig, Effects, GroundClick, Lights, SkyDome, useKeyboardControls }
 import { ActionPrompt, WorldDef } from "./types";
 import { city } from "./worlds/city";
 import { kingdom } from "./worlds/kingdom";
+import { raceway } from "./worlds/raceway";
 import { stadium } from "./worlds/stadium";
 
 const WORLDS: Record<ThemeId, WorldDef> = {
   chevalier: kingdom,
   pompier: city,
   foot: stadium,
+  course: raceway,
 };
 
-const PROMPTS: Record<ActionPrompt, { label: string; art: "droplet" | "ball" }> = {
-  spray: { label: "Arroser !", art: "droplet" },
+const PROMPTS: Record<ActionPrompt, { label: string; art: ArtKey; color?: string }> = {
+  spray: { label: "Arroser !", art: "droplet", color: "#0ea5e9" },
   kick: { label: "Tirer !", art: "ball" },
+  slash: { label: "Épée !", art: "swords" },
+  climb: { label: "Grimper !", art: "ladder", color: "#f59e0b" },
+  descend: { label: "Descendre", art: "ladder", color: "#f59e0b" },
+  wave: { label: "Saluer !", art: "wave", color: "#a855f7" },
+  turbo: { label: "Turbo !", art: "rocket", color: "#0ea5e9" },
 };
 
-/** Mounted inside the Suspense boundary: reports once the world has actually been drawn. */
+/**
+ * Mounted inside the Suspense boundary, once every model is loaded: compiles all
+ * shaders up front (no stutter on the first frames), then reports after a couple
+ * of drawn frames so the loading screen hides only when the world is visible.
+ */
 function WorldReady({ onReady }: { onReady: () => void }) {
+  const { gl, scene, camera } = useThree();
+  const compiled = useRef(false);
   const frames = useRef(0);
+  useEffect(() => {
+    let alive = true;
+    gl.compileAsync(scene, camera)
+      .catch(() => undefined)
+      .finally(() => {
+        if (alive) compiled.current = true;
+      });
+    return () => {
+      alive = false;
+    };
+  }, [gl, scene, camera]);
   useFrame(() => {
+    if (!compiled.current) return;
     frames.current += 1;
     if (frames.current === 3) onReady();
   });
@@ -86,23 +113,32 @@ export default function ExploreGame({
   const [high, setHigh] = useState(true);
   const [hint, setHint] = useState(true);
   const [drawn, setDrawn] = useState(false);
+  const { addBonusStars } = useProgress();
 
   useKeyboardControls();
 
-  // Space or Enter fires the action button (Arroser / Tirer) from the keyboard.
+  // Keyboard: Space or Enter fires the action button (or jumps when there is none), J jumps.
   const actionReady = useRef(false);
+  const pausedRef = useRef(paused);
   useEffect(() => {
     actionReady.current = prompt !== null && !paused;
+    pausedRef.current = paused;
   }, [prompt, paused]);
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
-      if (e.key !== " " && e.key !== "Enter") return;
+      const isAction = e.key === " " || e.key === "Enter";
+      const isJump = e.code === "KeyJ";
+      if (!isAction && !isJump) return;
       const target = e.target as HTMLElement | null;
       if (target?.closest("button, a, input, textarea")) return;
       e.preventDefault();
-      if (e.repeat || !actionReady.current) return;
-      sfx.pop();
-      game.actionRequest = true;
+      if (e.repeat || pausedRef.current) return;
+      if (isAction && actionReady.current) {
+        sfx.pop();
+        game.actionRequest = true;
+      } else {
+        game.jumpRequest = true;
+      }
     };
     window.addEventListener("keydown", onKey);
     return () => window.removeEventListener("keydown", onKey);
@@ -126,6 +162,7 @@ export default function ExploreGame({
   }, [drawn]);
 
   function addScore() {
+    addBonusStars(1);
     setScore((s) => {
       const next = s + 1;
       if (next === mission.goalCount) setTimeout(onWin, 1400);
@@ -136,12 +173,16 @@ export default function ExploreGame({
   function takeStar(i: number) {
     sfx.star();
     setTaken((prev) => prev.map((v, j) => (j === i ? true : v)));
-    if (!world.Mission) addScore();
+    if (world.starsScore) addScore();
   }
 
   function act() {
     sfx.pop();
     game.actionRequest = true;
+  }
+
+  function jump() {
+    game.jumpRequest = true;
   }
 
   const Mission = world.Mission;
@@ -207,9 +248,28 @@ export default function ExploreGame({
         <div className="pointer-events-none absolute inset-x-0 bottom-5 flex justify-center px-3">
           <div className="rise-in flex items-center gap-3 rounded-full border-4 border-white bg-white/90 px-5 py-2 text-lg font-bold text-slate-700 shadow-lg lg:text-2xl">
             <Art name="sparkles" className="w-8 h-8 lg:w-10 lg:h-10" eager />
-            Touche le sol ou les flèches pour marcher !
+            {world.vehicle ? "Touche la piste ou les flèches pour conduire !" : "Touche le sol ou les flèches pour marcher !"}
           </div>
         </div>
+      )}
+
+      {!paused && (
+        <button
+          type="button"
+          onPointerDown={(e) => {
+            e.stopPropagation();
+            jump();
+          }}
+          onMouseDown={(e) => e.preventDefault()}
+          tabIndex={-1}
+          aria-label="Sauter"
+          className={`absolute bottom-5 flex flex-col items-center justify-center rounded-full border-4 border-white text-white lg:bottom-8 ${CANDY_PRESS} ${prompt ? "right-[calc(min(34vw,11rem)+2rem)] lg:right-[calc(11rem+3rem)]" : "right-5 lg:right-8"}`}
+          style={{ ...candyStyle("#22c55e"), width: "min(22vw, 7rem)", height: "min(22vw, 7rem)" }}
+        >
+          <span className="text-4xl leading-none drop-shadow lg:text-5xl">⤴</span>
+          <span className="text-base font-extrabold drop-shadow lg:text-lg">Sauter</span>
+          <span className="hidden rounded-md bg-white/25 px-1.5 text-xs font-bold [@media(hover:hover)]:inline">J</span>
+        </button>
       )}
 
       {prompt && !paused && (
@@ -222,7 +282,7 @@ export default function ExploreGame({
           onMouseDown={(e) => e.preventDefault()}
           tabIndex={-1}
           className={`pop-in absolute bottom-5 right-5 flex flex-col items-center justify-center rounded-full border-4 border-white text-white lg:bottom-8 lg:right-8 ${CANDY_PRESS}`}
-          style={{ ...candyStyle(prompt === "spray" ? "#0ea5e9" : theme.colors.primary), width: "min(34vw, 11rem)", height: "min(34vw, 11rem)" }}
+          style={{ ...candyStyle(PROMPTS[prompt].color ?? theme.colors.primary), width: "min(34vw, 11rem)", height: "min(34vw, 11rem)" }}
         >
           <Art name={PROMPTS[prompt].art} className="w-16 h-16 lg:w-20 lg:h-20" eager />
           <span className="text-xl font-extrabold drop-shadow lg:text-2xl">{PROMPTS[prompt].label}</span>

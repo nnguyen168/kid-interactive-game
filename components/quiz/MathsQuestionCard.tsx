@@ -7,7 +7,7 @@ import { sfx } from "@/lib/sfx";
 import { speak } from "@/lib/speech";
 import Art from "../Art";
 import MascotSays from "../ui/MascotSays";
-import ChoiceTile, { TILE_COLORS } from "./ChoiceTile";
+import ChoiceTile, { choiceGrid, TILE_COLORS } from "./ChoiceTile";
 import { useAnswer } from "./useAnswer";
 
 function objectSize(total: number) {
@@ -58,11 +58,20 @@ export default function MathsQuestionCard({
       <MascotSays themeId={themeId} text={question.prompt} mood={mood} speakKey={question.id} />
 
       <div className="w-full rounded-[2rem] lg:rounded-[2.6rem] border-4 border-white/80 bg-white/95 px-4 py-4 sm:px-6 lg:py-5 shadow-[0_8px_0_rgba(0,0,0,0.08)] backdrop-blur-sm">
-        {question.numberWord ? (
+        {question.display ? (
+          <button
+            type="button"
+            onClick={() => speak(question.prompt)}
+            className="pop-in mx-auto block whitespace-nowrap text-5xl font-bold text-violet-600 sm:text-7xl lg:text-8xl"
+            style={{ textShadow: "0 5px 0 rgba(0,0,0,0.12)" }}
+          >
+            {question.display}
+          </button>
+        ) : question.numberWord ? (
           <button
             type="button"
             onClick={() => speak(question.numberWord ?? "")}
-            className="pop-in mx-auto block text-6xl sm:text-7xl lg:text-8xl font-bold capitalize text-violet-600"
+            className="pop-in mx-auto block text-5xl sm:text-7xl lg:text-8xl font-bold capitalize text-violet-600"
             style={{ textShadow: "0 5px 0 rgba(0,0,0,0.12)" }}
           >
             {question.numberWord}
@@ -114,14 +123,14 @@ export default function MathsQuestionCard({
             ))}
           </div>
         )}
-        {!question.numberWord && (
+        {question.groups.length > 0 && !question.display && (
           <p className="mt-3 text-center text-base lg:text-xl font-semibold text-slate-500">
             Touche les objets pour compter !
           </p>
         )}
       </div>
 
-      <div className="grid w-full max-w-3xl grid-cols-3 gap-4 sm:gap-6">
+      <div className={choiceGrid(question.choices.length)}>
         {question.choices.map((choice, i) => (
           <ChoiceTile
             key={i}

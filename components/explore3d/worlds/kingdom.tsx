@@ -4,6 +4,7 @@ import { MED } from "../Prop";
 import { seeded } from "../game";
 import { Vec3, WorldDef } from "../types";
 import { Clouds, collidersOf, Instanced, Path, Placed, Props } from "./common";
+import { KNIGHT_COLLIDERS, KnightMission } from "./knight";
 
 const S = 3; // KayKit hex tiles are 2 units wide; the kingdom is built at 3x.
 
@@ -145,21 +146,17 @@ function KingdomScene() {
 
 const stars: Vec3[] = [
   [0, 0, 4],
-  [-4, 0, 2],
   [9, 0, 4],
   [-9, 0, 3],
   [3, 0, -8],
   [-3, 0, -8.5],
-  [18, 0, -7],
-  [-18.5, 0, -6.5],
   [6, 0, 14],
-  [-6, 0, 16],
 ];
 
 export const kingdom: WorldDef = {
   spawn: [0, 0, 11],
   bounds: { kind: "circle", r: 23 },
-  colliders: [...collidersOf(buildings), ...collidersOf(nature)],
+  colliders: [...collidersOf(buildings), ...collidersOf(nature), ...KNIGHT_COLLIDERS],
   stars,
   spots: {
     tour: [0, 0, -8.8],
@@ -170,4 +167,6 @@ export const kingdom: WorldDef = {
   sky: { top: "#4fa8f0", horizon: "#d9f1ff", fog: "#cfeaf7", fogNear: 45, fogFar: 140 },
   camera: { height: 7.5, distance: 11 },
   Scene: KingdomScene,
+  Mission: KnightMission,
+  starsScore: true,
 };

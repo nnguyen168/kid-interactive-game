@@ -204,6 +204,48 @@ function StadiumScene() {
   );
 }
 
+function RaceTrackScene() {
+  const kerb = Array.from({ length: 34 }, (_, i) => i);
+  return (
+    <g>
+      <path d="M-20 520 Q300 430 700 500 T1620 470 L1620 900 L-20 900 Z" fill="#86C96B" />
+      <path d="M-20 560 Q420 500 820 560 T1620 540 L1620 900 L-20 900 Z" fill="#6DBA56" />
+      {/* grandstand */}
+      <g transform="translate(980 380)">
+        <rect x={0} y={40} width={520} height={150} fill="#334155" />
+        <path d="M-20 44 L540 44 L520 10 L0 10 Z" fill="#EA580C" />
+        {crowd.slice(0, 160).map((p, i) => (
+          <circle key={i} cx={12 + ((p.x * 0.31) % 496)} cy={60 + ((p.y - 430) % 120)} r={6} fill={p.c} />
+        ))}
+      </g>
+      {/* track */}
+      <path d="M-40 760 C300 600 700 640 900 700 S1400 800 1660 690" stroke="#475569" strokeWidth={170} fill="none" />
+      <path d="M-40 760 C300 600 700 640 900 700 S1400 800 1660 690" stroke="#FFFFFF" strokeWidth={6} strokeDasharray="40 36" fill="none" />
+      <path d="M-40 675 C300 515 700 555 900 615 S1400 715 1660 605" stroke="#EF4444" strokeWidth={14} strokeDasharray="30 30" fill="none" />
+      <path d="M-40 675 C300 515 700 555 900 615 S1400 715 1660 605" stroke="#FFFFFF" strokeWidth={14} strokeDasharray="30 30" strokeDashoffset={30} fill="none" />
+      {/* start / finish gantry */}
+      <g transform="translate(520 470)">
+        <rect x={-10} y={0} width={16} height={230} fill="#94A3B8" />
+        <rect x={334} y={0} width={16} height={230} fill="#94A3B8" />
+        <rect x={-10} y={-10} width={360} height={50} rx={6} fill="#111827" />
+        {kerb.slice(0, 18).map((i) => (
+          <rect key={i} x={i * 20} y={i % 2 ? 0 : 15} width={20} height={15} fill="#FFFFFF" />
+        ))}
+      </g>
+      {/* tyre stacks */}
+      {[140, 1460].map((x) => (
+        <g key={x} transform={`translate(${x} 560)`}>
+          {[0, 1, 2].map((r) => (
+            <ellipse key={r} cx={0} cy={-r * 22} rx={34} ry={14} fill={r % 2 ? "#EF4444" : "#1F2937"} />
+          ))}
+        </g>
+      ))}
+      <image href="/art/racing-car.png" x={250} y={560} width={190} height={190} />
+      <image href="/art/checkered-flag.png" x={1240} y={420} width={140} height={140} />
+    </g>
+  );
+}
+
 export default function SceneBackground({ themeId }: { themeId: ThemeId }) {
   const { sky } = THEMES[themeId];
   const gradientId = `sky-${themeId}`;
@@ -222,6 +264,7 @@ export default function SceneBackground({ themeId }: { themeId: ThemeId }) {
         {themeId === "chevalier" && <CastleScene />}
         {themeId === "pompier" && <FireStationScene />}
         {themeId === "foot" && <StadiumScene />}
+        {themeId === "course" && <RaceTrackScene />}
       </svg>
     </div>
   );

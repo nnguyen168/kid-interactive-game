@@ -6,7 +6,14 @@ import { candyStyle } from "../ui/CandyButton";
 
 export type TileState = "idle" | "wrong" | "correct" | "hint" | "dim";
 
-export const TILE_COLORS = ["#3B82F6", "#A855F7", "#F97316"];
+export const TILE_COLORS = ["#3B82F6", "#A855F7", "#F97316", "#14B8A6"];
+
+/** Grid classes for three or four answer tiles. */
+export function choiceGrid(count: number) {
+  return count >= 4
+    ? "grid w-full max-w-4xl grid-cols-2 gap-4 sm:grid-cols-4 sm:gap-5"
+    : "grid w-full max-w-3xl grid-cols-3 gap-4 sm:gap-6";
+}
 
 const BURST: [number, number][] = [
   [-80, -70],
