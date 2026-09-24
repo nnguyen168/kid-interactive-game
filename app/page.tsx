@@ -32,7 +32,7 @@ const MODULES = [
     href: "/jeu",
     emoji: "🎮",
     title: "Je joue",
-    desc: "Le grand jeu du thème",
+    desc: "Petit quiz rapide et chronométré",
     subject: null,
   },
 ];
@@ -43,62 +43,89 @@ export default function Home() {
 
   return (
     <main
-      className="flex-1 px-4 py-6 sm:px-8 sm:py-10 max-w-3xl mx-auto w-full"
+      className="flex-1 px-4 py-6 sm:px-8 sm:py-10 lg:px-12 lg:py-12 max-w-3xl lg:max-w-6xl mx-auto w-full"
       style={{ color: theme.colors.text }}
     >
-      <div className="flex items-center justify-between mb-6">
+      <div className="flex items-center justify-between mb-6 lg:mb-10">
         <div>
-          <h1 className="text-2xl sm:text-3xl font-extrabold">L&apos;Aventure du Vendredi</h1>
-          <p className="text-sm text-slate-600 mt-1">15 minutes pour apprendre et jouer ensemble !</p>
+          <h1 className="text-2xl sm:text-3xl lg:text-5xl font-extrabold">L&apos;Aventure du Vendredi</h1>
+          <p className="text-sm lg:text-xl text-slate-600 mt-1">
+            15 minutes pour apprendre et jouer ensemble !
+          </p>
         </div>
         {progressReady && <StarBadge count={totalStars} />}
       </div>
 
-      <section className="mb-8">
-        <h2 className="text-lg font-bold mb-3">Choisis ton thème</h2>
+      <section className="mb-8 lg:mb-12">
+        <h2 className="text-lg lg:text-2xl font-bold mb-3 lg:mb-5">Choisis ton thème</h2>
         <ThemePicker />
       </section>
 
       {themeReady && (
-        <section className="mb-8">
+        <section className="mb-8 lg:mb-12 grid grid-cols-1 lg:grid-cols-2 gap-4 lg:gap-6">
           <Link
             href="/seance"
-            className="block rounded-3xl p-6 shadow-xl active:scale-95 transition-transform text-white"
+            className="block rounded-3xl p-6 lg:p-8 shadow-xl active:scale-95 transition-transform text-white"
             style={{
               background: `linear-gradient(135deg, ${theme.colors.primary}, ${theme.colors.primaryDark})`,
             }}
           >
-            <div className="flex items-center gap-4">
-              <div className="text-5xl">{theme.mascotEmoji}</div>
+            <div className="flex items-center gap-4 lg:gap-6">
+              <div className="text-5xl lg:text-7xl animate-float">{theme.mascotEmoji}</div>
               <div className="flex-1">
-                <div className="text-xs font-bold uppercase tracking-wide opacity-80">
+                <div className="text-xs lg:text-sm font-bold uppercase tracking-wide opacity-80">
                   Séance guidée · 15 minutes
                 </div>
-                <div className="text-2xl font-extrabold">On commence l&apos;aventure !</div>
-                <div className="text-sm opacity-90 mt-1">
+                <div className="text-2xl lg:text-3xl font-extrabold">On commence l&apos;aventure !</div>
+                <div className="text-sm lg:text-base opacity-90 mt-1">
                   {theme.mascotName} t&apos;attend : un peu d&apos;étude, puis place au jeu.
                 </div>
               </div>
-              <div className="text-3xl">➡️</div>
+              <div className="text-3xl lg:text-4xl">➡️</div>
+            </div>
+          </Link>
+
+          <Link
+            href="/explore"
+            className="relative block rounded-3xl p-6 lg:p-8 shadow-xl active:scale-95 transition-transform text-white overflow-hidden"
+            style={{
+              background: "linear-gradient(135deg, #0ea5e9, #075985)",
+            }}
+          >
+            <span className="absolute top-3 right-3 lg:top-4 lg:right-4 rounded-full bg-yellow-300 text-yellow-900 text-[10px] lg:text-xs font-extrabold uppercase tracking-wide px-2.5 py-1 shadow">
+              Nouveau
+            </span>
+            <div className="flex items-center gap-4 lg:gap-6">
+              <div className="text-5xl lg:text-7xl">🧭</div>
+              <div className="flex-1">
+                <div className="text-xs lg:text-sm font-bold uppercase tracking-wide opacity-80">
+                  Exploration en 3D
+                </div>
+                <div className="text-2xl lg:text-3xl font-extrabold">J&apos;explore le monde de {theme.name} !</div>
+                <div className="text-sm lg:text-base opacity-90 mt-1">
+                  Tourne autour de la scène et découvre des bulles surprises ✨
+                </div>
+              </div>
+              <div className="text-3xl lg:text-4xl">➡️</div>
             </div>
           </Link>
         </section>
       )}
 
       <section>
-        <h2 className="text-lg font-bold mb-3">Ou explore librement</h2>
-        <div className="grid grid-cols-2 gap-4">
+        <h2 className="text-lg lg:text-2xl font-bold mb-3 lg:mb-5">Ou entraîne-toi librement</h2>
+        <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 lg:gap-6">
           {MODULES.map((m) => (
             <Link
               key={m.href}
               href={m.href}
-              className="rounded-3xl p-5 shadow-md active:scale-95 transition-transform bg-white"
+              className="rounded-3xl p-5 lg:p-7 shadow-md active:scale-95 transition-transform bg-white"
             >
-              <div className="text-4xl mb-2">{m.emoji}</div>
-              <div className="text-lg font-extrabold">{m.title}</div>
-              <div className="text-xs text-slate-500 mt-1">{m.desc}</div>
+              <div className="text-4xl lg:text-6xl mb-2 lg:mb-3">{m.emoji}</div>
+              <div className="text-lg lg:text-2xl font-extrabold">{m.title}</div>
+              <div className="text-xs lg:text-sm text-slate-500 mt-1">{m.desc}</div>
               {m.subject && progressReady && (
-                <div className="mt-3 text-xs font-bold text-slate-500">
+                <div className="mt-3 text-xs lg:text-sm font-bold text-slate-500">
                   Niveau {progress.level[m.subject]} · {progress.stars[m.subject]} ⭐
                 </div>
               )}
