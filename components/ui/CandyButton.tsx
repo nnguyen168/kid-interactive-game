@@ -42,6 +42,7 @@ export default function CandyButton({
   className = "",
   disabled,
   textColor = "#FFFFFF",
+  autoFocus,
 }: {
   color: string;
   children?: ReactNode;
@@ -53,6 +54,8 @@ export default function CandyButton({
   className?: string;
   disabled?: boolean;
   textColor?: string;
+  /** Focus on appear, so Enter or Space continues without the mouse. */
+  autoFocus?: boolean;
 }) {
   const classes = `relative inline-flex items-center justify-center font-bold select-none ${SIZES[size]} ${CANDY_PRESS} disabled:opacity-50 ${className}`;
   const style = { ...candyStyle(color), color: textColor, textShadow: "0 2px 0 rgba(0,0,0,0.22)" };
@@ -67,7 +70,7 @@ export default function CandyButton({
 
   if (href) {
     return (
-      <Link href={href} onClick={() => sfx.pop()} className={classes} style={style}>
+      <Link href={href} onClick={() => sfx.pop()} className={classes} style={style} data-nav autoFocus={autoFocus}>
         {content}
       </Link>
     );
@@ -82,6 +85,8 @@ export default function CandyButton({
       }}
       className={classes}
       style={style}
+      data-nav
+      autoFocus={autoFocus}
     >
       {content}
     </button>

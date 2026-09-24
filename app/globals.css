@@ -186,6 +186,11 @@ button {
   0%, 100% { transform: translateY(0); }
   50% { transform: translateY(-8px); }
 }
+/* Big, friendly focus ring for keyboard play. */
+:focus-visible {
+  outline: 5px solid #facc15;
+  outline-offset: 4px;
+}
 .wiggle-hover:hover .wiggle-target,
 .wiggle-hover:focus-visible .wiggle-target {
   animation: wiggle 0.5s ease-in-out;

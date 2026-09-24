@@ -3,6 +3,7 @@ import { Fredoka } from "next/font/google";
 import "./globals.css";
 import { ThemeProvider } from "@/lib/ThemeContext";
 import { ProgressProvider } from "@/lib/ProgressContext";
+import KeyboardNav from "@/components/KeyboardNav";
 
 const fredoka = Fredoka({
   variable: "--font-fredoka",
@@ -27,6 +28,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
       <body className="min-h-full flex flex-col">
         <ThemeProvider>
           <ProgressProvider>{children}</ProgressProvider>
+          <KeyboardNav />
         </ThemeProvider>
       </body>
     </html>

@@ -102,7 +102,7 @@ export default function StoryReader({
             <ArrowIcon back className="w-8 h-8 text-slate-600 lg:w-10 lg:h-10" />
           </IconButton>
         )}
-        <CandyButton color={color} size="xl" onClick={next} iconRight={<ArrowIcon className="w-9 h-9 lg:w-12 lg:h-12" />}>
+        <CandyButton color={color} size="xl" onClick={next} autoFocus iconRight={<ArrowIcon className="w-9 h-9 lg:w-12 lg:h-12" />}>
           {page + 1 < total ? "La suite" : "Le quiz !"}
         </CandyButton>
       </div>

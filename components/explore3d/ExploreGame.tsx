@@ -89,6 +89,25 @@ export default function ExploreGame({
 
   useKeyboardControls();
 
+  // Space or Enter fires the action button (Arroser / Tirer) from the keyboard.
+  const actionReady = useRef(false);
+  useEffect(() => {
+    actionReady.current = prompt !== null && !paused;
+  }, [prompt, paused]);
+  useEffect(() => {
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key !== " " && e.key !== "Enter") return;
+      const target = e.target as HTMLElement | null;
+      if (target?.closest("button, a, input, textarea")) return;
+      e.preventDefault();
+      if (e.repeat || !actionReady.current) return;
+      sfx.pop();
+      game.actionRequest = true;
+    };
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+  }, []);
+
   useEffect(() => {
     resetGame(world.spawn);
     // Handy for automated checks in development.
@@ -188,7 +207,7 @@ export default function ExploreGame({
         <div className="pointer-events-none absolute inset-x-0 bottom-5 flex justify-center px-3">
           <div className="rise-in flex items-center gap-3 rounded-full border-4 border-white bg-white/90 px-5 py-2 text-lg font-bold text-slate-700 shadow-lg lg:text-2xl">
             <Art name="sparkles" className="w-8 h-8 lg:w-10 lg:h-10" eager />
-            Touche le sol pour marcher !
+            Touche le sol ou les flèches pour marcher !
           </div>
         </div>
       )}
@@ -200,11 +219,14 @@ export default function ExploreGame({
             e.stopPropagation();
             act();
           }}
+          onMouseDown={(e) => e.preventDefault()}
+          tabIndex={-1}
           className={`pop-in absolute bottom-5 right-5 flex flex-col items-center justify-center rounded-full border-4 border-white text-white lg:bottom-8 lg:right-8 ${CANDY_PRESS}`}
           style={{ ...candyStyle(prompt === "spray" ? "#0ea5e9" : theme.colors.primary), width: "min(34vw, 11rem)", height: "min(34vw, 11rem)" }}
         >
           <Art name={PROMPTS[prompt].art} className="w-16 h-16 lg:w-20 lg:h-20" eager />
           <span className="text-xl font-extrabold drop-shadow lg:text-2xl">{PROMPTS[prompt].label}</span>
+          <span className="mt-1 hidden rounded-md bg-white/25 px-2 text-sm font-bold [@media(hover:hover)]:inline">Espace</span>
         </button>
       )}
 

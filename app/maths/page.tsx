@@ -41,7 +41,7 @@ export default function MathsPage() {
       <LevelUpToast level={levelUp.level} />
       {round.done ? (
         <ResultScreen themeId={themeId} correct={round.firstTryCount} total={ROUND}>
-          <CandyButton color={theme.colors.primary} onClick={round.restart} iconRight={<ReplayIcon className="w-8 h-8 lg:w-10 lg:h-10" />}>
+          <CandyButton color={theme.colors.primary} onClick={round.restart} autoFocus iconRight={<ReplayIcon className="w-8 h-8 lg:w-10 lg:h-10" />}>
             Rejouer
           </CandyButton>
           <CandyButton color="#0EA5E9" href="/" icon="home">

@@ -123,7 +123,7 @@ export default function SeancePage() {
             text="C'est l'heure de l'aventure du vendredi ! D'abord on apprend, puis on découvre une histoire, et enfin on joue !"
           />
           <SessionSteps step={step} big />
-          <CandyButton size="xl" color={theme.colors.primary} onClick={() => go("etude")} iconRight={<PlayIcon className="w-10 h-10 lg:w-12 lg:h-12" />}>
+          <CandyButton size="xl" color={theme.colors.primary} onClick={() => go("etude")} autoFocus iconRight={<PlayIcon className="w-10 h-10 lg:w-12 lg:h-12" />}>
             C&apos;est parti !
           </CandyButton>
         </div>
@@ -158,7 +158,7 @@ export default function SeancePage() {
             <Art name={theme.badgeArt} className="w-12 h-12 lg:w-16 lg:h-16" eager />
             <span className="text-xl font-bold text-slate-700 lg:text-2xl">À vendredi prochain !</span>
           </div>
-          <CandyButton color="#0EA5E9" href="/" icon="home">
+          <CandyButton color="#0EA5E9" href="/" icon="home" autoFocus>
             Maison
           </CandyButton>
         </ResultScreen>

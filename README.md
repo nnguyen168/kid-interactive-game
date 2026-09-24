@@ -29,6 +29,16 @@ in the browser, so there are no audio files.
 All progress (stars, levels, badges) is saved locally in the browser
 (`localStorage`) — there's no account, no backend, and no data collection.
 
+## Playing with the keyboard
+
+Everything works without a mouse:
+
+- **Arrow keys** move between the big buttons (answers, heroes, activities, books), and
+  **Enter** or **Space** presses the highlighted one (yellow ring).
+- Pop-ups and end-of-round screens focus their main button, so **Enter** continues.
+- In **J'explore**, the arrow keys (or WASD) walk the hero, and **Space** or **Enter**
+  sprays water or shoots the ball when the big action button is showing.
+
 ## Running it locally
 
 Requirements: [Node.js](https://nodejs.org) 20 or newer.

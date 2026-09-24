@@ -65,7 +65,7 @@ export default function DefiPage() {
 
   const playAgain = (
     <>
-      <CandyButton color={theme.colors.primary} onClick={restart} iconRight={<ReplayIcon className="w-8 h-8 lg:w-10 lg:h-10" />}>
+      <CandyButton color={theme.colors.primary} onClick={restart} autoFocus iconRight={<ReplayIcon className="w-8 h-8 lg:w-10 lg:h-10" />}>
         Rejouer
       </CandyButton>
       <CandyButton color="#0EA5E9" href="/" icon="home">

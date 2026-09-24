@@ -44,7 +44,7 @@ export default function DecouvertePage() {
           </div>
           <MascotSays themeId={themeId} mood="happy" size="lg" text="Bravo ! Tu as appris quelque chose de nouveau !" />
           <div className="flex flex-wrap justify-center gap-4 sm:gap-6">
-            <CandyButton color={theme.colors.primary} icon="book" onClick={() => setCard(null)}>
+            <CandyButton color={theme.colors.primary} icon="book" onClick={() => setCard(null)} autoFocus>
               Une autre histoire
             </CandyButton>
             <CandyButton color="#0EA5E9" href="/" icon="home">
@@ -76,6 +76,7 @@ export default function DecouvertePage() {
                 key={c.id}
                 type="button"
                 onClick={() => open(c)}
+                data-nav
                 className={`wiggle-hover rise-in relative flex flex-col items-center gap-2 rounded-[2rem] px-3 pb-4 pt-5 text-white ${CANDY_PRESS}`}
                 style={{ ...candyStyle(BOOK_COLORS[i % BOOK_COLORS.length]), animationDelay: `${i * 80}ms` }}
               >

@@ -35,6 +35,8 @@ function Splash({ themeId, onStart }: { themeId: ThemeId; onStart: () => void })
         type="button"
         onClick={onStart}
         aria-label="Jouer"
+        autoFocus
+        data-nav
         className={`pulse-soft flex h-28 w-28 items-center justify-center rounded-full text-white lg:h-36 lg:w-36 ${CANDY_PRESS}`}
         style={candyStyle("#22C55E")}
       >
@@ -47,7 +49,7 @@ function Splash({ themeId, onStart }: { themeId: ThemeId; onStart: () => void })
 function HeroPortrait({ themeId, selected, onPick }: { themeId: ThemeId; selected: boolean; onPick: () => void }) {
   const t = THEMES[themeId];
   return (
-    <button type="button" onClick={onPick} aria-label={t.mascotName} className="flex flex-col items-center gap-1">
+    <button type="button" onClick={onPick} aria-label={t.mascotName} className="flex flex-col items-center gap-1 rounded-3xl" data-nav>
       <span
         className={`block h-20 w-20 overflow-hidden rounded-full border-4 bg-white transition-transform sm:h-24 sm:w-24 lg:h-28 lg:w-28 ${
           selected ? "scale-110 shadow-[0_6px_0_rgba(0,0,0,0.15)]" : "opacity-80 hover:opacity-100"
@@ -71,6 +73,7 @@ function HubTile({ tile, level, index }: { tile: Tile; level?: number; index: nu
     <Link
       href={tile.href}
       onClick={() => sfx.pop()}
+      data-nav
       className={`wiggle-hover rise-in relative flex aspect-square flex-col items-center justify-center gap-1 rounded-[2rem] px-2 text-white sm:aspect-[5/4] lg:rounded-[2.4rem] ${CANDY_PRESS}`}
       style={{ ...candyStyle(tile.color), animationDelay: `${index * 70}ms` }}
     >

@@ -23,7 +23,7 @@ const ExploreGame = dynamic(() => import("@/components/explore3d/ExploreGame"), 
 
 function Modal({ children }: { children: React.ReactNode }) {
   return (
-    <div className="absolute inset-0 z-40 flex items-center justify-center bg-slate-900/40 px-3 backdrop-blur-[2px]">
+    <div className="absolute inset-0 z-40 flex items-center justify-center bg-slate-900/40 px-3 backdrop-blur-[2px]" data-popup>
       <div className="rise-in w-full max-w-3xl rounded-[2.4rem] border-4 border-white bg-sky-50 p-4 shadow-2xl sm:p-6 lg:p-8">
         {children}
       </div>
@@ -79,7 +79,10 @@ export default function ExplorePage() {
         </div>
       </TopBar>
 
-      <div className="relative mx-2 mb-2 mt-3 min-h-0 flex-1 overflow-hidden rounded-[2rem] border-4 border-white/80 shadow-xl lg:mx-8 lg:mb-6">
+      <div
+        className="relative mx-2 mb-2 mt-3 min-h-0 flex-1 overflow-hidden rounded-[2rem] border-4 border-white/80 shadow-xl lg:mx-8 lg:mb-6"
+        data-arrow-keys="game"
+      >
         <ExploreGame
           key={`${themeId}-${round}`}
           themeId={themeId}
@@ -94,7 +97,7 @@ export default function ExplorePage() {
             <div className="flex flex-col items-center gap-3">
               <Art name={mission.goalArt} className="pop-in float-y w-24 h-24 lg:w-32 lg:h-32" eager />
               <MascotSays themeId={themeId} text={mission.intro} speakKey={`intro-${themeId}-${round}`} />
-              <CandyButton color={theme.colors.primary} size="xl" onClick={() => setOverlay(null)} icon="rocket">
+              <CandyButton color={theme.colors.primary} size="xl" onClick={() => setOverlay(null)} icon="rocket" autoFocus>
                 C&apos;est parti !
               </CandyButton>
             </div>
@@ -106,7 +109,7 @@ export default function ExplorePage() {
             <div className="flex flex-col items-center gap-2">
               <Art name={overlay.fact.art} className="pop-in float-y w-24 h-24 lg:w-36 lg:h-36" eager />
               <MascotSays themeId={themeId} text={overlay.fact.fact} speakKey={overlay.fact.id} />
-              <CandyButton color={theme.colors.primary} size="xl" onClick={() => closeFact(overlay.fact)} icon="glowing-star">
+              <CandyButton color={theme.colors.primary} size="xl" onClick={() => closeFact(overlay.fact)} icon="glowing-star" autoFocus>
                 Super !
               </CandyButton>
             </div>
@@ -120,7 +123,7 @@ export default function ExplorePage() {
               <Art name={theme.badgeArt} className="pop-in w-28 h-28 lg:w-40 lg:h-40" eager />
               <MascotSays themeId={themeId} mood="happy" text={mission.win} speakKey={`win-${themeId}-${round}`} />
               <div className="flex flex-wrap justify-center gap-3">
-                <CandyButton color={theme.colors.secondary} size="lg" onClick={replay} icon="game">
+                <CandyButton color={theme.colors.secondary} size="lg" onClick={replay} icon="game" autoFocus>
                   Rejouer
                 </CandyButton>
                 <CandyButton color={theme.colors.primary} size="lg" href="/" icon="home">

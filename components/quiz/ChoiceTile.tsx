@@ -46,6 +46,7 @@ export default function ChoiceTile({
         aria-label={label}
         disabled={disabled}
         onClick={onSelect}
+        data-nav
         className={`relative flex w-full ${wide ? "min-h-24 px-6 py-5 lg:min-h-40" : "aspect-[4/3] lg:aspect-[16/10]"} items-center justify-center rounded-[1.8rem] lg:rounded-[2.4rem] transition-[transform,box-shadow] duration-100 enabled:active:translate-y-[6px] enabled:active:!shadow-[0_1px_0_rgba(0,0,0,0.25)] ${animation}`}
         style={candyStyle(tileColor)}
       >
