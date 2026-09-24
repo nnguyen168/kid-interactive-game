@@ -1,12 +1,6 @@
 "use client";
 
-import {
-  createContext,
-  useContext,
-  useEffect,
-  useState,
-  ReactNode,
-} from "react";
+import { createContext, useContext, useEffect, useRef, useState, ReactNode } from "react";
 import { Level, Subject, ThemeId } from "./types";
 
 const STORAGE_KEY = "kid-app-progress";
@@ -41,13 +35,11 @@ function levelForStars(stars: number): Level {
 type ProgressContextValue = {
   progress: ProgressState;
   ready: boolean;
-  addStars: (subject: Subject, amount: number) => { leveledUp: boolean };
+  addStars: (subject: Subject, amount: number) => { leveledUp: boolean; level: Level };
   addBadge: (badgeId: string) => void;
   recordSession: () => void;
   totalStars: number;
-  starsToNextLevel: (subject: Subject) => number | null;
   collectHotspot: (themeId: ThemeId, hotspotId: string) => void;
-  isHotspotCollected: (themeId: ThemeId, hotspotId: string) => boolean;
 };
 
 const ProgressContext = createContext<ProgressContextValue | null>(null);
@@ -55,16 +47,21 @@ const ProgressContext = createContext<ProgressContextValue | null>(null);
 export function ProgressProvider({ children }: { children: ReactNode }) {
   const [progress, setProgress] = useState<ProgressState>(DEFAULT_STATE);
   const [ready, setReady] = useState(false);
+  // Mutators read the latest committed state from here, so several updates in
+  // one event handler (e.g. addBadge + recordSession) don't overwrite each other.
+  const latest = useRef<ProgressState>(DEFAULT_STATE);
 
   useEffect(() => {
     try {
       const stored = window.localStorage.getItem(STORAGE_KEY);
       if (stored) {
         const parsed = JSON.parse(stored) as Partial<ProgressState>;
+        const loaded = { ...DEFAULT_STATE, ...parsed };
+        latest.current = loaded;
         // Read after mount (not in a lazy useState initializer) so server and
         // client agree on the first render; only then adopt the stored value.
         // eslint-disable-next-line react-hooks/set-state-in-effect
-        setProgress({ ...DEFAULT_STATE, ...parsed });
+        setProgress(loaded);
       }
     } catch {
       // ignore malformed/unavailable storage
@@ -73,6 +70,7 @@ export function ProgressProvider({ children }: { children: ReactNode }) {
   }, []);
 
   function persist(next: ProgressState) {
+    latest.current = next;
     setProgress(next);
     try {
       window.localStorage.setItem(STORAGE_KEY, JSON.stringify(next));
@@ -82,62 +80,36 @@ export function ProgressProvider({ children }: { children: ReactNode }) {
   }
 
   function addStars(subject: Subject, amount: number) {
-    const nextStars = { ...progress.stars, [subject]: progress.stars[subject] + amount };
-    const prevLevel = progress.level[subject];
+    const p = latest.current;
+    const nextStars = { ...p.stars, [subject]: p.stars[subject] + amount };
+    const prevLevel = p.level[subject];
     const nextLevel = levelForStars(nextStars[subject]);
-    const nextLevels = { ...progress.level, [subject]: nextLevel };
-    persist({ ...progress, stars: nextStars, level: nextLevels });
-    return { leveledUp: nextLevel > prevLevel };
+    persist({ ...p, stars: nextStars, level: { ...p.level, [subject]: nextLevel } });
+    return { leveledUp: nextLevel > prevLevel, level: nextLevel };
   }
 
   function addBadge(badgeId: string) {
-    if (progress.badges.includes(badgeId)) return;
-    persist({ ...progress, badges: [...progress.badges, badgeId] });
+    const p = latest.current;
+    if (p.badges.includes(badgeId)) return;
+    persist({ ...p, badges: [...p.badges, badgeId] });
   }
 
   function recordSession() {
-    persist({
-      ...progress,
-      sessionsCompleted: progress.sessionsCompleted + 1,
-      lastSessionDate: new Date().toISOString(),
-    });
-  }
-
-  function starsToNextLevel(subject: Subject): number | null {
-    const level = progress.level[subject];
-    if (level >= 3) return null;
-    const nextThreshold = LEVEL_THRESHOLDS[level];
-    return Math.max(0, nextThreshold - progress.stars[subject]);
-  }
-
-  function isHotspotCollected(themeId: ThemeId, hotspotId: string): boolean {
-    return progress.explored[themeId].includes(hotspotId);
+    const p = latest.current;
+    persist({ ...p, sessionsCompleted: p.sessionsCompleted + 1, lastSessionDate: new Date().toISOString() });
   }
 
   function collectHotspot(themeId: ThemeId, hotspotId: string) {
-    if (isHotspotCollected(themeId, hotspotId)) return;
-    const nextExplored = {
-      ...progress.explored,
-      [themeId]: [...progress.explored[themeId], hotspotId],
-    };
-    persist({ ...progress, explored: nextExplored });
+    const p = latest.current;
+    if (p.explored[themeId].includes(hotspotId)) return;
+    persist({ ...p, explored: { ...p.explored, [themeId]: [...p.explored[themeId], hotspotId] } });
   }
 
   const totalStars = progress.stars.maths + progress.stars.francais;
 
   return (
     <ProgressContext.Provider
-      value={{
-        progress,
-        ready,
-        addStars,
-        addBadge,
-        recordSession,
-        totalStars,
-        starsToNextLevel,
-        collectHotspot,
-        isHotspotCollected,
-      }}
+      value={{ progress, ready, addStars, addBadge, recordSession, totalStars, collectHotspot }}
     >
       {children}
     </ProgressContext.Provider>

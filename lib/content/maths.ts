@@ -1,7 +1,7 @@
 import { Level, MathsKind, MathsQuestion, Theme } from "../types";
 import { pick, randomInt, shuffle, uid } from "../random";
 
-const NUMBER_WORDS: Record<number, string> = {
+export const NUMBER_WORDS: Record<number, string> = {
   0: "zéro",
   1: "un",
   2: "deux",
@@ -65,7 +65,7 @@ export function generateMathsQuestion(theme: Theme, level: Level): MathsQuestion
       id: uid(),
       kind,
       prompt: `Combien y a-t-il de ${item.plural} ?`,
-      groups: [{ emoji: item.emoji, count: value }],
+      groups: [{ art: item.art, count: value }],
       choices,
       answerIndex: choices.indexOf(value),
     };
@@ -85,8 +85,8 @@ export function generateMathsQuestion(theme: Theme, level: Level): MathsQuestion
       kind,
       prompt: "Combien cela fait-il en tout ?",
       groups: [
-        { emoji: item.emoji, count: a },
-        { emoji: item.emoji, count: b },
+        { art: item.art, count: a },
+        { art: item.art, count: b },
       ],
       choices,
       answerIndex: choices.indexOf(sum),
@@ -103,7 +103,7 @@ export function generateMathsQuestion(theme: Theme, level: Level): MathsQuestion
       id: uid(),
       kind,
       prompt: `Il y avait ${start} ${item.plural}. ${removeCount} s'en vont. Combien en reste-t-il ?`,
-      groups: [{ emoji: item.emoji, count: start }],
+      groups: [{ art: item.art, count: start }],
       removeCount,
       choices,
       answerIndex: choices.indexOf(result),
@@ -112,7 +112,7 @@ export function generateMathsQuestion(theme: Theme, level: Level): MathsQuestion
 
   // compare
   const itemA = pick(theme.items);
-  const itemB = pick(theme.items.filter((i) => i.emoji !== itemA.emoji)) ?? itemA;
+  const itemB = pick(theme.items.filter((i) => i.art !== itemA.art)) ?? itemA;
   const a = randomInt(min, max);
   let b = randomInt(min, max);
   while (b === a) b = randomInt(min, max);
@@ -125,10 +125,10 @@ export function generateMathsQuestion(theme: Theme, level: Level): MathsQuestion
   return {
     id: uid(),
     kind: "compare",
-    prompt: "Quel nombre est le plus grand ?",
+    prompt: "Compte chaque groupe. Quel nombre est le plus grand ?",
     groups: [
-      { emoji: itemA.emoji, count: a },
-      { emoji: itemB.emoji, count: b },
+      { art: itemA.art, count: a },
+      { art: itemB.art, count: b },
     ],
     choices: finalChoices,
     answerIndex: finalChoices.indexOf(target),

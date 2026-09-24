@@ -2,28 +2,30 @@
 
 import { useEffect, useState } from "react";
 
-const PIECES = ["⭐", "🎉", "✨", "🏅"];
+const COLORS = ["#F43F5E", "#F59E0B", "#10B981", "#3B82F6", "#A855F7", "#FACC15", "#EC4899"];
 
-type Piece = { id: number; left: number; delay: number; duration: number; emoji: string };
+type Piece = { id: number; left: number; delay: number; duration: number; color: string; w: number; h: number };
 
-export default function Confetti({ active }: { active: boolean }) {
+export default function Confetti({ active, amount = 40 }: { active: boolean; amount?: number }) {
   const [pieces, setPieces] = useState<Piece[]>([]);
 
   useEffect(() => {
     if (!active) return;
-    // Randomized burst layout is computed here (not during render) so each
-    // burst gets a fresh pattern without calling Math.random during render.
+    // Randomized layout is computed here (not during render) so each burst
+    // gets a fresh pattern without calling Math.random during render.
     // eslint-disable-next-line react-hooks/set-state-in-effect
     setPieces(
-      Array.from({ length: 18 }, (_, i) => ({
+      Array.from({ length: amount }, (_, i) => ({
         id: i,
         left: Math.random() * 100,
-        delay: Math.random() * 0.4,
-        emoji: PIECES[Math.floor(Math.random() * PIECES.length)],
-        duration: 1.2 + Math.random() * 0.8,
+        delay: Math.random() * 0.35,
+        duration: 1.4 + Math.random() * 1,
+        color: COLORS[i % COLORS.length],
+        w: 8 + Math.random() * 8,
+        h: 12 + Math.random() * 10,
       }))
     );
-  }, [active]);
+  }, [active, amount]);
 
   if (!active) return null;
 
@@ -32,15 +34,16 @@ export default function Confetti({ active }: { active: boolean }) {
       {pieces.map((p) => (
         <span
           key={p.id}
-          className="absolute top-[-10%] text-2xl confetti-piece"
+          className="confetti-piece absolute top-0 rounded-[3px]"
           style={{
             left: `${p.left}%`,
+            width: p.w,
+            height: p.h,
+            background: p.color,
             animationDelay: `${p.delay}s`,
             animationDuration: `${p.duration}s`,
           }}
-        >
-          {p.emoji}
-        </span>
+        />
       ))}
     </div>
   );

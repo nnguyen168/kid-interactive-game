@@ -1,23 +1,30 @@
-# L'Aventure du Vendredi 🛡️🚒⚽
+# L'Aventure du Vendredi
 
-A small French-language educational web app built for a 15-minute Friday-night ritual
-with a 5-year-old learning maths and French in *CP* (first grade). Pick a theme
-(chevalier, pompier, or foot), study a few questions together, discover a fun
-"how the world works" fact, then play a short themed game.
+A small French-language educational game built for a 15-minute Friday-night ritual
+with a 5-year-old learning maths and French in *CP* (first grade). Pick a hero
+(Léo le Chevalier, Max le Pompier or Théo le Footballeur), learn a little, discover
+how the world works, then play.
 
-- **J'apprends** — counting, addition/subtraction and comparisons (Maths); letter
-  recognition, word-picture matching and missing letters (Français). Difficulty
-  auto-levels up as stars are earned.
-- **Je découvre** — short, read-aloud explainer cards for real-world questions
-  ("D'où vient l'eau du robinet ?", "Comment fait-on de l'eau qui pétille ?", ...)
-  with a mini quiz.
-- **Je joue** — a themed quiz game with hearts/lives, score, and a badge reward.
-- **Séance du vendredi** — the guided 15-minute flow: study → discover → play → recap.
+- **Les nombres / Les lettres** — counting (tap each object to count it out loud),
+  addition, subtraction and comparisons; letter sounds, word–picture matching and
+  missing letters. Rounds of 8 questions end with a 3-star result screen, and
+  difficulty levels up automatically as stars are earned.
+- **Le monde** — a bookshelf of narrated picture-books ("D'où vient l'eau du
+  robinet ?", "Comment fait-on de l'eau qui pétille ?", ...) with a spoken quiz.
+- **Le défi** — a themed challenge with hearts: every answer moves the ball toward
+  the goal, the fire truck toward the fire, or the horse toward the castle.
+- **J'explore** — a 3D world for each hero with golden bubbles to find.
+- **L'aventure** — the guided 15-minute session: learn → story → challenge → reward.
+
+Designed for a child who is just learning to read: every question is read aloud
+by the hero (browser text-to-speech in French) and his mouth moves while he talks;
+tap the hero or the bubble to hear it again. Answers use pictures with a small
+speaker to hear each word. A wrong answer is never punished — the child simply
+tries again, and after two misses the right answer glows. Sounds are synthesized
+in the browser, so there are no audio files.
 
 All progress (stars, levels, badges) is saved locally in the browser
 (`localStorage`) — there's no account, no backend, and no data collection.
-French narration is read aloud with the browser's built-in text-to-speech
-(Web Speech API), so questions work even before a child can read fluently.
 
 ## Running it locally
 
@@ -64,8 +71,19 @@ remembers the link (in a local, git-ignored `.vercel` folder) for future runs.
 ## Project structure
 
 ```
-app/            Pages (home, maths, francais, decouverte, jeu, seance)
-components/     Reusable UI (question cards, buttons, header, confetti, ...)
-lib/            Theme + progress state, content generators, TTS hook
-  content/      Maths/Français question generators and Découverte cards
+app/                Pages (home hub, maths, francais, decouverte, jeu, seance, explore)
+components/
+  Mascot.tsx        SVG hero with moods (idle, happy, wave, encourage) and a talking mouth
+  SceneBackground   Illustrated castle / fire station / stadium worlds
+  ui/               Candy buttons, top bar, progress trail, speech bubble
+  quiz/             Question cards, answer tiles, story reader, result screen
+  explore/          3D scenes (react-three-fiber)
+lib/                Themes, progress store, speech + sound effects, content generators
+public/art/         3D illustrations
 ```
+
+## Credits
+
+The 3D illustrations in `public/art/` are from
+[Microsoft Fluent Emoji](https://github.com/microsoft/fluentui-emoji) (MIT licence,
+see `public/art/LICENSE.txt`).
