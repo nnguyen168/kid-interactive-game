@@ -41,6 +41,34 @@ function tone(
   osc.stop(t0 + duration + 0.05);
 }
 
+let noiseBuffer: AudioBuffer | null = null;
+
+/** Filtered white noise: water splashes, kicks and crowd roars. */
+function noise(start: number, duration: number, volume: number, frequency: number, q = 1) {
+  const ac = audio();
+  if (!ac) return;
+  if (!noiseBuffer) {
+    noiseBuffer = ac.createBuffer(1, ac.sampleRate, ac.sampleRate);
+    const data = noiseBuffer.getChannelData(0);
+    for (let i = 0; i < data.length; i++) data[i] = Math.random() * 2 - 1;
+  }
+  const t0 = ac.currentTime + start;
+  const src = ac.createBufferSource();
+  src.buffer = noiseBuffer;
+  src.loop = true;
+  const filter = ac.createBiquadFilter();
+  filter.type = "bandpass";
+  filter.frequency.value = frequency;
+  filter.Q.value = q;
+  const gain = ac.createGain();
+  gain.gain.setValueAtTime(0.0001, t0);
+  gain.gain.exponentialRampToValueAtTime(volume, t0 + Math.min(0.08, duration / 3));
+  gain.gain.exponentialRampToValueAtTime(0.0001, t0 + duration);
+  src.connect(filter).connect(gain).connect(ac.destination);
+  src.start(t0);
+  src.stop(t0 + duration + 0.05);
+}
+
 export const sfx = {
   unlock() {
     audio();
@@ -69,5 +97,17 @@ export const sfx = {
   },
   whoosh() {
     tone(260, 0, 0.28, "sine", 0.07, 1100);
+  },
+  splash() {
+    noise(0, 0.9, 0.16, 2200, 0.7);
+    noise(0.1, 0.7, 0.08, 900, 0.9);
+  },
+  kick() {
+    tone(150, 0, 0.14, "sine", 0.35, 55);
+    noise(0, 0.06, 0.12, 3000, 1.2);
+  },
+  cheer() {
+    noise(0, 1.8, 0.12, 1100, 0.5);
+    noise(0.05, 1.6, 0.08, 2400, 0.8);
   },
 };

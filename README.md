@@ -13,7 +13,10 @@ how the world works, then play.
   robinet ?", "Comment fait-on de l'eau qui pétille ?", ...) with a spoken quiz.
 - **Le défi** — a themed challenge with hearts: every answer moves the ball toward
   the goal, the fire truck toward the fire, or the horse toward the castle.
-- **J'explore** — a 3D world for each hero with golden bubbles to find.
+- **J'explore** — a little 3D adventure game for each hero. Tap the ground (or use the
+  arrow keys) to walk around; glowing spots tell fun facts. The knight collects 10 stars
+  in his kingdom, the firefighter puts out 3 fires in the city with the *Arroser* button,
+  and the footballer dribbles and shoots 3 goals past the keeper in a packed stadium.
 - **L'aventure** — the guided 15-minute session: learn → story → challenge → reward.
 
 Designed for a child who is just learning to read: every question is read aloud
@@ -77,9 +80,10 @@ components/
   SceneBackground   Illustrated castle / fire station / stadium worlds
   ui/               Candy buttons, top bar, progress trail, speech bubble
   quiz/             Question cards, answer tiles, story reader, result screen
-  explore/          3D scenes (react-three-fiber)
+  explore3d/        J'explore game: hero controller, worlds, missions (react-three-fiber)
 lib/                Themes, progress store, speech + sound effects, content generators
 public/art/         3D illustrations
+public/models/      3D models (glTF) for J'explore
 ```
 
 ## Credits
@@ -87,3 +91,8 @@ public/art/         3D illustrations
 The 3D illustrations in `public/art/` are from
 [Microsoft Fluent Emoji](https://github.com/microsoft/fluentui-emoji) (MIT licence,
 see `public/art/LICENSE.txt`).
+
+The 3D models in `public/models/` are from [KayKit](https://kaylousberg.itch.io) by
+Kay Lousberg: Medieval Hexagon Pack, City Builder Bits and Character Pack: Adventurers
+(CC0 licence, see the `LICENSE.txt` files next to them). The fire station, fire truck,
+stadium, fires and ball are built in code.
