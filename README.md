@@ -62,14 +62,31 @@ npm run lint    # check code style/correctness
 
 ## Deploying to Vercel
 
-The easiest way is to connect this GitHub repository to Vercel — it auto-detects
-Next.js and needs no configuration:
+Live app: https://kid-interactive-game.vercel.app/
 
-1. Go to [vercel.com/new](https://vercel.com/new) and import this repository.
-2. Leave the default settings (Framework: Next.js) and click **Deploy**.
-3. Every push to the main branch redeploys automatically.
+### Continuous deployment (recommended)
 
-Alternatively, deploy from the command line with the included script:
+Connect the Vercel project to this GitHub repository once. After that:
+
+- every push to `main` deploys to production automatically;
+- every other branch and pull request gets its own preview URL.
+
+To connect it: in the Vercel dashboard, open the project → **Settings** → **Git** →
+**Connect Git Repository** → GitHub → `nnguyen168/kid-interactive-game`
+(authorise the Vercel GitHub app for this repository if asked). Check that the
+production branch is `main`.
+
+### Continuous integration
+
+`.github/workflows/ci.yml` runs on every push to `main` and on every pull request:
+install (`npm ci`), lint, and a production build (which also type-checks). A red
+check means the change would not deploy cleanly. To block merging a pull request
+until it passes, add the **Lint and build** check as a required status check in
+GitHub → Settings → Branches.
+
+### Manual deploy
+
+You can still deploy from your computer with the included script:
 
 ```bash
 ./scripts/deploy.sh
