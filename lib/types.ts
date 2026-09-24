@@ -1,7 +1,9 @@
+import { ArtKey } from "./art";
+
 export type ThemeId = "chevalier" | "pompier" | "foot";
 
 export type ThemeItem = {
-  emoji: string;
+  art: ArtKey;
   singular: string;
   plural: string;
 };
@@ -10,18 +12,19 @@ export type Theme = {
   id: ThemeId;
   name: string;
   mascotName: string;
-  mascotEmoji: string;
-  tagline: string;
+  greeting: string;
+  iconArt: ArtKey;
   colors: {
     primary: string;
-    primaryDark: string;
     secondary: string;
     soft: string;
     text: string;
   };
+  sky: { top: string; bottom: string };
   items: ThemeItem[];
   badgeName: string;
-  badgeEmoji: string;
+  badgeArt: ArtKey;
+  challenge: { mover: ArtKey; target: ArtKey; win: string };
 };
 
 export type Subject = "maths" | "francais";
@@ -34,7 +37,7 @@ export type MathsQuestion = {
   id: string;
   kind: MathsKind;
   prompt: string;
-  groups: { emoji: string; count: number }[];
+  groups: { art: ArtKey; count: number }[];
   removeCount?: number;
   numberWord?: string;
   choices: number[];
@@ -45,7 +48,8 @@ export type FrancaisKind = "letter" | "word-picture" | "missing-letter";
 
 export type FrancaisChoice = {
   label: string;
-  emoji?: string;
+  art?: ArtKey;
+  speak?: string;
 };
 
 export type FrancaisQuestion = {
@@ -53,7 +57,7 @@ export type FrancaisQuestion = {
   kind: FrancaisKind;
   prompt: string;
   display: string;
-  displayEmoji?: string;
+  displayArt?: ArtKey;
   choices: FrancaisChoice[];
   answerIndex: number;
   speak: string;
@@ -63,7 +67,7 @@ export type DecouverteCard = {
   id: string;
   title: string;
   question: string;
-  emoji: string;
+  art: [ArtKey, ArtKey];
   explanation: string[];
   quiz: {
     question: string;

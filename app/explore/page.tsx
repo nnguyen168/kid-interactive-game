@@ -2,34 +2,50 @@
 
 import dynamic from "next/dynamic";
 import { useState } from "react";
-import Header from "@/components/Header";
-import SpeakButton from "@/components/SpeakButton";
-import BigButton from "@/components/BigButton";
+import TopBar from "@/components/ui/TopBar";
+import MascotSays from "@/components/ui/MascotSays";
+import CandyButton from "@/components/ui/CandyButton";
+import Art from "@/components/Art";
 import Confetti from "@/components/Confetti";
 import { useTheme } from "@/lib/ThemeContext";
 import { useProgress } from "@/lib/ProgressContext";
 import { EXPLORE_HOTSPOTS, Hotspot } from "@/lib/content/explore";
+import { sfx } from "@/lib/sfx";
 
 const Scene3D = dynamic(() => import("@/components/explore/Scene3D"), {
   ssr: false,
   loading: () => (
-    <div className="absolute inset-0 flex items-center justify-center text-slate-500 font-bold">
-      Chargement de la scène 3D…
+    <div className="absolute inset-0 flex items-center justify-center">
+      <Art name="compass" className="pulse-soft w-24 h-24" eager />
     </div>
   ),
 });
 
+function Modal({ children }: { children: React.ReactNode }) {
+  return (
+    <div className="fixed inset-0 z-40 flex items-center justify-center bg-slate-900/45 px-3 backdrop-blur-[2px]">
+      <div className="rise-in w-full max-w-3xl rounded-[2.4rem] border-4 border-white bg-sky-50 p-4 shadow-2xl sm:p-6 lg:p-8">
+        {children}
+      </div>
+    </div>
+  );
+}
+
 export default function ExplorePage() {
-  const { theme, themeId } = useTheme();
+  const { theme, themeId, ready: themeReady } = useTheme();
   const { progress, ready, collectHotspot, addBadge } = useProgress();
   const [active, setActive] = useState<Hotspot | null>(null);
   const [celebrate, setCelebrate] = useState(false);
 
   const hotspots = EXPLORE_HOTSPOTS[themeId];
   const collected = ready ? progress.explored[themeId] : [];
-  const allCollected = collected.length >= hotspots.length;
   const badgeId = `${themeId}-explorateur`;
-  const justCompleted = ready && allCollected && !progress.badges.includes(badgeId);
+  const justCompleted = ready && collected.length >= hotspots.length && !progress.badges.includes(badgeId);
+
+  function select(hotspot: Hotspot) {
+    sfx.pop();
+    setActive(hotspot);
+  }
 
   function handleContinue() {
     if (!active) return;
@@ -37,75 +53,66 @@ export default function ExplorePage() {
     collectHotspot(themeId, active.id);
     setActive(null);
     if (wasNew) {
+      sfx.star();
       setCelebrate(true);
-      setTimeout(() => setCelebrate(false), 1000);
+      setTimeout(() => setCelebrate(false), 1200);
     }
   }
 
+  if (!themeReady) return <div className="min-h-dvh bg-sky-100" />;
+
   return (
-    <main className="flex-1 flex flex-col min-h-screen" style={{ backgroundColor: theme.colors.soft }}>
-      <Header title={`J'explore ${theme.mascotEmoji}`} />
+    <div className="flex min-h-dvh flex-col" style={{ background: `linear-gradient(${theme.sky.top}, ${theme.sky.bottom})` }}>
+      <TopBar>
+        <div className="flex items-center gap-2 rounded-full bg-white/90 py-1 pl-2 pr-5 shadow-[0_5px_0_rgba(0,0,0,0.12)]">
+          <Art name="sparkles" className="w-9 h-9 lg:w-12 lg:h-12" eager />
+          <span className="text-xl font-bold text-amber-500 lg:text-3xl">
+            {collected.length} / {hotspots.length}
+          </span>
+        </div>
+      </TopBar>
 
-      <div
-        className="relative h-[62vh] lg:h-[70vh] mx-2 mb-2 lg:mx-6 lg:mb-6 rounded-3xl overflow-hidden shadow-xl"
-        style={{ background: `linear-gradient(to top, ${theme.colors.soft}, #bfe3ff)` }}
-      >
-        <Scene3D
-          themeId={themeId}
-          collected={collected}
-          onHotspotSelect={(hotspot) => setActive(hotspot)}
-        />
-
-        <div className="pointer-events-none absolute inset-0 flex flex-col justify-between p-3 lg:p-5">
-          <div className="flex justify-between items-start">
-            <div className="pointer-events-auto rounded-full bg-white/90 px-4 py-2 text-sm lg:text-base font-bold shadow">
-              {collected.length} / {hotspots.length} découvertes
-            </div>
-          </div>
-          <div className="text-center">
-            <span className="pointer-events-auto inline-block rounded-full bg-white/80 px-4 py-1.5 text-xs lg:text-sm font-semibold text-slate-600 shadow">
-              👆 Fais glisser pour tourner autour de la scène, touche les bulles brillantes ✨
-            </span>
-          </div>
+      <div className="relative mx-2 mb-2 mt-3 h-[72dvh] overflow-hidden rounded-[2rem] border-4 border-white/70 shadow-xl lg:mx-8 lg:mb-6 lg:h-[76dvh]">
+        <Scene3D themeId={themeId} collected={collected} onHotspotSelect={select} />
+        <div className="pointer-events-none absolute inset-x-0 bottom-3 flex justify-center px-3">
+          <span className="flex items-center gap-2 rounded-full bg-white/85 px-4 py-2 text-sm font-semibold text-slate-600 shadow lg:text-lg">
+            <Art name="sparkles" className="w-6 h-6 lg:w-8 lg:h-8" eager />
+            Fais tourner le monde et touche les bulles dorées !
+          </span>
         </div>
       </div>
 
       {active && (
-        <div className="fixed inset-0 z-40 flex items-center justify-center bg-black/40 px-4">
-          <div className="w-full max-w-lg rounded-3xl bg-white p-6 shadow-2xl">
-            <div className="text-center text-6xl mb-3">{active.emoji}</div>
-            <div className="flex items-start gap-3 mb-4">
-              <SpeakButton text={active.fact} />
-              <p className="text-lg font-bold leading-snug flex-1 pt-2">{active.fact}</p>
-            </div>
-            <BigButton color={theme.colors.primary} onClick={handleContinue} className="w-full">
-              Super, continuer ! ✨
-            </BigButton>
+        <Modal>
+          <div className="flex flex-col items-center gap-2">
+            <Art name={active.art} className="pop-in float-y w-24 h-24 lg:w-36 lg:h-36" eager />
+            <MascotSays themeId={themeId} text={active.fact} speakKey={active.id} />
+            <CandyButton color={theme.colors.primary} size="xl" onClick={handleContinue} icon="glowing-star">
+              Super !
+            </CandyButton>
           </div>
-        </div>
+        </Modal>
       )}
 
       {justCompleted && !active && (
-        <div className="fixed inset-0 z-40 flex items-center justify-center bg-black/40 px-4">
-          <div className="w-full max-w-lg rounded-3xl bg-white p-6 shadow-2xl text-center">
-            <div className="text-6xl mb-3">{theme.badgeEmoji}</div>
-            <h2 className="text-2xl font-extrabold mb-2">Tu as tout exploré !</h2>
-            <p className="text-slate-600 mb-6">
-              Badge débloqué : « Explorateur {theme.name} » {theme.badgeEmoji}
-            </p>
-            <BigButton
-              color={theme.colors.primary}
-              onClick={() => {
-                addBadge(badgeId);
-              }}
-            >
-              Youpi ! 🎉
-            </BigButton>
+        <Modal>
+          <Confetti active amount={70} />
+          <div className="flex flex-col items-center gap-3">
+            <Art name={theme.badgeArt} className="pop-in w-28 h-28 lg:w-40 lg:h-40" eager />
+            <MascotSays
+              themeId={themeId}
+              mood="happy"
+              text={`Tu as tout exploré ! Tu es un vrai explorateur ${theme.name.toLowerCase()} !`}
+              speakKey="explore-complete"
+            />
+            <CandyButton color={theme.colors.primary} size="xl" onClick={() => addBadge(badgeId)} icon="party">
+              Youpi !
+            </CandyButton>
           </div>
-        </div>
+        </Modal>
       )}
 
       <Confetti active={celebrate} />
-    </main>
+    </div>
   );
 }

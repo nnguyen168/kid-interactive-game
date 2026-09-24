@@ -5,7 +5,7 @@ export const DECOUVERTE_CARDS: DecouverteCard[] = [
     id: "eau-robinet",
     title: "L'eau du robinet",
     question: "D'où vient l'eau du robinet ?",
-    emoji: "🚰💧",
+    art: ["tap-water", "droplet"],
     explanation: [
       "La pluie tombe du ciel et coule dans les rivières et sous la terre.",
       "Cette eau va jusqu'à une usine spéciale qui la nettoie bien.",
@@ -22,7 +22,7 @@ export const DECOUVERTE_CARDS: DecouverteCard[] = [
     id: "eau-petillante",
     title: "L'eau qui pétille",
     question: "Comment fait-on de l'eau qui pétille ?",
-    emoji: "🫧🥤",
+    art: ["bubbles", "cup"],
     explanation: [
       "L'eau qui pétille s'appelle de l'eau gazeuse.",
       "On y ajoute un gaz invisible, le même gaz que celui que tu respires.",
@@ -39,7 +39,7 @@ export const DECOUVERTE_CARDS: DecouverteCard[] = [
     id: "ciel-bleu",
     title: "Le ciel bleu",
     question: "Pourquoi le ciel est-il bleu ?",
-    emoji: "☀️🔵",
+    art: ["sun-cloud", "rainbow"],
     explanation: [
       "La lumière du soleil paraît blanche, mais elle contient toutes les couleurs.",
       "Quand cette lumière traverse le ciel, l'air disperse surtout la couleur bleue.",
@@ -60,7 +60,7 @@ export const DECOUVERTE_CARDS: DecouverteCard[] = [
     id: "pain",
     title: "Le pain",
     question: "D'où vient le pain ?",
-    emoji: "🌾🍞",
+    art: ["wheat", "bread"],
     explanation: [
       "Le pain commence dans un champ, où pousse une plante appelée le blé.",
       "On récolte le blé et on écrase ses grains pour faire de la farine.",
@@ -77,7 +77,7 @@ export const DECOUVERTE_CARDS: DecouverteCard[] = [
     id: "jour-nuit",
     title: "Le jour et la nuit",
     question: "Pourquoi y a-t-il le jour et la nuit ?",
-    emoji: "🌞🌙",
+    art: ["sun-face", "moon"],
     explanation: [
       "La Terre est comme une grosse boule qui tourne sur elle-même.",
       "Le côté qui fait face au soleil est éclairé : c'est le jour.",

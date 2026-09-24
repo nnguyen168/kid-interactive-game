@@ -1,123 +1,110 @@
 "use client";
 
 import { useState } from "react";
-import Header from "@/components/Header";
-import MathsQuestionCard from "@/components/MathsQuestionCard";
-import FrancaisQuestionCard from "@/components/FrancaisQuestionCard";
-import HeartLives from "@/components/HeartLives";
-import Confetti from "@/components/Confetti";
-import BigButton from "@/components/BigButton";
+import GameScreen from "@/components/ui/GameScreen";
+import CandyButton from "@/components/ui/CandyButton";
+import MascotSays from "@/components/ui/MascotSays";
+import { ReplayIcon } from "@/components/ui/icons";
+import Art from "@/components/Art";
+import MixedQuestionCard from "@/components/quiz/MixedQuestionCard";
+import ResultScreen from "@/components/quiz/ResultScreen";
+import ChallengeTrack from "@/components/quiz/ChallengeTrack";
+import { useQuizRound } from "@/components/quiz/useQuizRound";
 import { useTheme } from "@/lib/ThemeContext";
 import { useProgress } from "@/lib/ProgressContext";
 import { generateMixedQuestion } from "@/lib/content/mixed";
-import { useLazyGenerated } from "@/lib/useLazyGenerated";
+import { sfx } from "@/lib/sfx";
 
-const TOTAL_QUESTIONS = 8;
-const MAX_LIVES = 3;
+const TOTAL = 8;
+const MAX_LIVES = 4;
 
-type Status = "playing" | "won" | "lost";
-
-export default function JeuPage() {
-  const { theme } = useTheme();
-  const { progress, ready, addStars, addBadge } = useProgress();
-  const [status, setStatus] = useState<Status>("playing");
-  const [current, setCurrent] = useLazyGenerated(ready && status === "playing", () =>
-    generateMixedQuestion(theme, progress.level)
+function Hearts({ lives }: { lives: number }) {
+  return (
+    <div className="flex items-center gap-1 rounded-full bg-white/85 px-3 py-1.5 shadow-[0_5px_0_rgba(0,0,0,0.12)]" aria-label={`${lives} cœurs`}>
+      {Array.from({ length: MAX_LIVES }, (_, i) => (
+        <Art
+          key={`${i}-${i < lives}`}
+          name={i < lives ? "heart" : "heart-empty"}
+          className={`w-8 h-8 sm:w-10 sm:h-10 lg:w-12 lg:h-12 ${i < lives ? "" : "opacity-40 shake"}`}
+          eager
+        />
+      ))}
+    </div>
   );
-  const [lives, setLives] = useState(MAX_LIVES);
-  const [score, setScore] = useState(0);
-  const [answered, setAnswered] = useState(false);
-  const [celebrate, setCelebrate] = useState(false);
+}
 
-  function handleAnswer(correct: boolean) {
-    setAnswered(true);
-    if (!current) return;
-    if (correct) {
-      addStars(current.subject, 1);
-      setScore((s) => s + 1);
-      setCelebrate(true);
-      setTimeout(() => setCelebrate(false), 900);
-    } else {
-      setLives((l) => Math.max(0, l - 1));
+export default function DefiPage() {
+  const { theme, themeId } = useTheme();
+  const { progress, ready, addStars, addBadge } = useProgress();
+  const [lives, setLives] = useState(MAX_LIVES);
+  const [lost, setLost] = useState(false);
+  const round = useQuizRound({ total: TOTAL, ready, generate: () => generateMixedQuestion(theme, progress.level) });
+
+  function onSolved(firstTry: boolean) {
+    const item = round.question;
+    if (firstTry && item) {
+      addStars(item.subject, 1);
+      setTimeout(() => sfx.star(), 350);
     }
+    if (round.results.length + 1 >= TOTAL) addBadge(`${themeId}-defi-champion`);
+    round.recordResult(firstTry);
   }
 
-  function next() {
-    if (lives <= 0) {
-      setStatus("lost");
-      return;
-    }
-    if (score >= TOTAL_QUESTIONS) {
-      setStatus("won");
-      addBadge(`${theme.id}-jeu-champion`);
-      setCelebrate(true);
-      setTimeout(() => setCelebrate(false), 2200);
-      return;
-    }
-    setAnswered(false);
-    setCurrent(generateMixedQuestion(theme, progress.level));
+  function onWrong(attempt: number) {
+    if (attempt !== 1) return;
+    const next = lives - 1;
+    setLives(next);
+    if (next <= 0) setTimeout(() => setLost(true), 1200);
   }
 
   function restart() {
     setLives(MAX_LIVES);
-    setScore(0);
-    setAnswered(false);
-    setStatus("playing");
-    setCurrent(generateMixedQuestion(theme, progress.level));
+    setLost(false);
+    round.restart();
   }
 
+  const playAgain = (
+    <>
+      <CandyButton color={theme.colors.primary} onClick={restart} iconRight={<ReplayIcon className="w-8 h-8 lg:w-10 lg:h-10" />}>
+        Rejouer
+      </CandyButton>
+      <CandyButton color="#0EA5E9" href="/" icon="home">
+        Maison
+      </CandyButton>
+    </>
+  );
+
   return (
-    <main className="flex-1 flex flex-col min-h-screen" style={{ backgroundColor: theme.colors.soft }}>
-      <Header title={`Je joue ${theme.mascotEmoji}`} />
-      <div className="flex-1 flex flex-col items-center px-4 pt-2 pb-10 gap-4 lg:gap-6">
-        {status === "playing" && current && (
-          <>
-            <div className="flex items-center justify-between w-full max-w-lg lg:max-w-2xl mx-auto mb-1 px-1">
-              <HeartLives lives={lives} max={MAX_LIVES} />
-              <div className="text-sm lg:text-lg font-bold text-slate-600">
-                Score : {score} / {TOTAL_QUESTIONS}
-              </div>
-            </div>
-            {current.subject === "maths" ? (
-              <MathsQuestionCard key={current.question.id} question={current.question} onAnswer={handleAnswer} />
-            ) : (
-              <FrancaisQuestionCard key={current.question.id} question={current.question} onAnswer={handleAnswer} />
-            )}
-            {answered && (
-              <BigButton color={theme.colors.primary} onClick={next}>
-                Suivant ➡️
-              </BigButton>
-            )}
-          </>
-        )}
-
-        {status === "won" && (
-          <div className="text-center max-w-sm lg:max-w-lg pt-8">
-            <div className="text-6xl lg:text-8xl mb-3">{theme.badgeEmoji}</div>
-            <h2 className="text-2xl lg:text-4xl font-extrabold mb-2">Bravo, champion !</h2>
-            <p className="text-slate-600 lg:text-xl mb-6">
-              Tu as gagné le badge « {theme.badgeName} » ! Score : {score} / {TOTAL_QUESTIONS}.
-            </p>
-            <BigButton color={theme.colors.primary} onClick={restart}>
-              Rejouer 🔁
-            </BigButton>
-          </div>
-        )}
-
-        {status === "lost" && (
-          <div className="text-center max-w-sm lg:max-w-lg pt-8">
-            <div className="text-6xl lg:text-8xl mb-3">💪</div>
-            <h2 className="text-2xl lg:text-4xl font-extrabold mb-2">Bien joué !</h2>
-            <p className="text-slate-600 lg:text-xl mb-6">
-              Score final : {score} / {TOTAL_QUESTIONS}. On réessaye ?
-            </p>
-            <BigButton color={theme.colors.primary} onClick={restart}>
-              Rejouer 🔁
-            </BigButton>
-          </div>
-        )}
-      </div>
-      <Confetti active={celebrate} />
-    </main>
+    <GameScreen top={!round.done && !lost && <Hearts lives={lives} />}>
+      {lost ? (
+        <div className="flex w-full max-w-4xl flex-col items-center gap-6 pt-6">
+          <Art name="heart-empty" className="pop-in w-28 h-28 lg:w-40 lg:h-40" eager />
+          <MascotSays
+            themeId={themeId}
+            mood="encourage"
+            size="lg"
+            text="Oh non, plus de cœurs ! Ce n'est pas grave, on réessaie ?"
+          />
+          <div className="flex flex-wrap justify-center gap-4 sm:gap-6">{playAgain}</div>
+        </div>
+      ) : round.done ? (
+        <ResultScreen themeId={themeId} correct={round.firstTryCount} total={TOTAL} message={theme.challenge.win}>
+          {playAgain}
+        </ResultScreen>
+      ) : (
+        <div className="flex w-full flex-col items-center gap-4 lg:gap-6">
+          <ChallengeTrack theme={theme} steps={round.results.length} total={TOTAL} />
+          {round.question && (
+            <MixedQuestionCard
+              key={round.question.question.id}
+              item={round.question}
+              themeId={themeId}
+              onSolved={onSolved}
+              onWrong={onWrong}
+            />
+          )}
+        </div>
+      )}
+    </GameScreen>
   );
 }
