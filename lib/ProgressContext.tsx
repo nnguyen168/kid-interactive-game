@@ -7,7 +7,7 @@ import {
   useState,
   ReactNode,
 } from "react";
-import { Level, Subject } from "./types";
+import { Level, Subject, ThemeId } from "./types";
 
 const STORAGE_KEY = "kid-app-progress";
 
@@ -17,6 +17,7 @@ export type ProgressState = {
   badges: string[];
   sessionsCompleted: number;
   lastSessionDate: string | null;
+  explored: Record<ThemeId, string[]>;
 };
 
 const DEFAULT_STATE: ProgressState = {
@@ -25,6 +26,7 @@ const DEFAULT_STATE: ProgressState = {
   badges: [],
   sessionsCompleted: 0,
   lastSessionDate: null,
+  explored: { chevalier: [], pompier: [], foot: [] },
 };
 
 // Stars needed to reach level 2 and level 3.
@@ -44,6 +46,8 @@ type ProgressContextValue = {
   recordSession: () => void;
   totalStars: number;
   starsToNextLevel: (subject: Subject) => number | null;
+  collectHotspot: (themeId: ThemeId, hotspotId: string) => void;
+  isHotspotCollected: (themeId: ThemeId, hotspotId: string) => boolean;
 };
 
 const ProgressContext = createContext<ProgressContextValue | null>(null);
@@ -106,11 +110,34 @@ export function ProgressProvider({ children }: { children: ReactNode }) {
     return Math.max(0, nextThreshold - progress.stars[subject]);
   }
 
+  function isHotspotCollected(themeId: ThemeId, hotspotId: string): boolean {
+    return progress.explored[themeId].includes(hotspotId);
+  }
+
+  function collectHotspot(themeId: ThemeId, hotspotId: string) {
+    if (isHotspotCollected(themeId, hotspotId)) return;
+    const nextExplored = {
+      ...progress.explored,
+      [themeId]: [...progress.explored[themeId], hotspotId],
+    };
+    persist({ ...progress, explored: nextExplored });
+  }
+
   const totalStars = progress.stars.maths + progress.stars.francais;
 
   return (
     <ProgressContext.Provider
-      value={{ progress, ready, addStars, addBadge, recordSession, totalStars, starsToNextLevel }}
+      value={{
+        progress,
+        ready,
+        addStars,
+        addBadge,
+        recordSession,
+        totalStars,
+        starsToNextLevel,
+        collectHotspot,
+        isHotspotCollected,
+      }}
     >
       {children}
     </ProgressContext.Provider>

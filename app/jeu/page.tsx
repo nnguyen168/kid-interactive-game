@@ -69,12 +69,12 @@ export default function JeuPage() {
   return (
     <main className="flex-1 flex flex-col min-h-screen" style={{ backgroundColor: theme.colors.soft }}>
       <Header title={`Je joue ${theme.mascotEmoji}`} />
-      <div className="flex-1 flex flex-col items-center px-4 pt-2 pb-10 gap-4">
+      <div className="flex-1 flex flex-col items-center px-4 pt-2 pb-10 gap-4 lg:gap-6">
         {status === "playing" && current && (
           <>
-            <div className="flex items-center justify-between w-full max-w-lg mx-auto mb-1 px-1">
+            <div className="flex items-center justify-between w-full max-w-lg lg:max-w-2xl mx-auto mb-1 px-1">
               <HeartLives lives={lives} max={MAX_LIVES} />
-              <div className="text-sm font-bold text-slate-600">
+              <div className="text-sm lg:text-lg font-bold text-slate-600">
                 Score : {score} / {TOTAL_QUESTIONS}
               </div>
             </div>
@@ -92,10 +92,10 @@ export default function JeuPage() {
         )}
 
         {status === "won" && (
-          <div className="text-center max-w-sm">
-            <div className="text-6xl mb-3">{theme.badgeEmoji}</div>
-            <h2 className="text-2xl font-extrabold mb-2">Bravo, champion !</h2>
-            <p className="text-slate-600 mb-6">
+          <div className="text-center max-w-sm lg:max-w-lg pt-8">
+            <div className="text-6xl lg:text-8xl mb-3">{theme.badgeEmoji}</div>
+            <h2 className="text-2xl lg:text-4xl font-extrabold mb-2">Bravo, champion !</h2>
+            <p className="text-slate-600 lg:text-xl mb-6">
               Tu as gagné le badge « {theme.badgeName} » ! Score : {score} / {TOTAL_QUESTIONS}.
             </p>
             <BigButton color={theme.colors.primary} onClick={restart}>
@@ -105,10 +105,10 @@ export default function JeuPage() {
         )}
 
         {status === "lost" && (
-          <div className="text-center max-w-sm">
-            <div className="text-6xl mb-3">💪</div>
-            <h2 className="text-2xl font-extrabold mb-2">Bien joué !</h2>
-            <p className="text-slate-600 mb-6">
+          <div className="text-center max-w-sm lg:max-w-lg pt-8">
+            <div className="text-6xl lg:text-8xl mb-3">💪</div>
+            <h2 className="text-2xl lg:text-4xl font-extrabold mb-2">Bien joué !</h2>
+            <p className="text-slate-600 lg:text-xl mb-6">
               Score final : {score} / {TOTAL_QUESTIONS}. On réessaye ?
             </p>
             <BigButton color={theme.colors.primary} onClick={restart}>

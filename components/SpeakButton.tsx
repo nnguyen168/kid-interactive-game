@@ -12,7 +12,7 @@ export default function SpeakButton({
   size?: "sm" | "md";
 }) {
   const speak = useSpeak();
-  const dimensions = size === "sm" ? "h-10 w-10 text-xl" : "h-14 w-14 text-2xl";
+  const dimensions = size === "sm" ? "h-10 w-10 text-xl" : "h-14 w-14 lg:h-20 lg:w-20 text-2xl lg:text-4xl";
 
   return (
     <button

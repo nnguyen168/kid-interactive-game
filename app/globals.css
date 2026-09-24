@@ -33,3 +33,17 @@ body {
   animation-timing-function: ease-in;
   animation-fill-mode: forwards;
 }
+
+@keyframes float-bob {
+  0%, 100% {
+    transform: translateY(0) rotate(-2deg);
+  }
+  50% {
+    transform: translateY(-10px) rotate(2deg);
+  }
+}
+
+.animate-float {
+  display: inline-block;
+  animation: float-bob 3.2s ease-in-out infinite;
+}

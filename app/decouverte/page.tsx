@@ -22,21 +22,25 @@ export default function DecouvertePage() {
   return (
     <main className="flex-1 flex flex-col min-h-screen" style={{ backgroundColor: theme.colors.soft }}>
       <Header title="Je découvre 🌍" />
-      <div className="flex-1 flex flex-col items-center px-4 pt-2 pb-10 gap-4">
-        <div className="flex gap-1.5">
+      <div className="flex-1 flex flex-col items-center px-4 pt-2 pb-10 gap-4 lg:gap-6">
+        <div className="flex gap-1.5 lg:gap-2.5">
           {DECOUVERTE_CARDS.map((c, i) => (
             <span
               key={c.id}
-              className={`h-2.5 w-2.5 rounded-full ${i === index ? "bg-slate-700" : "bg-slate-300"}`}
+              className={`h-2.5 w-2.5 lg:h-3.5 lg:w-3.5 rounded-full ${i === index ? "bg-slate-700" : "bg-slate-300"}`}
             />
           ))}
         </div>
         <DecouverteCardView key={card.id} card={card} onDone={() => {}} />
-        <div className="flex gap-3">
-          <BigButton onClick={prev} className="!py-3 !px-5 text-base">
+        <div className="flex gap-3 lg:gap-5">
+          <BigButton onClick={prev} className="!py-3 !px-5 lg:!py-4 lg:!px-7 text-base lg:text-xl">
             ⬅️ Précédent
           </BigButton>
-          <BigButton color={theme.colors.primary} onClick={next} className="!py-3 !px-5 text-base">
+          <BigButton
+            color={theme.colors.primary}
+            onClick={next}
+            className="!py-3 !px-5 lg:!py-4 lg:!px-7 text-base lg:text-xl"
+          >
             Suivant ➡️
           </BigButton>
         </div>

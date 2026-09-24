@@ -106,14 +106,14 @@ export default function SeancePage() {
   return (
     <main className="flex-1 flex flex-col min-h-screen" style={{ backgroundColor: theme.colors.soft }}>
       <Header title="Séance du vendredi" />
-      <div className="flex-1 flex flex-col items-center px-4 pt-2 pb-10 gap-4">
+      <div className="flex-1 flex flex-col items-center px-4 pt-2 pb-10 gap-4 lg:gap-6">
         {step === "intro" && (
-          <div className="text-center max-w-sm">
-            <div className="text-6xl mb-3">{theme.mascotEmoji}</div>
-            <h2 className="text-2xl font-extrabold mb-2">
+          <div className="text-center max-w-sm lg:max-w-lg pt-8">
+            <div className="text-6xl lg:text-8xl mb-3 animate-float">{theme.mascotEmoji}</div>
+            <h2 className="text-2xl lg:text-4xl font-extrabold mb-2">
               Coucou, c&apos;est {theme.mascotName} !
             </h2>
-            <p className="text-slate-600 mb-6">
+            <p className="text-slate-600 lg:text-xl mb-6">
               On va d&apos;abord réviser un peu ({STUDY_COUNT} questions), puis découvrir une
               question sur le monde, et enfin jouer ensemble. Prêt·e ?
             </p>
@@ -125,7 +125,7 @@ export default function SeancePage() {
 
         {step === "etude" && studyQuestion && (
           <>
-            <div className="text-sm font-bold text-slate-600">
+            <div className="text-sm lg:text-lg font-bold text-slate-600">
               Étude · question {studyIndex + 1} / {STUDY_COUNT}
             </div>
             {studyQuestion.subject === "maths" ? (
@@ -151,7 +151,7 @@ export default function SeancePage() {
 
         {step === "decouverte" && decouverteCard && (
           <>
-            <div className="text-sm font-bold text-slate-600">Je découvre le monde</div>
+            <div className="text-sm lg:text-lg font-bold text-slate-600">Je découvre le monde</div>
             <DecouverteCardView
               card={decouverteCard}
               onDone={() => setDecouverteDone(true)}
@@ -166,9 +166,9 @@ export default function SeancePage() {
 
         {step === "jeu" && gameQuestion && (
           <>
-            <div className="flex items-center justify-between w-full max-w-lg mx-auto mb-1 px-1">
+            <div className="flex items-center justify-between w-full max-w-lg lg:max-w-2xl mx-auto mb-1 px-1">
               <HeartLives lives={lives} max={MAX_LIVES} />
-              <div className="text-sm font-bold text-slate-600">
+              <div className="text-sm lg:text-lg font-bold text-slate-600">
                 Manche {gameIndex + 1} / {GAME_COUNT}
               </div>
             </div>
@@ -194,19 +194,19 @@ export default function SeancePage() {
         )}
 
         {step === "recap" && (
-          <div className="text-center max-w-sm">
-            <div className="text-6xl mb-3">{theme.badgeEmoji}</div>
-            <h2 className="text-2xl font-extrabold mb-2">Bravo, la séance est finie !</h2>
-            <p className="text-slate-600 mb-2">
+          <div className="text-center max-w-sm lg:max-w-lg pt-8">
+            <div className="text-6xl lg:text-8xl mb-3">{theme.badgeEmoji}</div>
+            <h2 className="text-2xl lg:text-4xl font-extrabold mb-2">Bravo, la séance est finie !</h2>
+            <p className="text-slate-600 lg:text-xl mb-2">
               Tu as gagné {sessionStars} ⭐ aujourd&apos;hui avec {theme.mascotName}.
             </p>
-            <p className="text-slate-600 mb-6">
+            <p className="text-slate-600 lg:text-xl mb-6">
               Badge débloqué : « {theme.badgeName} » {theme.badgeEmoji}
             </p>
             <Link href="/" className="inline-block">
               <BigButton color={theme.colors.primary}>Retour à l&apos;accueil 🏠</BigButton>
             </Link>
-            <p className="text-xs text-slate-500 mt-4">À vendredi prochain ! 👋</p>
+            <p className="text-xs lg:text-base text-slate-500 mt-4">À vendredi prochain ! 👋</p>
           </div>
         )}
       </div>
