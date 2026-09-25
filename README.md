@@ -20,14 +20,17 @@ how the world works, then play.
 - **Le défi** — a themed challenge with hearts: every answer moves the ball toward
   the goal, the fire truck toward the fire, or the horse toward the castle.
 - **J'explore** — a little 3D adventure game for each hero. Tap the ground (or use the
-  arrow keys) to walk around, *Sauter* (J) to jump; glowing spots tell fun facts.
+  arrow keys) to walk around, *Sauter* (Shift / Maj) to jump; glowing spots tell fun facts.
   - The knight collects 10 stars in his kingdom, swinging his sword (*Épée*) to break
     barrels with stars inside and to knock the training dummies.
   - The firefighter puts out 3 fires (at random places all over the city, new ones
     every game) with *Arroser*,
     and climbs a ladder onto a roof to rescue a cat.
-  - The footballer dribbles and shoots 3 goals past the keeper, and can start a
-    Mexican wave in the stands (*Saluer*).
+  - The footballer dribbles and shoots 3 goals past a keeper who dives (usually the
+    wrong way, sometimes making a save!). Each goal lights up the big screen behind
+    the goal with fireworks and confetti, the ball flies with a rainbow trail and
+    comes back from a different spot, bonus stars lie around the pitch, and
+    *Saluer* starts a Mexican wave in the stands.
   - The racing driver drives a kart for 3 laps through the arches, with turbo pads,
     a jump ramp, cones to knock over and a *Turbo* button. Racing controls: ↑ to
     accelerate, ← → to steer, ↓ to brake; the kart gently follows the track when

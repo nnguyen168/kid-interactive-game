@@ -119,7 +119,7 @@ export default function ExploreGame({
 
   useKeyboardControls();
 
-  // Keyboard: Space or Enter fires the action button (or jumps when there is none), J jumps.
+  // Keyboard: Space or Enter fires the action button (or jumps when there is none), Shift jumps.
   const actionReady = useRef(false);
   const pausedRef = useRef(paused);
   useEffect(() => {
@@ -129,7 +129,7 @@ export default function ExploreGame({
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
       const isAction = e.key === " " || e.key === "Enter";
-      const isJump = e.code === "KeyJ";
+      const isJump = e.key === "Shift";
       if (e.code === "KeyV" && !e.repeat) {
         if (vehicle && !pausedRef.current) {
           game.view = game.view === "chase" ? "cockpit" : "chase";
@@ -183,7 +183,9 @@ export default function ExploreGame({
   function takeStar(i: number) {
     sfx.star();
     setTaken((prev) => prev.map((v, j) => (j === i ? true : v)));
+    // In the kingdom stars are the mission; elsewhere they are a bonus for the star counter.
     if (world.starsScore) addScore();
+    else addBonusStars(1);
   }
 
   function act() {
@@ -305,7 +307,7 @@ export default function ExploreGame({
         >
           <span className="text-4xl leading-none drop-shadow lg:text-5xl">⤴</span>
           <span className="text-base font-extrabold drop-shadow lg:text-lg">Sauter</span>
-          <span className="hidden rounded-md bg-white/25 px-1.5 text-xs font-bold [@media(hover:hover)]:inline">J</span>
+          <span className="hidden rounded-md bg-white/25 px-1.5 text-xs font-bold [@media(hover:hover)]:inline">Maj ⇧</span>
         </button>
       )}
 

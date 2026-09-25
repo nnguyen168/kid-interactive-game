@@ -58,7 +58,7 @@ export const MISSIONS: Record<ThemeId, Mission> = {
     win: "Mission réussie ! Les feux sont éteints et le chat est sauvé. Bravo pompier !",
   },
   foot: {
-    intro: "C'est le match ! Pousse le ballon dans le but pour marquer trois buts.",
+    intro: "C'est le match ! Marque trois buts. Attention, le gardien plonge ! Et ramasse les étoiles en dribblant.",
     goalLabel: "Buts",
     goalArt: "ball",
     goalCount: 3,

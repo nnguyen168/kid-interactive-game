@@ -444,7 +444,15 @@ export const stadium: WorldDef = {
     { x: -GOAL_HALF, z: GOAL_LINE, r: 0.15 },
     { x: GOAL_HALF, z: GOAL_LINE, r: 0.15 },
   ],
-  stars: [],
+  // Bonus stars to pick up while dribbling around the pitch.
+  stars: [
+    [-7, 0, 9],
+    [7, 0, 11],
+    [-8, 0, -6],
+    [8, 0, -3],
+    [0, 0, -9],
+    [-3, 0, 14],
+  ],
   spots: {
     but: [7, 0, -12.5],
     ballon: [BALL_BAG_AT[0] - 1.8, 0, BALL_BAG_AT[2]],

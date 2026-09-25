@@ -268,7 +268,8 @@ function TireStack({ position }: { position: Vec3 }) {
 }
 
 function PitBuilding() {
-  const yaw = yawAt(PIT_T);
+  // Long side along the track, garage doors (+x) facing it.
+  const yaw = yawAt(PIT_T) + Math.PI;
   return (
     <group position={PIT_AT} rotation-y={yaw}>
       <mesh position={[0, 2, 0]} castShadow receiveShadow>
@@ -301,7 +302,8 @@ function PitBuilding() {
 }
 
 function Grandstand() {
-  const yaw = yawAt(0.9);
+  // Seats run along the track (+x) and the rows climb away from it (+z).
+  const yaw = yawAt(0.9) - Math.PI / 2;
   const fans = useRef<THREE.InstancedMesh>(null);
   const seats = useMemo(() => {
     const rand = seeded(5);
