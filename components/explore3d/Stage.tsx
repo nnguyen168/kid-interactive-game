@@ -11,17 +11,52 @@ import { WorldDef } from "./types";
 const lookAt = new THREE.Vector3();
 const wanted = new THREE.Vector3();
 
-/** Third-person camera that smoothly trails the hero. */
+const chaseDir = new THREE.Vector3();
+
+/**
+ * Third-person camera that smoothly trails the hero. In a kart it sits behind the
+ * kart and turns with it (or inside, in the driver's view), so ← and → always
+ * mean "turn left / right" on screen.
+ */
 export function CameraRig({ world }: { world: WorldDef }) {
   const look = useRef(new THREE.Vector3(...world.spawn));
+  const heading = useRef(new THREE.Vector3(Math.sin(world.spawnYaw ?? Math.PI), 0, Math.cos(world.spawnYaw ?? Math.PI)));
+  const lastView = useRef<string | null>(null);
   const { camera } = useThree();
 
   useEffect(() => {
     camera.position.set(world.spawn[0], world.camera.height + 6, world.spawn[2] + world.camera.distance + 8);
   }, [camera, world]);
 
-  useFrame(({ size }, delta) => {
+  useFrame(({ size, camera: cam }, delta) => {
     const dt = Math.min(delta, 0.1);
+    if (world.vehicle) {
+      const cockpit = game.view === "cockpit";
+      if (lastView.current !== game.view) {
+        lastView.current = game.view;
+        const persp = cam as THREE.PerspectiveCamera;
+        persp.near = cockpit ? 0.05 : 0.5;
+        persp.fov = cockpit ? 62 : 42;
+        persp.updateProjectionMatrix();
+      }
+      // Smooth the kart's heading so the view swings gently through corners.
+      heading.current.lerp(game.heroDir, 1 - Math.exp(-dt * (cockpit ? 10 : 3.5))).normalize();
+      const f = heading.current;
+      if (cockpit) {
+        // Sitting in the seat, just behind the steering wheel.
+        camera.position.set(game.hero.x - f.x * 0.15, game.hero.y + 1.24, game.hero.z - f.z * 0.15);
+        lookAt.set(game.hero.x + f.x * 12, game.hero.y + 0.55, game.hero.z + f.z * 12);
+        camera.lookAt(lookAt);
+        look.current.copy(lookAt);
+        return;
+      }
+      wanted.set(game.hero.x - f.x * 9, game.hero.y + 4.6, game.hero.z - f.z * 9);
+      camera.position.lerp(wanted, 1 - Math.exp(-dt * 6));
+      chaseDir.set(game.hero.x + f.x * 6, game.hero.y + 1, game.hero.z + f.z * 6);
+      look.current.lerp(chaseDir, 1 - Math.exp(-dt * 8));
+      camera.lookAt(look.current);
+      return;
+    }
     // Pull back on tall/narrow screens so the world still fits side to side.
     const zoom = THREE.MathUtils.clamp(1.45 / (size.width / size.height), 1, 1.8);
     wanted.set(game.hero.x, game.hero.y + world.camera.height * zoom, game.hero.z + world.camera.distance * zoom);

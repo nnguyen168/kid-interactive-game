@@ -7,6 +7,7 @@ import Mascot from "@/components/Mascot";
 import Art from "@/components/Art";
 import MascotSays from "@/components/ui/MascotSays";
 import StarCounter from "@/components/ui/StarCounter";
+import ParentSettings from "@/components/ParentSettings";
 import { CANDY_PRESS, candyStyle } from "@/components/ui/CandyButton";
 import { PlayIcon } from "@/components/ui/icons";
 import { useTheme } from "@/lib/ThemeContext";
@@ -143,7 +144,10 @@ export default function Home() {
           <br />
           du Vendredi
         </h1>
-        <StarCounter count={ready ? totalStars : 0} />
+        <div className="flex items-center gap-3">
+          <ParentSettings />
+          <StarCounter count={ready ? totalStars : 0} />
+        </div>
       </header>
 
       <main className="relative z-10 mx-auto grid w-full max-w-7xl items-end gap-6 px-4 pb-8 pt-4 sm:px-8 lg:grid-cols-[minmax(0,5fr)_minmax(0,7fr)] lg:gap-10 lg:px-12">

@@ -21,7 +21,8 @@ const JUMP_SPEED = 8;
 // Kart handling: gentle enough for a five-year-old.
 const KART_SPEED = 11;
 const KART_TURBO = 17;
-const KART_TURN = 3.2; // radians per second
+const KART_TURN = 2.4; // radians per second at full steering
+const KART_REVERSE = 4;
 const KART_ACCEL = 9;
 const KART_RADIUS = 1.1;
 
@@ -89,6 +90,7 @@ export default function Hero({ themeId, world }: { themeId: ThemeId; world: Worl
   const model = useMemo(() => dressHero(scene, themeId), [scene, themeId]);
   const group = useRef<THREE.Group>(null);
   const body = useRef<THREE.Group>(null);
+  const driver = useRef<THREE.Group>(null);
   const { actions } = useAnimations(animations, model);
   const current = useRef<string | null>(null);
   const stuckTime = useRef(0);
@@ -132,24 +134,54 @@ export default function Hero({ themeId, world }: { themeId: ThemeId; world: Worl
 
     let moving = false;
     if (vehicle) {
-      const wants = wantedDirection(1.6);
+      // Arcade driving: ↑ accelerates, ↓ brakes then reverses, ← → steer the kart itself.
+      const k = game.keys;
+      const blocked = game.paused || !!game.action || game.cinematic;
+      const usingKeys = k.up || k.down || k.left || k.right;
+      if (usingKeys) game.target = null;
+      let steer = 0;
+      let throttle = 0;
+      if (!blocked && usingKeys) {
+        steer = (k.left ? 1 : 0) - (k.right ? 1 : 0);
+        throttle = k.up ? 1 : k.down ? -1 : 0;
+      } else if (!blocked && game.target) {
+        // Tap-to-drive: head for the tapped point.
+        const dx = game.target.x - game.hero.x;
+        const dz = game.target.z - game.hero.z;
+        if (Math.hypot(dx, dz) < 2) game.target = null;
+        else {
+          const turn = shortestAngle(g.rotation.y, Math.atan2(dx, dz));
+          steer = THREE.MathUtils.clamp(turn * 2, -1, 1);
+          throttle = Math.abs(turn) > 1.6 ? 0.35 : 1;
+        }
+      }
+      // Steering help: going forward without steering, the kart gently follows the track.
+      if (steer === 0 && throttle > 0 && world.steerAssist) {
+        const yawTrack = world.steerAssist(game.hero.x, game.hero.z);
+        if (yawTrack !== null) {
+          const d = shortestAngle(g.rotation.y, yawTrack);
+          if (Math.abs(d) < 1.2) steer = THREE.MathUtils.clamp(d * 1.6, -0.7, 0.7);
+        }
+      }
+
+      game.steer += (steer - game.steer) * Math.min(1, delta * 10);
       const turbo = now < game.boostUntil;
       const top = turbo ? KART_TURBO : KART_SPEED;
-      if (wants) {
-        const yawWanted = Math.atan2(move.x, move.z);
-        const turn = shortestAngle(g.rotation.y, yawWanted);
-        g.rotation.y += THREE.MathUtils.clamp(turn, -KART_TURN * delta, KART_TURN * delta);
-        // Ease off while turning hard, so the kart does not orbit its target.
-        const aim = Math.abs(turn) > 1.6 ? top * 0.35 : top;
-        game.speed += (aim - game.speed) * Math.min(1, delta * (KART_ACCEL / 4));
-      } else {
-        game.speed *= Math.exp(-delta * (turbo ? 0.5 : 3));
-        if (game.speed < 0.05) game.speed = 0;
+      if (throttle > 0) game.speed += (top * throttle - game.speed) * Math.min(1, delta * (KART_ACCEL / 4));
+      else if (throttle < 0) game.speed = game.speed > 0 ? Math.max(0, game.speed - 18 * delta) : Math.max(-KART_REVERSE, game.speed - 6 * delta);
+      else {
+        game.speed *= Math.exp(-delta * (turbo ? 0.5 : 1.5));
+        if (Math.abs(game.speed) < 0.05) game.speed = 0;
       }
       if (turbo) game.speed = Math.max(game.speed, KART_SPEED);
-      moving = game.speed > 0.3;
-      if (game.speed > 0) {
-        lastPos.copy(game.hero);
+
+      // A kart only turns while rolling, and steering flips when reversing.
+      const grip = THREE.MathUtils.clamp(Math.abs(game.speed) / 4, 0, 1) * Math.sign(game.speed || 1);
+      g.rotation.y += steer * KART_TURN * grip * delta;
+      if (body.current) body.current.rotation.z = THREE.MathUtils.lerp(body.current.rotation.z, -steer * 0.08 * grip, delta * 6);
+
+      moving = Math.abs(game.speed) > 0.3;
+      if (game.speed !== 0) {
         game.hero.x += Math.sin(g.rotation.y) * game.speed * delta;
         game.hero.z += Math.cos(g.rotation.y) * game.speed * delta;
         if (resolveCollisions(game.hero, KART_RADIUS, world.colliders)) game.speed *= 0.6;
@@ -198,8 +230,8 @@ export default function Hero({ themeId, world }: { themeId: ThemeId; world: Worl
     g.position.copy(game.hero);
 
     if (vehicle) {
-      // Lean into turns and bob a little over bumps.
-      if (body.current) body.current.rotation.z = THREE.MathUtils.lerp(body.current.rotation.z, 0, delta * 4);
+      // In the driver's view the camera sits where the driver's head is.
+      if (driver.current) driver.current.visible = game.view !== "cockpit";
       play(game.action ? ACTION_CLIPS[game.action.kind] : "Sit_Chair_Idle");
       return;
     }
@@ -213,7 +245,9 @@ export default function Hero({ themeId, world }: { themeId: ThemeId; world: Worl
       <group ref={group} position={world.spawn} rotation={[0, world.spawnYaw ?? Math.PI, 0]}>
         <group ref={body}>
           <Kart />
-          <primitive object={model} scale={HERO_SCALE * 0.85} position={[0, 0.05, -0.2]} />
+          <group ref={driver}>
+            <primitive object={model} scale={HERO_SCALE * 0.85} position={[0, 0.05, -0.2]} />
+          </group>
         </group>
       </group>
     );

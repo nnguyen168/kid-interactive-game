@@ -1,7 +1,7 @@
 "use client";
 
 import { CITY, MED } from "../Prop";
-import { seeded } from "../game";
+import { Collider, seeded } from "../game";
 import { Vec3, WorldDef } from "../types";
 import { Clouds, collidersOf, Instanced, Placed, Props } from "./common";
 import { FireStation, FireTruck, Ladder } from "./firehouse";
@@ -91,6 +91,68 @@ for (const [x, z] of [[-13, 4], [-1, 4.2], [10, 4.4], [15, 4.2], [-7.5, 3.6]]) {
 const TRUCK_AT: Vec3 = [-7.3, 0, -4.2];
 const STATION_AT: Vec3 = [-8.2, 0, -10.3];
 
+const BOUNDS = { minX: -12.5, maxX: 12.5, minZ: -17.5, maxZ: 8 };
+const SPAWN: Vec3 = [0, 0, 4];
+const SPOTS: Record<string, Vec3> = {
+  camion: [-4.3, 0, -5.8],
+  caserne: [-11, 0, -6.6],
+  bouche: [4.5, 0, 4],
+  echelle: [-1.2, 0, -16.4],
+};
+const COLLIDERS: Collider[] = [
+  ...collidersOf(buildings),
+  ...collidersOf(props),
+  ...collidersOf(greenery),
+  { x: STATION_AT[0], z: STATION_AT[2], hw: 4.3, hd: 2.25 },
+  { x: STATION_AT[0] + 5.6, z: STATION_AT[2] - 0.6, hw: 1.2, hd: 1.2 },
+  { x: TRUCK_AT[0], z: TRUCK_AT[2] + 0.3, hw: 1.25, hd: 3.1 },
+];
+
+function gap(c: Collider, x: number, z: number) {
+  if ("r" in c) return Math.hypot(x - c.x, z - c.z) - c.r;
+  const dx = Math.max(Math.abs(x - c.x) - c.hw, 0);
+  const dz = Math.max(Math.abs(z - c.z) - c.hd, 0);
+  return Math.hypot(dx, dz);
+}
+
+/**
+ * Every place a fire could start: in front of each reachable building wall and
+ * next to cars, trees, benches and bins. The fire mission picks a few at random.
+ */
+const FIRE_SPOTS: Vec3[] = (() => {
+  const keepClear: Vec3[] = [SPAWN, [LADDER_AT[0], 0, LADDER_AT[2] + 0.8], ...Object.values(SPOTS)];
+  const free = (x: number, z: number) =>
+    x > BOUNDS.minX + 0.6 &&
+    x < BOUNDS.maxX - 0.6 &&
+    z > BOUNDS.minZ + 0.6 &&
+    z < BOUNDS.maxZ - 0.6 &&
+    COLLIDERS.every((c) => gap(c, x, z) > 0.7) &&
+    keepClear.every((p) => Math.hypot(p[0] - x, p[2] - z) > (p === SPAWN ? 6 : 3.2));
+  const spots: Vec3[] = [];
+  for (const c of COLLIDERS) {
+    if ("r" in c || Math.max(c.hw, c.hd) < 2) {
+      // Beside a car, tree, bench or bin.
+      const r = "r" in c ? c.r : Math.max(c.hw, c.hd);
+      for (let a = 0; a < 4; a++) {
+        const x = c.x + Math.cos(a * (Math.PI / 2)) * (r + 1.2);
+        const z = c.z + Math.sin(a * (Math.PI / 2)) * (r + 1.2);
+        if (r >= 0.3 && free(x, z)) spots.push([x, 0, z]);
+      }
+      continue;
+    }
+    // Along each wall of a building.
+    for (const [nx, nz] of [[1, 0], [-1, 0], [0, 1], [0, -1]]) {
+      const along = nx ? c.hd : c.hw;
+      for (const t of [-0.6, 0, 0.6]) {
+        const x = c.x + nx * (c.hw + 1) + (nx ? 0 : t * along);
+        const z = c.z + nz * (c.hd + 1) + (nz ? 0 : t * along);
+        if (free(x, z)) spots.push([x, 0, z]);
+      }
+    }
+  }
+  return spots;
+})();
+
 function CityScene() {
   return (
     <group position-y={-0.25}>
@@ -114,23 +176,12 @@ function CityScene() {
 }
 
 export const city: WorldDef = {
-  spawn: [0, 0, 4],
-  bounds: { kind: "rect", minX: -12.5, maxX: 12.5, minZ: -17.5, maxZ: 8 },
-  colliders: [
-    ...collidersOf(buildings),
-    ...collidersOf(props),
-    ...collidersOf(greenery),
-    { x: STATION_AT[0], z: STATION_AT[2], hw: 4.3, hd: 2.25 },
-    { x: STATION_AT[0] + 5.6, z: STATION_AT[2] - 0.6, hw: 1.2, hd: 1.2 },
-    { x: TRUCK_AT[0], z: TRUCK_AT[2] + 0.3, hw: 1.25, hd: 3.1 },
-  ],
+  spawn: SPAWN,
+  bounds: { kind: "rect", ...BOUNDS },
+  colliders: COLLIDERS,
   stars: [],
-  spots: {
-    camion: [-4.3, 0, -5.8],
-    caserne: [-11, 0, -6.6],
-    bouche: [4.5, 0, 4],
-    echelle: [-1.2, 0, -16.4],
-  },
+  spots: SPOTS,
+  eventSpots: FIRE_SPOTS,
   sky: { top: "#4b8fe0", horizon: "#ffe2b8", fog: "#f2dcc2", fogNear: 40, fogFar: 130 },
   camera: { height: 8.5, distance: 11.5 },
   Scene: CityScene,

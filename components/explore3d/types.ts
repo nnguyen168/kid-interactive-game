@@ -9,6 +9,7 @@ export type ActionPrompt = "spray" | "kick" | "slash" | "climb" | "descend" | "w
 export type MissionProps = {
   onScore: () => void;
   onPrompt: (prompt: ActionPrompt | null) => void;
+  world: WorldDef;
 };
 
 export type WorldDef = {
@@ -28,6 +29,10 @@ export type WorldDef = {
   Mission?: ComponentType<MissionProps>;
   /** Picking up a star counts towards the mission (the kingdom). */
   starsScore?: boolean;
+  /** Places where a mission may randomly put things (the city's fires). */
+  eventSpots?: Vec3[];
   /** The hero drives a kart in this world. */
   vehicle?: boolean;
+  /** For karts: the heading that follows the track from here, or null when off the track. */
+  steerAssist?: (x: number, z: number) => number | null;
 };

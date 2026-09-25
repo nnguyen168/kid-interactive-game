@@ -40,6 +40,8 @@ type ProgressContextValue = {
   /** Stars won in J'explore: they count for this visit but not for levels. */
   addBonusStars: (amount: number) => void;
   addBadge: (badgeId: string) => void;
+  /** Parent setting: jump to a level (its star count restarts at that level's threshold). */
+  setLevel: (subject: Subject, level: Level) => void;
   recordSession: () => void;
   /** Stars earned since the page was opened; starts at zero on every visit. */
   totalStars: number;
@@ -100,6 +102,15 @@ export function ProgressProvider({ children }: { children: ReactNode }) {
     setSessionStars((n) => n + amount);
   }
 
+  function setLevel(subject: Subject, level: Level) {
+    const p = latest.current;
+    persist({
+      ...p,
+      stars: { ...p.stars, [subject]: LEVEL_THRESHOLDS[level - 1] },
+      level: { ...p.level, [subject]: level },
+    });
+  }
+
   function addBadge(badgeId: string) {
     const p = latest.current;
     if (p.badges.includes(badgeId)) return;
@@ -121,7 +132,7 @@ export function ProgressProvider({ children }: { children: ReactNode }) {
 
   return (
     <ProgressContext.Provider
-      value={{ progress, ready, addStars, addBonusStars, addBadge, recordSession, totalStars, collectHotspot }}
+      value={{ progress, ready, addStars, addBonusStars, addBadge, setLevel, recordSession, totalStars, collectHotspot }}
     >
       {children}
     </ProgressContext.Provider>

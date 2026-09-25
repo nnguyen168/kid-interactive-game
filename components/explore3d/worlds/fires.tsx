@@ -1,7 +1,7 @@
 "use client";
 
 import { useFrame } from "@react-three/fiber";
-import { MutableRefObject, useLayoutEffect, useRef } from "react";
+import { MutableRefObject, useEffect, useLayoutEffect, useRef } from "react";
 import * as THREE from "three";
 import { sfx } from "@/lib/sfx";
 import { shuffle } from "@/lib/random";
@@ -9,22 +9,16 @@ import { useLazyGenerated } from "@/lib/useLazyGenerated";
 import { distance2D, game, startAction, Zone } from "../game";
 import { ActionPrompt, MissionProps, Vec3 } from "../types";
 
-/** Places in front of building walls where a fire can start; three are picked each round. */
-const FIRE_SPOTS: Vec3[] = [
-  [11.6, 0, -4.2],
-  [11.6, 0, -11.2],
-  [10, 0, -11.9],
-  [6.6, 0, -11.9],
-  [2, 0, -13.2],
-  [-2, 0, -13.8],
-  [-11.7, 0, -3.2],
-];
+const FIRES_PER_ROUND = 3;
 
-function pickFires(): Vec3[] {
+/** A few fires far apart, picked afresh every time the game starts. */
+function pickFires(spots: Vec3[]): Vec3[] {
   const chosen: Vec3[] = [];
-  for (const p of shuffle(FIRE_SPOTS)) {
-    if (chosen.every((c) => Math.hypot(c[0] - p[0], c[2] - p[2]) > 5)) chosen.push(p);
-    if (chosen.length === 3) break;
+  for (const minGap of [9, 6, 3]) {
+    for (const p of shuffle(spots)) {
+      if (chosen.length === FIRES_PER_ROUND) break;
+      if (chosen.every((c) => Math.hypot(c[0] - p[0], c[2] - p[2]) > minGap)) chosen.push(p);
+    }
   }
   return chosen;
 }
@@ -280,8 +274,12 @@ function Cat({ state }: { state: MutableRefObject<{ phase: Phase; carried: boole
 type Phase = "ground" | "up" | "roof" | "down";
 
 /** Firefighter mission: three fires at random places, and a cat to bring down from a roof. */
-export function FireMission({ onScore, onPrompt }: MissionProps) {
-  const [fires] = useLazyGenerated(true, pickFires);
+export function FireMission({ onScore, onPrompt, world }: MissionProps) {
+  const [fires] = useLazyGenerated(true, () => pickFires(world.eventSpots ?? []));
+  useEffect(() => {
+    // Handy for automated checks in development.
+    if (fires && process.env.NODE_ENV !== "production") Object.assign(window, { __fires: fires });
+  }, [fires]);
   const health = useRef<number[]>([1, 1, 1]);
   const target = useRef<number | null>(null);
   const shown = useRef<ActionPrompt | null>(null);

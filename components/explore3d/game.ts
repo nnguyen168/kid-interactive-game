@@ -32,8 +32,12 @@ export const game = {
   cinematic: false,
   /** Kart turbo lasts until this time (performance.now ms). */
   boostUntil: 0,
-  /** Current kart speed, for effects and sounds. */
+  /** Current kart speed (negative when reversing), for effects and sounds. */
   speed: 0,
+  /** Kart camera: behind the kart, or the driver's own view. */
+  view: "chase" as "chase" | "cockpit",
+  /** Current steering, -1 (right) to 1 (left), to turn the steering wheel. */
+  steer: 0,
 };
 
 export function resetGame(spawn: [number, number, number]) {
@@ -52,6 +56,8 @@ export function resetGame(spawn: [number, number, number]) {
   game.cinematic = false;
   game.boostUntil = 0;
   game.speed = 0;
+  game.view = "chase";
+  game.steer = 0;
 }
 
 /** Height of the floor under the hero. */

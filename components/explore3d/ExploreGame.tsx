@@ -114,6 +114,8 @@ export default function ExploreGame({
   const [hint, setHint] = useState(true);
   const [drawn, setDrawn] = useState(false);
   const { addBonusStars } = useProgress();
+  const [view, setView] = useState<"chase" | "cockpit">("chase");
+  const vehicle = !!world.vehicle;
 
   useKeyboardControls();
 
@@ -128,6 +130,14 @@ export default function ExploreGame({
     const onKey = (e: KeyboardEvent) => {
       const isAction = e.key === " " || e.key === "Enter";
       const isJump = e.code === "KeyJ";
+      if (e.code === "KeyV" && !e.repeat) {
+        if (vehicle && !pausedRef.current) {
+          game.view = game.view === "chase" ? "cockpit" : "chase";
+          setView(game.view);
+          sfx.pop();
+        }
+        return;
+      }
       if (!isAction && !isJump) return;
       const target = e.target as HTMLElement | null;
       if (target?.closest("button, a, input, textarea")) return;
@@ -142,12 +152,12 @@ export default function ExploreGame({
     };
     window.addEventListener("keydown", onKey);
     return () => window.removeEventListener("keydown", onKey);
-  }, []);
+  }, [vehicle]);
 
   useEffect(() => {
     resetGame(world.spawn);
     // Handy for automated checks in development.
-    if (process.env.NODE_ENV !== "production") (window as unknown as { __game: typeof game }).__game = game;
+    if (process.env.NODE_ENV !== "production") Object.assign(window, { __game: game, __world: world });
   }, [world]);
 
   useEffect(() => {
@@ -185,6 +195,33 @@ export default function ExploreGame({
     game.jumpRequest = true;
   }
 
+
+
+  function toggleView() {
+    if (!world.vehicle) return;
+    game.view = game.view === "chase" ? "cockpit" : "chase";
+    setView(game.view);
+    sfx.pop();
+  }
+
+  /** Holds a direction/pedal while an on-screen button is pressed (tablets). */
+  function pedal(key: keyof typeof game.keys) {
+    const release = () => {
+      game.keys[key] = false;
+    };
+    return {
+      onPointerDown: (e: React.PointerEvent) => {
+        e.stopPropagation();
+        game.keys[key] = true;
+      },
+      onPointerUp: release,
+      onPointerLeave: release,
+      onPointerCancel: release,
+      onMouseDown: (e: React.MouseEvent) => e.preventDefault(),
+      tabIndex: -1,
+    };
+  }
+
   const Mission = world.Mission;
   const goalShown = Math.min(score, mission.goalCount);
 
@@ -211,7 +248,7 @@ export default function ExploreGame({
               <Spot key={f.id} position={world.spots[f.id]} art={f.art} visited={visited.includes(f.id)} onEnter={() => onDiscover(f.id)} />
             ) : null,
           )}
-          {Mission && <Mission onScore={addScore} onPrompt={setPrompt} />}
+          {Mission && <Mission onScore={addScore} onPrompt={setPrompt} world={world} />}
           <WorldReady onReady={() => setDrawn(true)} />
         </Suspense>
         <Suspense fallback={null}>
@@ -248,7 +285,7 @@ export default function ExploreGame({
         <div className="pointer-events-none absolute inset-x-0 bottom-5 flex justify-center px-3">
           <div className="rise-in flex items-center gap-3 rounded-full border-4 border-white bg-white/90 px-5 py-2 text-lg font-bold text-slate-700 shadow-lg lg:text-2xl">
             <Art name="sparkles" className="w-8 h-8 lg:w-10 lg:h-10" eager />
-            {world.vehicle ? "Touche la piste ou les flèches pour conduire !" : "Touche le sol ou les flèches pour marcher !"}
+            {world.vehicle ? "↑ pour accélérer, ← → pour tourner !" : "Touche le sol ou les flèches pour marcher !"}
           </div>
         </div>
       )}
@@ -288,6 +325,49 @@ export default function ExploreGame({
           <span className="text-xl font-extrabold drop-shadow lg:text-2xl">{PROMPTS[prompt].label}</span>
           <span className="mt-1 hidden rounded-md bg-white/25 px-2 text-sm font-bold [@media(hover:hover)]:inline">Espace</span>
         </button>
+      )}
+
+      {world.vehicle && !paused && (
+        <>
+          <button
+            type="button"
+            onPointerDown={(e) => {
+              e.stopPropagation();
+              toggleView();
+            }}
+            onMouseDown={(e) => e.preventDefault()}
+            tabIndex={-1}
+            className={`absolute right-3 top-3 flex items-center gap-2 rounded-full border-4 border-white bg-white/90 py-1.5 pl-2 pr-4 text-base font-bold text-slate-700 shadow-[0_5px_0_rgba(0,0,0,0.12)] lg:right-6 lg:top-6 lg:text-xl ${CANDY_PRESS}`}
+          >
+            <Art name={view === "chase" ? "racing-car" : "checkered-flag"} className="w-9 h-9 lg:w-11 lg:h-11" eager />
+            {view === "chase" ? "Vue pilote" : "Vue de derrière"}
+            <span className="hidden rounded-md bg-slate-200 px-1.5 text-xs [@media(hover:hover)]:inline">V</span>
+          </button>
+          {/* Steering and pedals for touch screens */}
+          <div className="absolute bottom-5 left-3 flex items-end gap-3 lg:bottom-8 lg:left-6 [@media(hover:hover)]:opacity-70">
+            {(
+              [
+                ["left", "◀", "#6366f1"],
+                ["right", "▶", "#6366f1"],
+                ["down", "Frein", "#ef4444"],
+                ["up", "Gaz", "#22c55e"],
+              ] as const
+            ).map(([key, label, color]) => (
+              <button
+                key={key}
+                type="button"
+                aria-label={label}
+                {...pedal(key)}
+                className={`flex items-center justify-center rounded-3xl border-4 border-white font-extrabold text-white ${CANDY_PRESS} ${
+                  key === "up" ? "h-24 w-24 text-2xl lg:h-28 lg:w-28" : "h-20 w-20 text-2xl lg:h-24 lg:w-24"
+                }`}
+                style={candyStyle(color)}
+              >
+                {label}
+              </button>
+            ))}
+          </div>
+        </>
       )}
 
       <LoadingOverlay themeId={themeId} done={drawn} />

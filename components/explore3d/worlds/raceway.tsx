@@ -46,6 +46,23 @@ function beside(t: number, offset: number): Vec3 {
 }
 
 const SAMPLE_POINTS = Array.from({ length: 200 }, (_, i) => pointAt(i / 200));
+const TRACK_LENGTH = CURVE.getLength();
+
+/** Heading towards a point a little further along the track, for the steering help. */
+function steerAssist(x: number, z: number): number | null {
+  let best = Infinity;
+  let index = 0;
+  SAMPLE_POINTS.forEach((p, i) => {
+    const d = Math.hypot(p.x - x, p.z - z);
+    if (d < best) {
+      best = d;
+      index = i;
+    }
+  });
+  if (best > WIDTH / 2 + 3) return null;
+  const ahead = pointAt(index / SAMPLE_POINTS.length + 7 / TRACK_LENGTH);
+  return Math.atan2(ahead.x - x, ahead.z - z);
+}
 function distanceToTrack(x: number, z: number) {
   let best = Infinity;
   for (const p of SAMPLE_POINTS) best = Math.min(best, Math.hypot(p.x - x, p.z - z));
@@ -463,8 +480,17 @@ function GuideArrow({ next }: { next: React.MutableRefObject<number> }) {
     const g = ref.current;
     if (!g) return;
     const target = pointAt(CHECKPOINTS[next.current]);
-    g.position.set(game.hero.x, game.hero.y + 3.4 + Math.sin(clock.elapsedTime * 4) * 0.15, game.hero.z);
+    // Above the kart from behind; out in front of the windscreen in the driver's view.
+    const ahead = game.view === "cockpit" ? 7 : 0;
+    g.position.set(
+      game.hero.x + game.heroDir.x * ahead,
+      game.hero.y + (ahead ? 1.8 : 3.4) + Math.sin(clock.elapsedTime * 4) * 0.15,
+      game.hero.z + game.heroDir.z * ahead,
+    );
+    g.rotation.order = "YXZ";
     g.rotation.y = Math.atan2(target.x - game.hero.x, target.z - game.hero.z) + Math.PI;
+    // Tilted up towards the driver's eyes in the driver's view.
+    g.rotation.x = ahead ? -0.9 : 0;
     g.visible = !game.paused;
   });
   return (
@@ -579,4 +605,5 @@ export const raceway: WorldDef = {
   Scene: RacewayScene,
   Mission: RaceMission,
   vehicle: true,
+  steerAssist,
 };

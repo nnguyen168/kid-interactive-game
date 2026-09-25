@@ -23,12 +23,16 @@ how the world works, then play.
   arrow keys) to walk around, *Sauter* (J) to jump; glowing spots tell fun facts.
   - The knight collects 10 stars in his kingdom, swinging his sword (*Épée*) to break
     barrels with stars inside and to knock the training dummies.
-  - The firefighter puts out 3 fires (a different place each round) with *Arroser*,
+  - The firefighter puts out 3 fires (at random places all over the city, new ones
+    every game) with *Arroser*,
     and climbs a ladder onto a roof to rescue a cat.
   - The footballer dribbles and shoots 3 goals past the keeper, and can start a
     Mexican wave in the stands (*Saluer*).
   - The racing driver drives a kart for 3 laps through the arches, with turbo pads,
-    a jump ramp, cones to knock over and a *Turbo* button.
+    a jump ramp, cones to knock over and a *Turbo* button. Racing controls: ↑ to
+    accelerate, ← → to steer, ↓ to brake; the kart gently follows the track when
+    you don't steer. *V* (or the button) switches between the view from behind and
+    the driver's view; on a tablet, use the on-screen pedals.
 - **L'aventure** — the guided 15-minute session: learn → story → challenge → reward.
 
 Designed for a child who is just learning to read: every question is read aloud
@@ -37,6 +41,11 @@ tap the hero or the bubble to hear it again. Answers use pictures with a small
 speaker to hear each word. A wrong answer is never punished — the child simply
 tries again, and after two misses the right answer glows. Sounds are synthesized
 in the browser, so there are no audio files.
+
+**Espace parents** — the gear next to the star counter on the home screen shows the
+difficulty level of *Les nombres* and *Les lettres* and lets you pick level 1, 2 or 3
+for each (or put both back to level 1). Levels still go up on their own as stars are
+earned.
 
 The star counter starts at zero on every visit (refreshing the page starts a new
 session). Levels, badges and discovered facts are saved locally in the browser

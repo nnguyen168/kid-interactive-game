@@ -34,7 +34,9 @@ function Wheel({ x, z, r, w }: { x: number; z: number; r: number; w: number }) {
 /** A chunky go-kart, nose pointing +z, with flames from the exhaust during turbo. */
 export function Kart() {
   const flames = useRef<THREE.Group>(null);
+  const wheel = useRef<THREE.Mesh>(null);
   useFrame(({ clock }) => {
+    if (wheel.current) wheel.current.rotation.z = game.steer * 1.2;
     const f = flames.current;
     if (!f) return;
     const turbo = performance.now() < game.boostUntil;
@@ -69,10 +71,16 @@ export function Kart() {
         <meshStandardMaterial color={DARK} roughness={0.5} />
       </RoundedBox>
       {/* steering wheel */}
-      <mesh position={[0, 0.95, 0.45]} rotation-x={-1.1}>
-        <torusGeometry args={[0.2, 0.04, 8, 20]} />
-        <meshStandardMaterial color="#111827" />
-      </mesh>
+      <group position={[0, 0.95, 0.45]} rotation-x={-1.1}>
+        <mesh ref={wheel}>
+          <torusGeometry args={[0.2, 0.04, 8, 20]} />
+          <meshStandardMaterial color="#111827" />
+          <mesh>
+            <boxGeometry args={[0.36, 0.05, 0.03]} />
+            <meshStandardMaterial color="#f97316" />
+          </mesh>
+        </mesh>
+      </group>
       {/* rear wing */}
       <mesh position={[0, 1.1, -1.25]} castShadow>
         <boxGeometry args={[1.7, 0.06, 0.4]} />
