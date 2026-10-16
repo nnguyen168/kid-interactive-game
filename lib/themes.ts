@@ -139,6 +139,29 @@ export const THEMES: Record<ThemeId, Theme> = {
     badgeArt: "trophy",
     challenge: { mover: "tennis", target: "trophy", win: "Jeu, set et match ! Tu as gagné !" },
   },
+  cuisine: {
+    id: "cuisine",
+    name: "Cuisinier",
+    mascotName: "Loukas le Cuisinier",
+    greeting: "Salut ! Je suis Loukas le Cuisinier. On prépare quelque chose de délicieux ?",
+    iconArt: "cook",
+    colors: {
+      primary: "#E11D48",
+      secondary: "#F59E0B",
+      soft: "#FFE4E6",
+      text: "#881337",
+    },
+    sky: { top: "#7DD3FC", bottom: "#FFEDD5" },
+    items: [
+      { art: "croissant", singular: "croissant", plural: "croissants" },
+      { art: "egg", singular: "œuf", plural: "œufs" },
+      { art: "cupcake", singular: "gâteau", plural: "gâteaux" },
+      { art: "pizza", singular: "pizza", plural: "pizzas" },
+    ],
+    badgeName: "toque d'or",
+    badgeArt: "cook",
+    challenge: { mover: "cooking", target: "cupcake", win: "Le gâteau est prêt ! Miam, bravo chef !" },
+  },
 };
 
-export const THEME_ORDER: ThemeId[] = ["chevalier", "pompier", "foot", "course", "espace", "tennis"];
+export const THEME_ORDER: ThemeId[] = ["chevalier", "pompier", "foot", "course", "espace", "tennis", "cuisine"];

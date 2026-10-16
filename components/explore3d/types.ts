@@ -4,7 +4,7 @@ import { Collider } from "./game";
 export type Vec3 = [number, number, number];
 
 /** The contextual action button shown in the HUD. */
-export type ActionPrompt = "spray" | "kick" | "slash" | "climb" | "descend" | "wave" | "turbo" | "launch" | "hit";
+export type ActionPrompt = "spray" | "kick" | "slash" | "climb" | "descend" | "wave" | "turbo" | "launch" | "hit" | "cook";
 
 export type MissionProps = {
   onScore: () => void;

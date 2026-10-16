@@ -1,6 +1,6 @@
 import { ArtKey } from "./art";
 
-export type ThemeId = "chevalier" | "pompier" | "foot" | "course" | "espace" | "tennis";
+export type ThemeId = "chevalier" | "pompier" | "foot" | "course" | "espace" | "tennis" | "cuisine";
 
 export type ThemeItem = {
   art: ArtKey;

@@ -63,7 +63,47 @@ function tennisKit(head: THREE.Object3D, root: THREE.Object3D) {
   hand.add(racket);
 }
 
+/** A tall puffy toque and a red neckerchief. */
+function chefKit(head: THREE.Object3D) {
+  const white = mat("#ffffff", { roughness: 0.7 });
+  const toque = new THREE.Group();
+  const band = new THREE.Mesh(new THREE.CylinderGeometry(0.6, 0.62, 0.5, 32), white);
+  band.position.y = 0;
+  toque.add(band);
+  for (const [x, z, r] of [
+    [0, 0, 0.42],
+    [0.3, 0.15, 0.32],
+    [-0.3, 0.15, 0.32],
+    [0.15, -0.3, 0.32],
+    [-0.2, -0.25, 0.32],
+  ] as const) {
+    const puff = new THREE.Mesh(new THREE.SphereGeometry(r, 20, 14), white);
+    puff.position.set(x, 0.42 + (r > 0.4 ? 0.12 : 0), z);
+    toque.add(puff);
+  }
+  toque.position.set(0, 1.02, -0.02);
+  head.add(toque);
+  const scarf = new THREE.Mesh(new THREE.TorusGeometry(0.42, 0.09, 10, 28), mat("#e11d48"));
+  scarf.rotation.x = Math.PI / 2;
+  scarf.position.set(0, -0.32, 0);
+  const knot = new THREE.Mesh(new THREE.ConeGeometry(0.16, 0.3, 12), mat("#be123c"));
+  knot.rotation.x = Math.PI;
+  knot.position.set(0, -0.48, 0.42);
+  head.add(scarf, knot);
+}
+
 const LOOKS: Record<ThemeId, Look> = {
+  cuisine: {
+    hide: KNIGHT_ONLY,
+    paint: {
+      Knight_Body: "#ffffff",
+      Knight_ArmLeft: "#ffffff",
+      Knight_ArmRight: "#ffffff",
+      Knight_LegLeft: "#334155",
+      Knight_LegRight: "#334155",
+    },
+    dress: (head) => chefKit(head),
+  },
   espace: {
     hide: KNIGHT_ONLY,
     paint: {

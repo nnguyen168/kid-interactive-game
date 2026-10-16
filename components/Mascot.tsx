@@ -24,6 +24,7 @@ const OUTFITS: Record<ThemeId, Outfit> = {
   course: { torso: "#EA580C", arm: "#EA580C", leg: "#EA580C", boot: "#111827" },
   espace: { torso: "#F1F5F9", arm: "#E2E8F0", leg: "#E2E8F0", boot: "#64748B" },
   tennis: { torso: "#FFFFFF", arm: "#FFFFFF", leg: "#FFFFFF", boot: "#E2E8F0" },
+  cuisine: { torso: "#FFFFFF", arm: "#FFFFFF", leg: "#334155", boot: "#111827" },
 };
 
 function Arm({ side, outfit, themeId }: { side: "l" | "r"; outfit: Outfit; themeId: ThemeId }) {
@@ -110,6 +111,22 @@ function Headgear({ themeId }: { themeId: ThemeId }) {
       </g>
     );
   }
+  if (themeId === "cuisine") {
+    return (
+      <g>
+        {/* tall puffy chef's toque */}
+        <rect x={56} y={36} width={88} height={30} rx={6} fill="#F8FAFC" stroke="#E2E8F0" strokeWidth={3} />
+        <circle cx={66} cy={22} r={22} fill="#FFFFFF" />
+        <circle cx={100} cy={8} r={28} fill="#FFFFFF" />
+        <circle cx={134} cy={22} r={22} fill="#FFFFFF" />
+        <rect x={60} y={20} width={80} height={26} fill="#FFFFFF" />
+        <path d="M76 40 L76 64 M100 40 L100 64 M124 40 L124 64" stroke="#E2E8F0" strokeWidth={3} />
+        <path d="M82 0 C90 -6 104 -6 112 -2" stroke="#E2E8F0" strokeWidth={4} fill="none" strokeLinecap="round" />
+        <path d="M40 92 C40 74 46 66 56 64 L56 76 C50 80 46 86 44 94 Z" fill="#7C4A21" />
+        <path d="M160 92 C160 74 154 66 144 64 L144 76 C150 80 154 86 156 94 Z" fill="#7C4A21" />
+      </g>
+    );
+  }
   if (themeId === "tennis") {
     return (
       <g>
@@ -183,6 +200,20 @@ function Torso({ themeId, outfit }: { themeId: ThemeId; outfit: Outfit }) {
           <circle cx={128} cy={150} r={9} fill="#4F46E5" />
           <path d="M128 144 L130 148.5 L134.8 149 L131.2 152.2 L132.3 157 L128 154.5 L123.7 157 L124.8 152.2 L121.2 149 L126 148.5 Z" fill="#FFFFFF" />
           <rect x={58} y={198} width={84} height={6} fill="#94A3B8" />
+        </g>
+      )}
+      {themeId === "cuisine" && (
+        <g>
+          {/* red neckerchief and the two rows of buttons */}
+          <path d="M80 140 L100 160 L120 140 Z" fill="#E11D48" />
+          <path d="M96 156 L90 172 L100 166 L110 172 L104 156 Z" fill="#BE123C" />
+          {[168, 182, 196].map((y) => (
+            <g key={y}>
+              <circle cx={88} cy={y} r={3.6} fill="#CBD5E1" />
+              <circle cx={112} cy={y} r={3.6} fill="#CBD5E1" />
+            </g>
+          ))}
+          <rect x={58} y={204} width={84} height={6} fill="#E2E8F0" />
         </g>
       )}
       {themeId === "tennis" && (
@@ -323,6 +354,7 @@ export default function Mascot({
       )}
       {themeId === "espace" && <image href="/art/rocket.png" x={140} y={196} width={56} height={56} />}
       {themeId === "tennis" && <image href="/art/tennis.png" x={136} y={192} width={60} height={60} />}
+      {themeId === "cuisine" && <image href="/art/spoon.png" x={140} y={190} width={58} height={58} />}
     </svg>
   );
 }

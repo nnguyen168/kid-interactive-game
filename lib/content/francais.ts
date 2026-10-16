@@ -58,6 +58,17 @@ const THEME_VOCAB: Record<ThemeId, VocabEntry[]> = {
     v("le chrono", "stopwatch", "chro-no", [], "o", 2, true),
     v("la coupe", "trophy", "cou-pe", ["ou"]),
   ],
+  cuisine: [
+    v("la pizza", "pizza", "piz-za", [], undefined, 2),
+    v("le croissant", "croissant", "crois-sant", ["oi", "an"], "an", 2),
+    v("la baguette", "baguette", "ba-guet-te", [], "ette"),
+    v("la crêpe", "pancakes", "crê-pe", []),
+    v("le beurre", "butter", "beur-re", []),
+    v("le miel", "honey", "miel", [], undefined, 1),
+    v("le chocolat", "chocolate", "cho-co-lat", ["ch"], "a", 3),
+    v("la cuillère", "spoon", "cuil-lè-re", []),
+    v("le biscuit", "cookie", "bis-cuit", [], "i", 2),
+  ],
   espace: [
     v("la fusée", "rocket", "fu-sée", [], "é", 2),
     v("la planète", "ringed-planet", "pla-nè-te", []),

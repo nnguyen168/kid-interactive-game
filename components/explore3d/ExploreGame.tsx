@@ -18,6 +18,7 @@ import { CameraRig, Effects, GroundClick, Lights, SkyDome, useKeyboardControls }
 import { ActionPrompt, WorldDef } from "./types";
 import { city } from "./worlds/city";
 import { kingdom } from "./worlds/kingdom";
+import { market } from "./worlds/market";
 import { moon } from "./worlds/moon";
 import { tennisCourt } from "./worlds/tennis";
 import { raceway } from "./worlds/raceway";
@@ -30,6 +31,7 @@ const WORLDS: Record<ThemeId, WorldDef> = {
   course: raceway,
   espace: moon,
   tennis: tennisCourt,
+  cuisine: market,
 };
 
 const PROMPTS: Record<ActionPrompt, { label: string; art: ArtKey; color?: string }> = {
@@ -42,6 +44,7 @@ const PROMPTS: Record<ActionPrompt, { label: string; art: ArtKey; color?: string
   turbo: { label: "Turbo !", art: "rocket", color: "#0ea5e9" },
   launch: { label: "Décoller !", art: "rocket", color: "#ef4444" },
   hit: { label: "Frapper !", art: "tennis", color: "#65a30d" },
+  cook: { label: "Cuisiner !", art: "cooking", color: "#f97316" },
 };
 
 /**
@@ -122,6 +125,8 @@ export default function ExploreGame({
   const { addBonusStars } = useProgress();
   const [view, setView] = useState<"chase" | "cockpit">("chase");
   const vehicle = !!world.vehicle;
+  // Facts already read in this game: they stay quiet until the next game.
+  const [read, setRead] = useState<string[]>([]);
 
   useKeyboardControls();
 
@@ -253,7 +258,16 @@ export default function ExploreGame({
           <Stars positions={world.stars} taken={taken} onTake={takeStar} />
           {facts.map((f) =>
             world.spots[f.id] ? (
-              <Spot key={f.id} position={world.spots[f.id]} art={f.art} visited={visited.includes(f.id)} onEnter={() => onDiscover(f.id)} />
+              <Spot
+                key={f.id}
+                position={world.spots[f.id]}
+                art={f.art}
+                visited={read.includes(f.id)}
+                onEnter={() => {
+                  setRead((r) => (r.includes(f.id) ? r : [...r, f.id]));
+                  onDiscover(f.id);
+                }}
+              />
             ) : null,
           )}
           {Mission && <Mission onScore={addScore} onPrompt={setPrompt} world={world} />}

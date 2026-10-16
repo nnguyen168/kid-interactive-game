@@ -52,6 +52,12 @@ export const EXPLORE_FACTS: Record<ThemeId, ExploreFact[]> = {
     { id: "filet", art: "goal", fact: "Au tennis, la balle doit passer au-dessus du filet pour que le point continue." },
     { id: "score", art: "numbers", fact: "Au tennis, on compte les points d'une façon rigolote : quinze, trente, quarante, jeu !" },
   ],
+  cuisine: [
+    { id: "pain", art: "baguette", fact: "Le boulanger se lève très tôt, avant le soleil, pour que le pain soit prêt le matin !" },
+    { id: "poule", art: "egg", fact: "Les œufs viennent des poules. Une poule peut pondre presque un œuf chaque jour !" },
+    { id: "lait", art: "milk", fact: "Le lait vient des vaches. Avec le lait, on fabrique aussi le beurre, le fromage et les yaourts." },
+    { id: "chocolat", art: "chocolate", fact: "Le chocolat est fait avec les graines du cacaoyer, un arbre qui pousse dans les pays chauds." },
+  ],
 };
 
 export const MISSIONS: Record<ThemeId, Mission> = {
@@ -96,5 +102,12 @@ export const MISSIONS: Record<ThemeId, Mission> = {
     goalArt: "tennis",
     goalCount: 5,
     win: "Cinq cibles ! Tu es le champion de Roland-Garros !",
+  },
+  cuisine: {
+    intro: "Bienvenue au marché, chef ! Trouve les ingrédients qui brillent et rapporte-les à la cuisine. D'abord des crêpes, ensuite une pizza !",
+    goalLabel: "Étapes",
+    goalArt: "cooking",
+    goalCount: 10,
+    win: "Des crêpes et une pizza ! Tu es un grand chef, bravo Loukas !",
   },
 };

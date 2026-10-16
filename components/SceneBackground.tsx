@@ -338,6 +338,63 @@ function TennisScene() {
   );
 }
 
+function KitchenScene() {
+  const tiles = Array.from({ length: 34 }, (_, i) => i);
+  return (
+    <g>
+      {/* tiled wall */}
+      <rect x={-20} y={300} width={1640} height={420} fill="#FEF3C7" />
+      {tiles.map((i) => (
+        <line key={`v${i}`} x1={i * 50} y1={300} x2={i * 50} y2={720} stroke="#FDE68A" strokeWidth={3} />
+      ))}
+      {[0, 1, 2, 3, 4, 5, 6, 7, 8].map((i) => (
+        <line key={`h${i}`} x1={-20} y1={300 + i * 50} x2={1620} y2={300 + i * 50} stroke="#FDE68A" strokeWidth={3} />
+      ))}
+      <rect x={-20} y={290} width={1640} height={16} fill="#E11D48" />
+      {/* shelf with jars and hanging pans */}
+      <rect x={160} y={400} width={420} height={14} rx={4} fill="#92400E" />
+      {["#F59E0B", "#E11D48", "#16A34A", "#3B82F6"].map((c, i) => (
+        <g key={c} transform={`translate(${190 + i * 100} 340)`}>
+          <rect x={0} y={0} width={56} height={60} rx={10} fill="#FFFFFF" opacity={0.85} />
+          <rect x={6} y={22} width={44} height={34} rx={8} fill={c} />
+          <rect x={-2} y={-8} width={60} height={12} rx={4} fill="#94A3B8" />
+        </g>
+      ))}
+      {[1080, 1180, 1280].map((x, i) => (
+        <g key={x}>
+          <line x1={x} y1={310} x2={x} y2={360} stroke="#64748B" strokeWidth={4} />
+          <circle cx={x} cy={380 + i * 6} r={28 + i * 6} fill="#334155" />
+          <rect x={x - 4} y={350} width={8} height={30} fill="#334155" />
+        </g>
+      ))}
+      {/* oven with a warm glow */}
+      <g transform="translate(1180 470)">
+        <rect x={-150} y={0} width={300} height={260} rx={18} fill="#B45309" />
+        <rect x={-110} y={60} width={220} height={140} rx={70} fill="#1C1917" />
+        <ellipse cx={0} cy={170} rx={90} ry={26} fill="#F97316" opacity={0.9} />
+        <ellipse cx={0} cy={168} rx={50} ry={14} fill="#FDE047" />
+      </g>
+      {/* counter */}
+      <rect x={-20} y={690} width={1640} height={40} fill="#E2E8F0" />
+      <rect x={-20} y={730} width={1640} height={180} fill="#9A3412" />
+      {[0, 1, 2, 3, 4, 5, 6, 7].map((i) => (
+        <rect key={i} x={30 + i * 200} y={760} width={170} height={120} rx={10} fill="#C2410C" />
+      ))}
+      {/* steaming pot */}
+      <g transform="translate(470 610)">
+        <rect x={-80} y={0} width={160} height={84} rx={14} fill="#94A3B8" />
+        <rect x={-92} y={-8} width={184} height={16} rx={8} fill="#64748B" />
+        {[-40, 0, 40].map((x) => (
+          <path key={x} d={`M${x} -20 C${x - 16} -50 ${x + 16} -70 ${x} -100`} stroke="#FFFFFF" strokeWidth={10} opacity={0.6} fill="none" strokeLinecap="round" />
+        ))}
+      </g>
+      <image href="/art/croissant.png" x={720} y={600} width={110} height={110} />
+      <image href="/art/cupcake.png" x={840} y={590} width={110} height={110} />
+      <image href="/art/baguette.png" x={170} y={600} width={120} height={120} />
+    </g>
+  );
+}
+
 export default function SceneBackground({ themeId }: { themeId: ThemeId }) {
   const { sky } = THEMES[themeId];
   const gradientId = `sky-${themeId}`;
@@ -359,6 +416,7 @@ export default function SceneBackground({ themeId }: { themeId: ThemeId }) {
         {themeId === "course" && <RaceTrackScene />}
         {themeId === "espace" && <SpaceScene />}
         {themeId === "tennis" && <TennisScene />}
+        {themeId === "cuisine" && <KitchenScene />}
       </svg>
     </div>
   );

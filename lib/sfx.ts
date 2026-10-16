@@ -106,6 +106,9 @@ export const sfx = {
     tone(150, 0, 0.14, "sine", 0.35, 55);
     noise(0, 0.06, 0.12, 3000, 1.2);
   },
+  cluck() {
+    [0, 0.14, 0.28].forEach((d) => tone(560, d, 0.08, "square", 0.05, 380));
+  },
   meow() {
     tone(760, 0, 0.18, "triangle", 0.09, 980);
     tone(980, 0.16, 0.32, "triangle", 0.08, 560);

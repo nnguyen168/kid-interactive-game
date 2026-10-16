@@ -2,7 +2,7 @@
 
 A small French-language educational game built for a 15-minute Friday-night ritual
 with a 5-year-old learning maths and French in *CP* (first grade). Pick a hero —
-Loukas the knight, firefighter, footballer, racing driver, astronaut or tennis player — learn a little, discover
+Loukas the knight, firefighter, footballer, racing driver, astronaut, tennis player or cook — learn a little, discover
 how the world works, then play.
 
 - **Les nombres** — counting (tap each object to count it out loud), number words up
@@ -43,6 +43,13 @@ how the world works, then play.
     where to stand, and pressing *Frapper* as the ball arrives (timing is the skill,
     the aim is automatic) sends it into one of 5 targets, scored the tennis way:
     quinze, trente, quarante, jeu, match !
+  - The cook shops for ingredients in a village market: the glowing ones (hidden in
+    new places every game) fly onto the kitchen counter and a chalkboard ticks them
+    off. Egg, milk, flour and butter make crêpes that flip in the pan; dough,
+    tomato, cheese and a mushroom make a pizza baked in the wood oven. A hen
+    clucks around the square.
+  - Once a glowing fact spot has been read it turns into a small green ✓ pad and
+    stays quiet for the rest of the game; a new game makes them all available again.
 - **L'aventure** — the guided 15-minute session: learn → story → challenge → reward.
 
 Designed for a child who is just learning to read: every question is read aloud

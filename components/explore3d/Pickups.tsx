@@ -90,7 +90,10 @@ export function Stars({ positions, taken, onTake }: { positions: Vec3[]; taken: 
 const ENTER_RADIUS = 1.7;
 const LEAVE_RADIUS = 2.8;
 
-/** A glowing discovery point: walking into it tells a fun fact. */
+/**
+ * A glowing discovery point: walking into it tells a fun fact. Once read it
+ * becomes a small green pad and cannot pop up again during this game.
+ */
 export function Spot({
   position,
   art,
@@ -113,14 +116,17 @@ export function Spot({
   useFrame(({ clock }) => {
     const t = clock.elapsedTime;
     const d = distance2D(game.hero, position[0], position[2]);
-    if (armed.current && d < ENTER_RADIUS && !game.paused) {
+    if (armed.current && !visited && d < ENTER_RADIUS && !game.paused) {
       armed.current = false;
       onEnter();
     } else if (!armed.current && d > LEAVE_RADIUS) {
       armed.current = true;
     }
-    if (icon.current) icon.current.position.y = (visited ? 2.2 : 2.7) + Math.sin(t * 2 + position[0]) * 0.2;
-    if (ring.current) ring.current.scale.setScalar(1 + Math.sin(t * 3) * 0.06);
+    if (icon.current) {
+      icon.current.position.y = (visited ? 1.4 : 2.7) + Math.sin(t * 2 + position[0]) * (visited ? 0.06 : 0.2);
+      icon.current.scale.setScalar(visited ? 0.55 : 1);
+    }
+    if (ring.current) ring.current.scale.setScalar(visited ? 0.6 : 1 + Math.sin(t * 3) * 0.06);
   });
 
   return (
@@ -129,7 +135,7 @@ export function Spot({
         <ringGeometry args={[1.05, 1.35, 48]} />
         <meshBasicMaterial color={color} transparent opacity={0.9} depthWrite={false} toneMapped={false} />
       </mesh>
-      <mesh rotation-x={-Math.PI / 2} position-y={0.04}>
+      <mesh rotation-x={-Math.PI / 2} position-y={0.04} scale={visited ? 0.6 : 1}>
         <circleGeometry args={[1.05, 48]} />
         <meshBasicMaterial color={color} transparent opacity={0.22} depthWrite={false} />
       </mesh>
@@ -160,6 +166,22 @@ export function Spot({
             <planeGeometry args={[1.3, 1.3]} />
             <meshBasicMaterial map={texture} transparent alphaTest={0.05} />
           </mesh>
+          {visited && (
+            <group position={[0.6, -0.6, 0.03]}>
+              <mesh>
+                <circleGeometry args={[0.36, 24]} />
+                <meshBasicMaterial color="#22c55e" toneMapped={false} />
+              </mesh>
+              <mesh position={[-0.07, -0.02, 0.01]} rotation-z={-0.8}>
+                <planeGeometry args={[0.1, 0.24]} />
+                <meshBasicMaterial color="#ffffff" />
+              </mesh>
+              <mesh position={[0.06, 0.04, 0.01]} rotation-z={0.6}>
+                <planeGeometry args={[0.1, 0.42]} />
+                <meshBasicMaterial color="#ffffff" />
+              </mesh>
+            </group>
+          )}
         </Billboard>
       </group>
       {!visited && <Sparkles count={16} scale={[2.4, 4, 2.4]} position={[0, 2, 0]} size={5} speed={0.4} color="#fff7c2" />}
