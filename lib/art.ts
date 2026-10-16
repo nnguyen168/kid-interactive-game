@@ -14,6 +14,7 @@ export const ART_KEYS = [
   // Cook theme.
   "cook", "cooking", "croissant", "baguette", "pancakes", "egg", "pizza", "milk", "butter", "honey", "cookie",
   "chocolate", "spoon", "cupcake", "salt", "pot",
+  "potato", "onion", "garlic", "herb", "poultry-leg", "spaghetti", "fries", "flatbread", "olive",
 ] as const;
 
 export type ArtKey = (typeof ART_KEYS)[number];

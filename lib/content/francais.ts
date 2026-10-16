@@ -68,6 +68,10 @@ const THEME_VOCAB: Record<ThemeId, VocabEntry[]> = {
     v("le chocolat", "chocolate", "cho-co-lat", ["ch"], "a", 3),
     v("la cuillère", "spoon", "cuil-lè-re", []),
     v("le biscuit", "cookie", "bis-cuit", [], "i", 2),
+    v("les frites", "fries", "fri-tes", []),
+    v("le poulet", "poultry-leg", "pou-let", ["ou"], undefined, 2),
+    v("l'oignon", "onion", "oi-gnon", ["on"], "on", 2, true),
+    v("les spaghettis", "spaghetti", "spa-ghet-tis", []),
   ],
   espace: [
     v("la fusée", "rocket", "fu-sée", [], "é", 2),

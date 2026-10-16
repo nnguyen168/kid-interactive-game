@@ -1,6 +1,6 @@
 "use client";
 
-import { Sparkles } from "@react-three/drei";
+import { Billboard, Sparkles, useTexture } from "@react-three/drei";
 import { useFrame } from "@react-three/fiber";
 import { useMemo, useRef } from "react";
 import * as THREE from "three";
@@ -22,33 +22,86 @@ const PAN_AT = new THREE.Vector3(-2.2, COUNTER_H + 0.12, -5);
 const HEN_HOME: Vec3 = [-11, 0, 9];
 const COOK_REACH = 3.6;
 
-type IngredientId = "oeuf" | "lait" | "farine" | "beurre" | "pate" | "tomate" | "fromage" | "champignon";
+type IngredientId =
+  | "oeuf" | "lait" | "farine" | "beurre" | "pate" | "tomate" | "fromage" | "champignon"
+  | "pommedeterre" | "huile" | "sel" | "chocolat" | "fraise" | "poulet" | "oignon" | "herbes" | "ail";
 
+/** Each ingredient is shown with the very same picture in the world and on the chalkboard. */
 const INGREDIENTS: Record<IngredientId, { art: ArtKey; say: string }> = {
   oeuf: { art: "egg", say: "Un œuf !" },
   lait: { art: "milk", say: "Du lait !" },
   farine: { art: "wheat", say: "De la farine !" },
   beurre: { art: "butter", say: "Du beurre !" },
-  pate: { art: "bread", say: "De la pâte !" },
+  pate: { art: "flatbread", say: "De la pâte à pizza !" },
   tomate: { art: "tomato", say: "Une tomate !" },
   fromage: { art: "cheese", say: "Du fromage !" },
   champignon: { art: "mushroom", say: "Un champignon !" },
+  pommedeterre: { art: "potato", say: "Des pommes de terre !" },
+  huile: { art: "olive", say: "De l'huile d'olive !" },
+  sel: { art: "salt", say: "Du sel !" },
+  chocolat: { art: "chocolate", say: "Du chocolat !" },
+  fraise: { art: "strawberry", say: "Une fraise !" },
+  poulet: { art: "poultry-leg", say: "Du poulet !" },
+  oignon: { art: "onion", say: "Un oignon !" },
+  herbes: { art: "herb", say: "Des herbes !" },
+  ail: { art: "garlic", say: "De l'ail !" },
 };
 
-const RECIPES: { name: string; items: IngredientId[]; ask: string; done: string }[] = [
+type Method = "pan" | "pot" | "oven";
+type Recipe = { name: string; dish: ArtKey; method: Method; items: IngredientId[]; ask: string; done: string };
+
+const RECIPES: Recipe[] = [
   {
     name: "CRÊPES",
+    dish: "pancakes",
+    method: "pan",
     items: ["oeuf", "lait", "farine", "beurre"],
     ask: "Pour les crêpes, il faut un œuf, du lait, de la farine et du beurre. Cherche ce qui brille !",
     done: "Miam ! Des crêpes toutes chaudes !",
   },
   {
     name: "PIZZA",
+    dish: "pizza",
+    method: "oven",
     items: ["pate", "tomate", "fromage", "champignon"],
-    ask: "Maintenant, une pizza ! Il faut de la pâte, une tomate, du fromage et un champignon.",
+    ask: "Pour la pizza, il faut de la pâte, une tomate, du fromage et un champignon.",
     done: "Et voilà une bonne pizza, toute chaude !",
   },
+  {
+    name: "FRITES",
+    dish: "fries",
+    method: "pot",
+    items: ["pommedeterre", "huile", "sel", "tomate"],
+    ask: "Pour les frites, il faut des pommes de terre, de l'huile, du sel, et une tomate pour faire le ketchup !",
+    done: "Des frites bien dorées, avec du ketchup !",
+  },
+  {
+    name: "CUPCAKES",
+    dish: "cupcake",
+    method: "oven",
+    items: ["farine", "oeuf", "chocolat", "fraise"],
+    ask: "Pour les cupcakes, il faut de la farine, un œuf, du chocolat et une fraise pour décorer.",
+    done: "Des cupcakes au chocolat ! Trop bons !",
+  },
+  {
+    name: "POULET RÔTI",
+    dish: "poultry-leg",
+    method: "oven",
+    items: ["poulet", "pommedeterre", "oignon", "herbes"],
+    ask: "Pour le poulet rôti, il faut du poulet, des pommes de terre, un oignon et des herbes.",
+    done: "Un bon poulet rôti avec ses pommes de terre !",
+  },
+  {
+    name: "SPAGHETTIS",
+    dish: "spaghetti",
+    method: "pot",
+    items: ["tomate", "oignon", "ail", "fromage"],
+    ask: "Pour les spaghettis à la tomate, il faut une tomate, un oignon, de l'ail et du fromage.",
+    done: "Des spaghettis à la sauce tomate ! Miam !",
+  },
 ];
+const RECIPES_PER_GAME = 2;
+const ALL_ART = [...new Set([...Object.values(INGREDIENTS).map((i) => i.art), ...RECIPES.map((r) => r.dish)])];
 
 /** Where ingredients may hide; each game shuffles them. */
 const HIDING_SPOTS: Vec3[] = [
@@ -66,123 +119,51 @@ const HIDING_SPOTS: Vec3[] = [
   [-6, 0, 15],
 ];
 
-/* ---------- small procedural ingredients ---------- */
+/* ---------- pictures ---------- */
 
-function IngredientModel({ id }: { id: IngredientId }) {
-  switch (id) {
-    case "oeuf":
-      return (
-        <group>
-          <mesh position-y={0.05} rotation-x={Math.PI / 2}>
-            <torusGeometry args={[0.32, 0.12, 8, 20]} />
-            <meshStandardMaterial color="#b45309" roughness={1} />
-          </mesh>
-          <mesh position-y={0.32} scale={[1, 1.3, 1]} castShadow>
-            <sphereGeometry args={[0.25, 20, 16]} />
-            <meshStandardMaterial color="#fde7c2" roughness={0.5} />
-          </mesh>
-        </group>
-      );
-    case "lait":
-      return (
-        <group>
-          <mesh position-y={0.35} castShadow>
-            <cylinderGeometry args={[0.24, 0.26, 0.7, 20]} />
-            <meshStandardMaterial color="#ffffff" roughness={0.3} />
-          </mesh>
-          <mesh position-y={0.8}>
-            <cylinderGeometry args={[0.1, 0.22, 0.25, 16]} />
-            <meshStandardMaterial color="#ffffff" roughness={0.3} />
-          </mesh>
-          <mesh position-y={0.97}>
-            <cylinderGeometry args={[0.11, 0.11, 0.1, 16]} />
-            <meshStandardMaterial color="#2563eb" />
-          </mesh>
-          <mesh position={[0, 0.38, 0.25]}>
-            <planeGeometry args={[0.3, 0.22]} />
-            <meshStandardMaterial color="#60a5fa" />
-          </mesh>
-        </group>
-      );
-    case "farine":
-      return (
-        <group>
-          <mesh position-y={0.4} scale={[1, 1.1, 0.8]} castShadow>
-            <sphereGeometry args={[0.38, 16, 12]} />
-            <meshStandardMaterial color="#e7d3a8" roughness={1} />
-          </mesh>
-          <mesh position-y={0.82}>
-            <cylinderGeometry args={[0.08, 0.16, 0.18, 10]} />
-            <meshStandardMaterial color="#c8a978" roughness={1} />
-          </mesh>
-          <mesh position={[0, 0.42, 0.31]}>
-            <circleGeometry args={[0.13, 16]} />
-            <meshStandardMaterial color="#b45309" />
-          </mesh>
-        </group>
-      );
-    case "beurre":
-      return (
-        <group>
-          <mesh position-y={0.04}>
-            <cylinderGeometry args={[0.4, 0.4, 0.06, 24]} />
-            <meshStandardMaterial color="#e0f2fe" />
-          </mesh>
-          <mesh position-y={0.2} castShadow>
-            <boxGeometry args={[0.45, 0.26, 0.3]} />
-            <meshStandardMaterial color="#fde047" roughness={0.4} />
-          </mesh>
-        </group>
-      );
-    case "pate":
-      return (
-        <mesh position-y={0.22} scale={[1, 0.65, 1]} castShadow>
-          <sphereGeometry args={[0.36, 20, 16]} />
-          <meshStandardMaterial color="#f5deb3" roughness={0.8} />
+function useFoodTextures() {
+  const urls = useMemo(() => Object.fromEntries(ALL_ART.map((a) => [a, `/art/${a}.png`])), []);
+  return useTexture(urls, (loaded) => {
+    for (const t of Object.values(loaded as Record<string, THREE.Texture>)) t.colorSpace = THREE.SRGBColorSpace;
+  }) as Record<string, THREE.Texture>;
+}
+
+/** A food picture standing in the world, always facing the camera, exactly like on the chalkboard. */
+function Picture({ texture, size }: { texture: THREE.Texture; size: number }) {
+  return (
+    <Billboard>
+      <mesh>
+        <planeGeometry args={[size, size]} />
+        {/* Slightly below white so the bloom effect does not wash the pictures out. */}
+        <meshBasicMaterial map={texture} color="#ebebeb" transparent alphaTest={0.05} toneMapped={false} />
+      </mesh>
+    </Billboard>
+  );
+}
+
+function WickerBasket() {
+  return (
+    <group>
+      <mesh position-y={0.22} castShadow receiveShadow>
+        <cylinderGeometry args={[0.55, 0.42, 0.44, 20, 1, true]} />
+        <meshStandardMaterial color="#c08a4a" roughness={1} side={THREE.DoubleSide} />
+      </mesh>
+      <mesh position-y={0.04}>
+        <cylinderGeometry args={[0.42, 0.42, 0.04, 20]} />
+        <meshStandardMaterial color="#a16207" roughness={1} />
+      </mesh>
+      {[0.12, 0.3].map((y) => (
+        <mesh key={y} position-y={y} rotation-x={Math.PI / 2}>
+          <torusGeometry args={[0.47 + y * 0.18, 0.03, 6, 24]} />
+          <meshStandardMaterial color="#92400e" roughness={1} />
         </mesh>
-      );
-    case "tomate":
-      return (
-        <group>
-          <mesh position-y={0.3} scale={[1, 0.85, 1]} castShadow>
-            <sphereGeometry args={[0.32, 20, 16]} />
-            <meshStandardMaterial color="#ef4444" roughness={0.3} />
-          </mesh>
-          {[0, 1, 2, 3, 4].map((i) => (
-            <mesh key={i} position={[Math.cos(i * 1.26) * 0.1, 0.56, Math.sin(i * 1.26) * 0.1]} rotation={[Math.sin(i * 1.26) * 0.8, 0, -Math.cos(i * 1.26) * 0.8]}>
-              <boxGeometry args={[0.05, 0.02, 0.18]} />
-              <meshStandardMaterial color="#16a34a" />
-            </mesh>
-          ))}
-        </group>
-      );
-    case "fromage":
-      return (
-        <mesh position-y={0.2} castShadow>
-          <cylinderGeometry args={[0.45, 0.45, 0.4, 3, 1, false, 0, Math.PI / 2.2]} />
-          <meshStandardMaterial color="#facc15" roughness={0.5} />
-        </mesh>
-      );
-    case "champignon":
-      return (
-        <group>
-          <mesh position-y={0.18}>
-            <cylinderGeometry args={[0.1, 0.13, 0.36, 12]} />
-            <meshStandardMaterial color="#fef3c7" />
-          </mesh>
-          <mesh position-y={0.36} castShadow>
-            <sphereGeometry args={[0.3, 20, 12, 0, Math.PI * 2, 0, Math.PI / 2]} />
-            <meshStandardMaterial color="#dc2626" roughness={0.4} />
-          </mesh>
-          {[0, 1, 2, 3].map((i) => (
-            <mesh key={i} position={[Math.cos(i * 1.6) * 0.18, 0.56, Math.sin(i * 1.6) * 0.18]}>
-              <sphereGeometry args={[0.05, 8, 6]} />
-              <meshStandardMaterial color="#ffffff" />
-            </mesh>
-          ))}
-        </group>
-      );
-  }
+      ))}
+      <mesh position-y={0.44} rotation-x={Math.PI / 2}>
+        <torusGeometry args={[0.55, 0.05, 8, 28]} />
+        <meshStandardMaterial color="#92400e" roughness={1} />
+      </mesh>
+    </group>
+  );
 }
 
 /* ---------- the outdoor kitchen ---------- */
@@ -221,10 +202,10 @@ function Counter() {
         <cylinderGeometry args={[0.05, 0.05, 0.6, 8]} />
         <meshStandardMaterial color="#1f2937" />
       </mesh>
-      {/* a big mixing bowl */}
-      <mesh position={[0.8, COUNTER_H + 0.25, -0.3]}>
-        <sphereGeometry args={[0.42, 24, 12, 0, Math.PI * 2, Math.PI / 2, Math.PI / 2]} />
-        <meshStandardMaterial color="#38bdf8" side={THREE.DoubleSide} />
+      {/* a second burner, for the pot */}
+      <mesh position={[-1.05, COUNTER_H + 0.1, -0.1]}>
+        <cylinderGeometry args={[0.5, 0.5, 0.06, 24]} />
+        <meshStandardMaterial color="#1f2937" />
       </mesh>
     </group>
   );
@@ -266,6 +247,58 @@ function Oven({ heat }: { heat: React.MutableRefObject<number> }) {
   );
 }
 
+/** The pot for frites and spaghettis: it bubbles and steams while cooking. */
+function Pot({ boilRef }: { boilRef: React.MutableRefObject<number> }) {
+  const lid = useRef<THREE.Mesh>(null);
+  const steam = useRef<(THREE.Mesh | null)[]>([]);
+  useFrame(({ clock }) => {
+    const t = clock.elapsedTime;
+    const b = boilRef.current;
+    if (lid.current) {
+      lid.current.position.y = 0.66 + (b ? Math.abs(Math.sin(t * 18)) * 0.06 : 0);
+      lid.current.rotation.z = b ? Math.sin(t * 23) * 0.06 : 0;
+    }
+    steam.current.forEach((m, i) => {
+      if (!m) return;
+      const k = (t * 0.7 + i / 6) % 1;
+      m.visible = b > 0;
+      m.position.set(Math.sin(i * 2.3 + t) * 0.2 * k, 0.8 + k * 1.6, Math.cos(i * 1.7) * 0.15 * k);
+      m.scale.setScalar(0.15 + k * 0.35);
+      (m.material as THREE.MeshStandardMaterial).opacity = (1 - k) * 0.6;
+    });
+  });
+  return (
+    <group position={[COUNTER_AT[0] - 1.05, COUNTER_H + 0.13, COUNTER_AT[2] - 0.1]}>
+      <mesh position-y={0.3} castShadow>
+        <cylinderGeometry args={[0.45, 0.4, 0.6, 24]} />
+        <meshStandardMaterial color="#94a3b8" metalness={0.7} roughness={0.25} />
+      </mesh>
+      {[-1, 1].map((s) => (
+        <mesh key={s} position={[s * 0.5, 0.48, 0]} rotation-z={Math.PI / 2}>
+          <torusGeometry args={[0.08, 0.025, 6, 12]} />
+          <meshStandardMaterial color="#475569" />
+        </mesh>
+      ))}
+      <mesh ref={lid} position-y={0.66}>
+        <cylinderGeometry args={[0.47, 0.47, 0.05, 24]} />
+        <meshStandardMaterial color="#64748b" metalness={0.6} roughness={0.3} />
+      </mesh>
+      {Array.from({ length: 6 }, (_, i) => (
+        <mesh
+          key={i}
+          ref={(el) => {
+            steam.current[i] = el;
+          }}
+          visible={false}
+        >
+          <sphereGeometry args={[1, 10, 8]} />
+          <meshStandardMaterial color="#ffffff" transparent opacity={0.5} depthWrite={false} />
+        </mesh>
+      ))}
+    </group>
+  );
+}
+
 const ART_CACHE: Partial<Record<ArtKey, HTMLImageElement>> = {};
 function artImage(art: ArtKey, onLoad: () => void) {
   let img = ART_CACHE[art];
@@ -279,14 +312,15 @@ function artImage(art: ArtKey, onLoad: () => void) {
 }
 
 type Kitchen = {
+  recipes: Recipe[];
+  /** Index into recipes of the dish being prepared. */
   recipe: number;
   /** Ingredients of the current recipe already on the counter. */
   have: IngredientId[];
   cooking: { start: number } | null;
-  dishes: number;
 };
 
-/** The chalkboard above the counter: the recipe with a tick on each ingredient found. */
+/** The chalkboard above the counter: the dish, and each ingredient with a tick once found. */
 function RecipeBoard({ kitchenRef }: { kitchenRef: React.MutableRefObject<Kitchen> }) {
   const canvas = useMemo(() => {
     const c = document.createElement("canvas");
@@ -303,9 +337,10 @@ function RecipeBoard({ kitchenRef }: { kitchenRef: React.MutableRefObject<Kitche
   const last = useRef("");
   useFrame(() => {
     const k = kitchenRef.current;
-    const recipe = RECIPES[Math.min(k.recipe, RECIPES.length - 1)];
-    const allDone = k.recipe >= RECIPES.length;
-    const key = `${k.recipe}|${k.have.join(",")}|${Object.keys(ART_CACHE).filter((a) => ART_CACHE[a as ArtKey]?.complete).length}`;
+    const allDone = k.recipe >= k.recipes.length;
+    const recipe = k.recipes[Math.min(k.recipe, k.recipes.length - 1)];
+    const loaded = Object.values(ART_CACHE).filter((img) => img?.complete).length;
+    const key = `${k.recipe}|${k.have.join(",")}|${loaded}`;
     if (key === last.current) return;
     last.current = key;
     const ctx = canvas.getContext("2d");
@@ -319,32 +354,38 @@ function RecipeBoard({ kitchenRef }: { kitchenRef: React.MutableRefObject<Kitche
     ctx.lineWidth = 24;
     ctx.strokeRect(0, 0, 1024, 400);
     ctx.fillStyle = "#f8fafc";
-    ctx.textAlign = "center";
+    ctx.textAlign = "left";
     ctx.textBaseline = "middle";
-    ctx.font = "bold 76px system-ui, sans-serif";
-    ctx.fillText(allDone ? "BRAVO CHEF !" : recipe.name, 512, 80);
-    if (allDone) return void (mat.current?.map && (mat.current.map.needsUpdate = true));
-    recipe.items.forEach((id, i) => {
-      const x = 152 + i * 240;
-      const img = artImage(INGREDIENTS[id].art, redraw);
-      const got = k.have.includes(id);
-      ctx.globalAlpha = got ? 1 : 0.45;
-      if (img.complete) ctx.drawImage(img, x - 80, 150, 160, 160);
-      ctx.globalAlpha = 1;
-      if (got) {
-        ctx.fillStyle = "#22c55e";
-        ctx.beginPath();
-        ctx.arc(x + 62, 290, 38, 0, Math.PI * 2);
-        ctx.fill();
-        ctx.strokeStyle = "#ffffff";
-        ctx.lineWidth = 12;
-        ctx.beginPath();
-        ctx.moveTo(x + 44, 290);
-        ctx.lineTo(x + 58, 306);
-        ctx.lineTo(x + 82, 274);
-        ctx.stroke();
-      }
-    });
+    ctx.font = "bold 72px system-ui, sans-serif";
+    const title = allDone ? "BRAVO CHEF !" : recipe.name;
+    const dishImg = artImage(allDone ? "cook" : recipe.dish, redraw);
+    const titleW = ctx.measureText(title).width;
+    const startX = 512 - (titleW + 110) / 2;
+    if (dishImg.complete) ctx.drawImage(dishImg, startX, 32, 96, 96);
+    ctx.fillText(title, startX + 110, 82);
+    if (!allDone) {
+      recipe.items.forEach((id, i) => {
+        const x = 152 + i * 240;
+        const img = artImage(INGREDIENTS[id].art, redraw);
+        const got = k.have.includes(id);
+        ctx.globalAlpha = got ? 1 : 0.45;
+        if (img.complete) ctx.drawImage(img, x - 80, 150, 160, 160);
+        ctx.globalAlpha = 1;
+        if (got) {
+          ctx.fillStyle = "#22c55e";
+          ctx.beginPath();
+          ctx.arc(x + 62, 290, 38, 0, Math.PI * 2);
+          ctx.fill();
+          ctx.strokeStyle = "#ffffff";
+          ctx.lineWidth = 12;
+          ctx.beginPath();
+          ctx.moveTo(x + 44, 290);
+          ctx.lineTo(x + 58, 306);
+          ctx.lineTo(x + 82, 274);
+          ctx.stroke();
+        }
+      });
+    }
     if (mat.current?.map) mat.current.map.needsUpdate = true;
   });
   return (
@@ -449,68 +490,83 @@ function Hen() {
 
 /* ---------- the mission ---------- */
 
+const SLOT_X0 = 0;
+const PLATES: Vec3[] = [
+  [COUNTER_AT[0] + 1.2, COUNTER_H + 0.1, COUNTER_AT[2] - 0.45],
+  [COUNTER_AT[0] + 2.4, COUNTER_H + 0.1, COUNTER_AT[2] - 0.45],
+];
+const COOK_TIME: Record<Method, number> = { pan: 3.4, pot: 3, oven: 4.6 };
+
+function slot(i: number) {
+  return new THREE.Vector3(COUNTER_AT[0] + SLOT_X0 + i * 0.8, COUNTER_H + 0.45, COUNTER_AT[2] + 0.4);
+}
+
 function MarketMission({ onScore, onPrompt }: MissionProps) {
-  // Each game the ingredients hide in different places.
-  const [spots] = useLazyGenerated(true, () => shuffle(HIDING_SPOTS));
-  const kitchen = useRef<Kitchen>({ recipe: 0, have: [], cooking: null, dishes: 0 });
+  const textures = useFoodTextures();
+  // Each game: two recipes drawn at random, and ingredients hidden in new places.
+  const [setup] = useLazyGenerated(true, () => ({
+    recipes: shuffle(RECIPES).slice(0, RECIPES_PER_GAME),
+    spots: shuffle(HIDING_SPOTS),
+  }));
+  const kitchen = useRef<Kitchen>({ recipes: [], recipe: 0, have: [], cooking: null });
   const items = useRef<(THREE.Group | null)[]>([]);
   const flights = useRef<Record<string, { start: number; from: THREE.Vector3 } | undefined>>({});
   const crepe = useRef<THREE.Group>(null);
-  const pizza = useRef<THREE.Group>(null);
-  const plate = useRef<THREE.Group>(null);
-  const servedPizza = useRef<THREE.Group>(null);
+  const cloche = useRef<THREE.Group>(null);
+  const clocheLid = useRef<THREE.Group>(null);
+  const plates = useRef<(THREE.Group | null)[]>([]);
   const heat = useRef(0);
+  const boil = useRef(0);
   const shown = useRef<ActionPrompt | null>(null);
   const announced = useRef(false);
-  const all = useMemo(() => RECIPES.flatMap((r) => r.items), []);
 
-  const slotOf = (id: IngredientId) => {
-    const r = RECIPES.findIndex((rc) => rc.items.includes(id));
-    const i = RECIPES[r].items.indexOf(id);
-    return new THREE.Vector3(COUNTER_AT[0] - 0.6 + i * 0.8, COUNTER_H + 0.08, COUNTER_AT[2] + 0.35);
-  };
+  // One entry per ingredient instance (the same ingredient can appear in both recipes).
+  const entries = useMemo(
+    () => (setup ? setup.recipes.flatMap((r, ri) => r.items.map((id, ii) => ({ key: `${ri}:${id}`, id, recipe: ri, index: ii }))) : []),
+    [setup],
+  );
 
   useFrame(({ clock }) => {
-    if (!spots) return;
+    if (!setup) return;
     const t = clock.elapsedTime;
     const k = kitchen.current;
+    if (k.recipes !== setup.recipes) k.recipes = setup.recipes;
     // Handy for automated checks in development.
-    if (process.env.NODE_ENV !== "production") Object.assign(window, { __market: { spots, kitchen: k } });
+    if (process.env.NODE_ENV !== "production") Object.assign(window, { __market: { spots: setup.spots, kitchen: k } });
 
     if (!announced.current && !game.paused) {
       announced.current = true;
-      speak(RECIPES[0].ask);
+      speak(k.recipes[0].ask);
     }
 
-    // Ingredients of the current recipe float, glow and can be picked up.
-    all.forEach((id, i) => {
+    entries.forEach((en, i) => {
       const g = items.current[i];
       if (!g) return;
-      const recipeIndex = i < 4 ? 0 : 1;
-      const home = spots[i];
-      const flight = flights.current[id];
-      const onCounter = flight && t - flight.start >= 0.8;
-      const used = recipeIndex < k.recipe || (recipeIndex === k.recipe && k.cooking && t - k.cooking.start > 0.6);
-      g.visible = !used && (recipeIndex === k.recipe || !!flight);
+      const home = setup.spots[i];
+      const flight = flights.current[en.key];
+      const used = en.recipe < k.recipe || (en.recipe === k.recipe && !!k.cooking && t - k.cooking.start > 0.6);
+      g.visible = !used && (en.recipe === k.recipe || !!flight);
       if (!g.visible) return;
+      const basket = g.children[0];
+      const pic = g.children[1];
       if (flight) {
-        const target = slotOf(id);
+        basket.visible = false;
         const a = Math.min(1, (t - flight.start) / 0.8);
-        g.position.lerpVectors(flight.from, target, a);
-        g.position.y += Math.sin(a * Math.PI) * 2.5;
-        g.rotation.y = a * Math.PI * 2;
-        g.scale.setScalar(onCounter ? 0.8 : 1 - a * 0.2);
+        g.position.set(0, 0, 0);
+        pic.position.lerpVectors(flight.from, slot(en.index), a);
+        pic.position.y += Math.sin(a * Math.PI) * 2.5;
+        pic.scale.setScalar(1 - a * 0.55);
         return;
       }
-      g.position.set(home[0], 0.6 + Math.sin(t * 2 + i) * 0.15, home[2]);
-      g.rotation.y = t * 1.2 + i;
+      g.position.set(home[0], 0, home[2]);
+      pic.position.set(0, 1.25 + Math.sin(t * 2 + i) * 0.15, 0);
       if (!game.paused && distance2D(game.hero, home[0], home[2]) < 1.3) {
-        flights.current[id] = { start: t, from: g.position.clone() };
-        k.have = [...k.have, id];
+        flights.current[en.key] = { start: t, from: new THREE.Vector3(home[0], 1.25, home[2]) };
+        k.have = [...k.have, en.id];
         sfx.star();
-        speak(INGREDIENTS[id].say);
+        speak(INGREDIENTS[en.id].say);
         onScore();
-        if (k.have.length === RECIPES[k.recipe].items.length) {
+        if (k.have.length === k.recipes[k.recipe].items.length) {
           setTimeout(() => {
             sfx.fanfare();
             speak("Tout est prêt ! Va à la cuisine et appuie sur Cuisiner !");
@@ -519,8 +575,7 @@ function MarketMission({ onScore, onPrompt }: MissionProps) {
       }
     });
 
-    // Cooking.
-    const recipe = RECIPES[k.recipe];
+    const recipe = k.recipes[k.recipe];
     const ready = !!recipe && !k.cooking && k.have.length === recipe.items.length;
     const atCounter = distance2D(game.hero, COUNTER_AT[0], COUNTER_AT[2] + 1.6) < COOK_REACH;
     const want: ActionPrompt | null = ready && atCounter && !game.paused ? "cook" : null;
@@ -539,145 +594,129 @@ function MarketMission({ onScore, onPrompt }: MissionProps) {
     }
 
     const c = crepe.current;
-    const pz = pizza.current;
+    const cl = cloche.current;
+    heat.current = 0;
+    boil.current = 0;
+    if (c) c.visible = false;
+    if (cl) cl.visible = false;
     if (k.cooking && recipe) {
       const e = t - k.cooking.start;
-      if (k.recipe === 0 && c) {
+      if (recipe.method === "pan" && c) {
         // The crêpe sizzles, flips twice, then lands on the plate.
-        c.visible = true;
-        if (e < 1) c.position.copy(PAN_AT);
-        else if (e < 2.6) {
+        c.visible = e < 3.2;
+        if (e > 1 && e < 2.6) {
           const f = ((e - 1) % 0.8) / 0.8;
           c.position.set(PAN_AT.x, PAN_AT.y + Math.sin(f * Math.PI) * 1.3, PAN_AT.z);
           c.rotation.x = f * Math.PI * 2;
-          if (Math.abs(f - 0.5) < 0.05) sfx.pop();
-        } else c.position.copy(PAN_AT);
-        if (e > 3.2) {
-          c.visible = false;
-          if (plate.current) plate.current.visible = true;
+        } else {
+          c.position.copy(PAN_AT);
+          c.rotation.x = 0;
         }
       }
-      if (k.recipe === 1 && pz) {
-        // The pizza slides into the wood oven and comes out baked.
-        pz.visible = true;
-        const start = new THREE.Vector3(COUNTER_AT[0] + 1.6, COUNTER_H + 0.1, COUNTER_AT[2] + 0.2);
+      if (recipe.method === "pot") boil.current = e < 2.8 ? 1 : 0;
+      if (recipe.method === "oven" && cl) {
+        // A covered dish slides into the wood oven and comes back out.
+        cl.visible = e < COOK_TIME.oven;
+        const start = new THREE.Vector3(...PLATES[k.recipe]);
         const inside = new THREE.Vector3(OVEN_AT[0] - 0.3, 1.15, OVEN_AT[2] + 0.4);
-        if (e < 1) pz.position.copy(start);
-        else if (e < 1.8) pz.position.lerpVectors(start, inside, (e - 1) / 0.8);
-        else if (e < 3.6) pz.position.copy(inside);
-        else pz.position.lerpVectors(inside, start, Math.min(1, (e - 3.6) / 0.8));
+        if (e < 1) cl.position.copy(start);
+        else if (e < 1.8) cl.position.lerpVectors(start, inside, (e - 1) / 0.8);
+        else if (e < 3.6) cl.position.copy(inside);
+        else cl.position.lerpVectors(inside, start, Math.min(1, (e - 3.6) / 0.8));
         heat.current = e > 1.8 && e < 3.6 ? 1 : 0;
-        const baked = e > 3.6;
-        pz.children.forEach((ch) => {
-          const m = (ch as THREE.Mesh).material as THREE.MeshStandardMaterial | undefined;
-          if (m && ch.name === "base") m.color.set(baked ? "#e5a54b" : "#f5deb3");
-        });
-        if (e > 4.6) {
-          pz.visible = false;
-          if (servedPizza.current) servedPizza.current.visible = true;
-        }
       }
-      if (e > 3.4 + k.recipe * 1.4) {
+      if (e > COOK_TIME[recipe.method]) {
         k.cooking = null;
-        k.dishes += 1;
         k.recipe += 1;
         k.have = [];
         sfx.correct();
         speak(recipe.done);
         startAction("cheer", 1.8);
         onScore();
-        if (k.recipe < RECIPES.length) setTimeout(() => speak(RECIPES[k.recipe].ask), 2600);
+        if (k.recipe < k.recipes.length) setTimeout(() => speak(k.recipes[k.recipe].ask), 2600);
       }
     }
+    // Finished dishes pop up on their plates.
+    plates.current.forEach((pl, i) => {
+      if (!pl) return;
+      const served = i < k.recipe;
+      pl.visible = served;
+      const pic = pl.children[1];
+      if (served && pic) pic.position.y = 0.5 + Math.sin(t * 2 + i) * 0.04;
+    });
   });
 
-  if (!spots) return null;
+  if (!setup) return null;
   return (
     <>
       <Counter />
+      <Pot boilRef={boil} />
       <Oven heat={heat} />
       <RecipeBoard kitchenRef={kitchen} />
       <Hen />
-      {all.map((id, i) => (
+      {entries.map((en, i) => (
         <group
-          key={id}
+          key={en.key}
           ref={(el) => {
             items.current[i] = el;
           }}
-          position={spots[i]}
           visible={false}
         >
-          <IngredientModel id={id} />
-          <Sparkles count={10} scale={[1.4, 1.6, 1.4]} position={[0, 0.5, 0]} size={4} speed={0.5} color="#fff7c2" />
-          <mesh position-y={-0.55} rotation-x={-Math.PI / 2}>
-            <ringGeometry args={[0.55, 0.75, 32]} />
-            <meshBasicMaterial color="#fde047" transparent opacity={0.7} depthWrite={false} toneMapped={false} />
-          </mesh>
+          <group>
+            <WickerBasket />
+            <Sparkles count={10} scale={[1.4, 1.8, 1.4]} position={[0, 1.1, 0]} size={4} speed={0.5} color="#fff7c2" />
+            <mesh position-y={0.03} rotation-x={-Math.PI / 2}>
+              <ringGeometry args={[0.7, 0.9, 32]} />
+              <meshBasicMaterial color="#fde047" transparent opacity={0.75} depthWrite={false} toneMapped={false} />
+            </mesh>
+          </group>
+          <group>
+            <Picture texture={textures[INGREDIENTS[en.id].art]} size={1.25} />
+          </group>
         </group>
       ))}
-      {/* the crêpe in the pan, and the finished plate */}
       <group ref={crepe} visible={false}>
         <mesh>
           <cylinderGeometry args={[0.38, 0.38, 0.03, 24]} />
           <meshStandardMaterial color="#f3c46b" roughness={0.6} />
         </mesh>
       </group>
-      <group ref={plate} position={[-0.8, COUNTER_H + 0.1, COUNTER_AT[2] - 0.3]} visible={false}>
+      <group ref={cloche} visible={false}>
         <mesh>
-          <cylinderGeometry args={[0.5, 0.42, 0.05, 28]} />
+          <cylinderGeometry args={[0.5, 0.45, 0.05, 28]} />
           <meshStandardMaterial color="#ffffff" />
         </mesh>
-        {Array.from({ length: 5 }, (_, i) => (
-          <mesh key={i} position-y={0.05 + i * 0.035} rotation-y={i}>
-            <cylinderGeometry args={[0.4, 0.4, 0.03, 24]} />
-            <meshStandardMaterial color={i % 2 ? "#eab35a" : "#f3c46b"} />
+        <group ref={clocheLid}>
+          <mesh position-y={0.03}>
+            <sphereGeometry args={[0.42, 24, 12, 0, Math.PI * 2, 0, Math.PI / 2]} />
+            <meshStandardMaterial color="#cbd5e1" metalness={0.8} roughness={0.2} />
           </mesh>
-        ))}
-        <mesh position-y={0.25}>
-          <sphereGeometry args={[0.1, 10, 8]} />
-          <meshStandardMaterial color="#7c2d12" />
-        </mesh>
+          <mesh position-y={0.48}>
+            <sphereGeometry args={[0.06, 10, 8]} />
+            <meshStandardMaterial color="#94a3b8" metalness={0.8} />
+          </mesh>
+        </group>
       </group>
-      <group ref={pizza} visible={false}>
-        <PizzaModel />
-      </group>
-      <group ref={servedPizza} position={[1.9, COUNTER_H + 0.1, COUNTER_AT[2] + 0.1]} visible={false}>
-        <PizzaModel baked />
-      </group>
-    </>
-  );
-}
-
-function PizzaModel({ baked = false }: { baked?: boolean }) {
-  const toppings = useMemo(() => {
-    const rand = seeded(9);
-    return Array.from({ length: 9 }, (_, i) => ({
-      x: (rand() - 0.5) * 0.6,
-      z: (rand() - 0.5) * 0.6,
-      color: i % 3 === 0 ? "#dc2626" : i % 3 === 1 ? "#f8fafc" : "#7c2d12",
-    }));
-  }, []);
-  return (
-    <group>
-      <mesh name="base">
-        <cylinderGeometry args={[0.5, 0.5, 0.05, 28]} />
-        <meshStandardMaterial color={baked ? "#e5a54b" : "#f5deb3"} />
-      </mesh>
-      <mesh position-y={0.03}>
-        <cylinderGeometry args={[0.43, 0.43, 0.02, 28]} />
-        <meshStandardMaterial color="#dc2626" />
-      </mesh>
-      <mesh position-y={0.045}>
-        <cylinderGeometry args={[0.38, 0.38, 0.015, 28]} />
-        <meshStandardMaterial color={baked ? "#fbbf24" : "#fef08a"} />
-      </mesh>
-      {toppings.map((tp, i) => (
-        <mesh key={i} position={[tp.x, 0.07, tp.z]} scale={[1, 0.3, 1]}>
-          <sphereGeometry args={[0.06, 10, 8]} />
-          <meshStandardMaterial color={tp.color} />
-        </mesh>
+      {setup.recipes.map((r, i) => (
+        <group
+          key={r.name}
+          ref={(el) => {
+            plates.current[i] = el;
+          }}
+          position={PLATES[i]}
+          visible={false}
+        >
+          <mesh>
+            <cylinderGeometry args={[0.5, 0.42, 0.05, 28]} />
+            <meshStandardMaterial color="#ffffff" />
+          </mesh>
+          <group position-y={0.5}>
+            <Picture texture={textures[r.dish]} size={0.95} />
+          </group>
+          <Sparkles count={12} scale={[1.2, 1, 1.2]} position={[0, 0.6, 0]} size={4} speed={0.6} color="#fff7c2" />
+        </group>
       ))}
-    </group>
+    </>
   );
 }
 

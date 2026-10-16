@@ -104,10 +104,10 @@ export const MISSIONS: Record<ThemeId, Mission> = {
     win: "Cinq cibles ! Tu es le champion de Roland-Garros !",
   },
   cuisine: {
-    intro: "Bienvenue au marché, chef ! Trouve les ingrédients qui brillent et rapporte-les à la cuisine. D'abord des crêpes, ensuite une pizza !",
+    intro: "Bienvenue au marché, chef ! Regarde la recette sur le tableau, trouve les ingrédients qui brillent et rapporte-les à la cuisine. Deux recettes surprises à préparer !",
     goalLabel: "Étapes",
     goalArt: "cooking",
     goalCount: 10,
-    win: "Des crêpes et une pizza ! Tu es un grand chef, bravo Loukas !",
+    win: "Deux bons plats ! Tu es un grand chef, bravo Loukas !",
   },
 };

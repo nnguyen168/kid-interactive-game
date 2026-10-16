@@ -43,11 +43,12 @@ how the world works, then play.
     where to stand, and pressing *Frapper* as the ball arrives (timing is the skill,
     the aim is automatic) sends it into one of 5 targets, scored the tennis way:
     quinze, trente, quarante, jeu, match !
-  - The cook shops for ingredients in a village market: the glowing ones (hidden in
-    new places every game) fly onto the kitchen counter and a chalkboard ticks them
-    off. Egg, milk, flour and butter make crêpes that flip in the pan; dough,
-    tomato, cheese and a mushroom make a pizza baked in the wood oven. A hen
-    clucks around the square.
+  - The cook prepares two recipes drawn at random from six: crêpes, pizza, frites,
+    cupcakes, poulet rôti and spaghettis. A chalkboard shows the dish and its four
+    ingredients; the same pictures glow in baskets around the village market (in new
+    places every game) and fly onto the counter when picked up. Then *Cuisiner*:
+    crêpes flip in the pan, frites and spaghettis bubble in the pot, and pizza,
+    cupcakes and roast chicken bake in the wood oven. A hen clucks around the square.
   - Once a glowing fact spot has been read it turns into a small green ✓ pad and
     stays quiet for the rest of the game; a new game makes them all available again.
 - **L'aventure** — the guided 15-minute session: learn → story → challenge → reward.
