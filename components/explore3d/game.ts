@@ -38,6 +38,8 @@ export const game = {
   view: "chase" as "chase" | "cockpit",
   /** Current steering, -1 (right) to 1 (left), to turn the steering wheel. */
   steer: 0,
+  /** The hero is out of sight (sitting inside the rocket). */
+  hidden: false,
 };
 
 export function resetGame(spawn: [number, number, number]) {
@@ -58,6 +60,7 @@ export function resetGame(spawn: [number, number, number]) {
   game.speed = 0;
   game.view = "chase";
   game.steer = 0;
+  game.hidden = false;
 }
 
 /** Height of the floor under the hero. */

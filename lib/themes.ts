@@ -93,6 +93,52 @@ export const THEMES: Record<ThemeId, Theme> = {
     badgeArt: "checkered-flag",
     challenge: { mover: "racing-car", target: "checkered-flag", win: "Drapeau à damier ! Tu as gagné la course !" },
   },
+  espace: {
+    id: "espace",
+    name: "Astronaute",
+    mascotName: "Loukas l'Astronaute",
+    greeting: "Salut ! Je suis Loukas l'Astronaute. On s'envole vers les étoiles ?",
+    iconArt: "rocket",
+    colors: {
+      primary: "#4F46E5",
+      secondary: "#F59E0B",
+      soft: "#E0E7FF",
+      text: "#1E1B4B",
+    },
+    sky: { top: "#1E1B4B", bottom: "#7C83E8" },
+    items: [
+      { art: "rocket", singular: "fusée", plural: "fusées" },
+      { art: "ringed-planet", singular: "planète", plural: "planètes" },
+      { art: "alien", singular: "extraterrestre", plural: "extraterrestres" },
+      { art: "satellite", singular: "satellite", plural: "satellites" },
+    ],
+    badgeName: "médaille des étoiles",
+    badgeArt: "ringed-planet",
+    challenge: { mover: "rocket", target: "moon", win: "Alunissage réussi ! Tu es sur la Lune !" },
+  },
+  tennis: {
+    id: "tennis",
+    name: "Tennis",
+    mascotName: "Loukas le Tennisman",
+    greeting: "Salut ! Je suis Loukas le Tennisman. Tu viens taper la balle avec moi ?",
+    iconArt: "tennis",
+    colors: {
+      primary: "#65A30D",
+      secondary: "#C2410C",
+      soft: "#ECFCCB",
+      text: "#365314",
+    },
+    sky: { top: "#38BDF8", bottom: "#FED7AA" },
+    items: [
+      { art: "tennis", singular: "raquette", plural: "raquettes" },
+      { art: "trophy", singular: "coupe", plural: "coupes" },
+      { art: "medal", singular: "médaille", plural: "médailles" },
+      { art: "cap", singular: "casquette", plural: "casquettes" },
+    ],
+    badgeName: "coupe de Roland-Garros",
+    badgeArt: "trophy",
+    challenge: { mover: "tennis", target: "trophy", win: "Jeu, set et match ! Tu as gagné !" },
+  },
 };
 
-export const THEME_ORDER: ThemeId[] = ["chevalier", "pompier", "foot", "course"];
+export const THEME_ORDER: ThemeId[] = ["chevalier", "pompier", "foot", "course", "espace", "tennis"];

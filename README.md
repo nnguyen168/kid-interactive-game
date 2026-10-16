@@ -2,7 +2,7 @@
 
 A small French-language educational game built for a 15-minute Friday-night ritual
 with a 5-year-old learning maths and French in *CP* (first grade). Pick a hero —
-Loukas the knight, firefighter, footballer or racing driver — learn a little, discover
+Loukas the knight, firefighter, footballer, racing driver, astronaut or tennis player — learn a little, discover
 how the world works, then play.
 
 - **Les nombres** — counting (tap each object to count it out loud), number words up
@@ -36,6 +36,13 @@ how the world works, then play.
     accelerate, ← → to steer, ↓ to brake; the kart gently follows the track when
     you don't steer. *V* (or the button) switches between the view from behind and
     the driver's view; on a tablet, use the on-screen pedals.
+  - The astronaut explores a Moon base with low gravity (huge jumps!), collects 5
+    energy cells — two float high and need a Moon jump — meets a friendly alien,
+    then climbs into the rocket and presses *Décoller* for a countdown and lift-off.
+  - The tennis player faces a ball machine on an orange clay court: a ring shows
+    where to stand, and pressing *Frapper* as the ball arrives (timing is the skill,
+    the aim is automatic) sends it into one of 5 targets, scored the tennis way:
+    quinze, trente, quarante, jeu, match !
 - **L'aventure** — the guided 15-minute session: learn → story → challenge → reward.
 
 Designed for a child who is just learning to read: every question is read aloud

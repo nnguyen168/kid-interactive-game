@@ -4,7 +4,7 @@ import { Collider } from "./game";
 export type Vec3 = [number, number, number];
 
 /** The contextual action button shown in the HUD. */
-export type ActionPrompt = "spray" | "kick" | "slash" | "climb" | "descend" | "wave" | "turbo";
+export type ActionPrompt = "spray" | "kick" | "slash" | "climb" | "descend" | "wave" | "turbo" | "launch" | "hit";
 
 export type MissionProps = {
   onScore: () => void;
@@ -31,6 +31,10 @@ export type WorldDef = {
   starsScore?: boolean;
   /** Places where a mission may randomly put things (the city's fires). */
   eventSpots?: Vec3[];
+  /** Gravity multiplier: below 1 means floaty, high jumps (the Moon). */
+  gravity?: number;
+  /** Light colours, e.g. a cold white sun in space. */
+  light?: { sun: string; intensity: number };
   /** The hero drives a kart in this world. */
   vehicle?: boolean;
   /** For karts: the heading that follows the track from here, or null when off the track. */

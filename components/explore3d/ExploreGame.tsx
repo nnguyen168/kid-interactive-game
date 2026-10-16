@@ -18,6 +18,8 @@ import { CameraRig, Effects, GroundClick, Lights, SkyDome, useKeyboardControls }
 import { ActionPrompt, WorldDef } from "./types";
 import { city } from "./worlds/city";
 import { kingdom } from "./worlds/kingdom";
+import { moon } from "./worlds/moon";
+import { tennisCourt } from "./worlds/tennis";
 import { raceway } from "./worlds/raceway";
 import { stadium } from "./worlds/stadium";
 
@@ -26,6 +28,8 @@ const WORLDS: Record<ThemeId, WorldDef> = {
   pompier: city,
   foot: stadium,
   course: raceway,
+  espace: moon,
+  tennis: tennisCourt,
 };
 
 const PROMPTS: Record<ActionPrompt, { label: string; art: ArtKey; color?: string }> = {
@@ -36,6 +40,8 @@ const PROMPTS: Record<ActionPrompt, { label: string; art: ArtKey; color?: string
   descend: { label: "Descendre", art: "ladder", color: "#f59e0b" },
   wave: { label: "Saluer !", art: "wave", color: "#a855f7" },
   turbo: { label: "Turbo !", art: "rocket", color: "#0ea5e9" },
+  launch: { label: "Décoller !", art: "rocket", color: "#ef4444" },
+  hit: { label: "Frapper !", art: "tennis", color: "#65a30d" },
 };
 
 /**
@@ -238,7 +244,7 @@ export default function ExploreGame({
         <PerformanceMonitor onDecline={() => setHigh(false)} />
         <SkyDome top={world.sky.top} horizon={world.sky.horizon} />
         <fog attach="fog" args={[world.sky.fog, world.sky.fogNear, world.sky.fogFar]} />
-        <Lights />
+        <Lights sun={world.light?.sun} intensity={world.light?.intensity} />
         <CameraRig world={world} />
         <GroundClick />
         <Suspense fallback={null}>

@@ -211,7 +211,7 @@ export default function Hero({ themeId, world }: { themeId: ThemeId; world: Worl
 
     // Gravity (a mission moves the hero itself while climbing).
     if (!game.cinematic) {
-      game.vy -= GRAVITY * delta;
+      game.vy -= GRAVITY * (world.gravity ?? 1) * delta;
       game.hero.y += game.vy * delta;
       if (game.hero.y <= floor) {
         game.hero.y = floor;
@@ -228,6 +228,7 @@ export default function Hero({ themeId, world }: { themeId: ThemeId; world: Worl
       if (targetYaw !== null) g.rotation.y += shortestAngle(g.rotation.y, targetYaw) * Math.min(1, delta * 12);
     }
     g.position.copy(game.hero);
+    g.visible = !game.hidden;
 
     if (vehicle) {
       // In the driver's view the camera sits where the driver's head is.
@@ -236,7 +237,7 @@ export default function Hero({ themeId, world }: { themeId: ThemeId; world: Worl
       return;
     }
     if (game.action) play(ACTION_CLIPS[game.action.kind]);
-    else if (now < jumpClipUntil.current) play("Jump_Full_Short");
+    else if (now < jumpClipUntil.current || game.hero.y > floor + 0.3) play("Jump_Full_Short");
     else play(moving ? "Running_A" : "Idle");
   });
 

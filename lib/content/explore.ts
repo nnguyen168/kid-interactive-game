@@ -40,6 +40,18 @@ export const EXPLORE_FACTS: Record<ThemeId, ExploreFact[]> = {
     { id: "chrono", art: "stopwatch", fact: "Le chronomètre mesure le temps des pilotes au centième de seconde près, c'est super précis !" },
     { id: "drapeau", art: "checkered-flag", fact: "Le drapeau à damier noir et blanc annonce la fin de la course. Le premier à le voir a gagné !" },
   ],
+  espace: [
+    { id: "lune", art: "moon", fact: "Sur la Lune, on est six fois plus léger que sur la Terre : on peut sauter très, très haut !" },
+    { id: "fusee", art: "rocket", fact: "Une fusée crache un énorme feu vers le bas pour monter très vite vers le ciel." },
+    { id: "terre", art: "globe", fact: "Vue de l'espace, la Terre est toute bleue, parce qu'elle est couverte d'océans." },
+    { id: "soleil", art: "sun", fact: "Le Soleil est une étoile, comme celles qu'on voit la nuit, mais bien plus proche de nous." },
+  ],
+  tennis: [
+    { id: "balle", art: "tennis", fact: "Les balles de tennis sont jaune fluo pour qu'on les voie bien, même à la télévision." },
+    { id: "terre-battue", art: "trophy", fact: "À Roland-Garros, à Paris, les champions jouent sur de la terre battue toute orange." },
+    { id: "filet", art: "goal", fact: "Au tennis, la balle doit passer au-dessus du filet pour que le point continue." },
+    { id: "score", art: "numbers", fact: "Au tennis, on compte les points d'une façon rigolote : quinze, trente, quarante, jeu !" },
+  ],
 };
 
 export const MISSIONS: Record<ThemeId, Mission> = {
@@ -70,5 +82,19 @@ export const MISSIONS: Record<ThemeId, Mission> = {
     goalArt: "checkered-flag",
     goalCount: 3,
     win: "Trois tours ! Drapeau à damier, tu as gagné la course !",
+  },
+  espace: {
+    intro: "Bienvenue sur la Lune, astronaute ! Ramasse les cinq piles d'énergie pour la fusée, puis monte dedans et appuie sur Décoller !",
+    goalLabel: "Mission",
+    goalArt: "rocket",
+    goalCount: 6,
+    win: "Trois, deux, un… décollage ! Bravo astronaute, direction les étoiles !",
+  },
+  tennis: {
+    intro: "Jeu, set et match ! Le lance-balles t'envoie des balles. Quand la balle arrive, appuie sur Frapper pour toucher les cibles de l'autre côté du filet !",
+    goalLabel: "Cibles",
+    goalArt: "tennis",
+    goalCount: 5,
+    win: "Cinq cibles ! Tu es le champion de Roland-Garros !",
   },
 };

@@ -22,6 +22,8 @@ const OUTFITS: Record<ThemeId, Outfit> = {
   pompier: { torso: "#1E3A8A", arm: "#1E3A8A", leg: "#1E3A8A", boot: "#111827" },
   foot: { torso: "#16A34A", arm: "#16A34A", leg: "#15803D", boot: "#111827" },
   course: { torso: "#EA580C", arm: "#EA580C", leg: "#EA580C", boot: "#111827" },
+  espace: { torso: "#F1F5F9", arm: "#E2E8F0", leg: "#E2E8F0", boot: "#64748B" },
+  tennis: { torso: "#FFFFFF", arm: "#FFFFFF", leg: "#FFFFFF", boot: "#E2E8F0" },
 };
 
 function Arm({ side, outfit, themeId }: { side: "l" | "r"; outfit: Outfit; themeId: ThemeId }) {
@@ -39,8 +41,15 @@ function Arm({ side, outfit, themeId }: { side: "l" | "r"; outfit: Outfit; theme
         <rect x={-11} y={0} width={22} height={50} rx={11} fill={outfit.arm} />
         {themeId === "pompier" && <rect x={-11} y={30} width={22} height={6} fill="#FACC15" />}
         {themeId === "course" && <rect x={-11} y={8} width={22} height={5} fill="#FFFFFF" />}
+        {themeId === "espace" && <rect x={-11} y={34} width={22} height={6} fill="#4F46E5" />}
+        {themeId === "tennis" && <rect x={-11} y={4} width={22} height={5} fill="#65A30D" />}
         {themeId === "chevalier" && <rect x={-11} y={22} width={22} height={5} fill="#94A3B8" opacity={0.6} />}
-        <circle cx={0} cy={54} r={12} fill={themeId === "chevalier" ? "#94A3B8" : themeId === "course" ? "#1F2937" : SKIN} />
+        <circle
+          cx={0}
+          cy={54}
+          r={12}
+          fill={themeId === "chevalier" ? "#94A3B8" : themeId === "course" ? "#1F2937" : themeId === "espace" ? "#CBD5E1" : SKIN}
+        />
         {side === "l" && themeId === "chevalier" && (
           <g transform="translate(-12 34)">
             <path d="M0 -20 L18 -14 C18 4 11 15 0 20 C-11 15 -18 4 -18 -14 Z" fill="#7C3AED" stroke="#FBBF24" strokeWidth={4} />
@@ -82,6 +91,35 @@ function Headgear({ themeId }: { themeId: ThemeId }) {
           d="M100 49 L102.6 55.4 L109.5 55.9 L104.2 60.3 L105.9 67 L100 63.3 L94.1 67 L95.8 60.3 L90.5 55.9 L97.4 55.4 Z"
           fill="#FFFFFF"
         />
+      </g>
+    );
+  }
+  if (themeId === "espace") {
+    return (
+      <g>
+        <path
+          d="M40 92 C36 44 74 26 104 28 C140 30 168 52 160 94 C152 74 138 66 124 72 C116 60 96 60 84 70 C72 62 52 70 40 92 Z"
+          fill="#6B4423"
+        />
+        {/* round glass space helmet over the whole head */}
+        <circle cx={100} cy={92} r={74} fill="#BFDBFE" opacity={0.28} stroke="#F8FAFC" strokeWidth={7} />
+        <path d="M52 56 C64 36 84 26 106 26" stroke="#FFFFFF" strokeWidth={8} strokeLinecap="round" opacity={0.75} fill="none" />
+        <circle cx={150} cy={58} r={6} fill="#FFFFFF" opacity={0.8} />
+        <rect x={86} y={10} width={28} height={10} rx={5} fill="#E2E8F0" />
+        <circle cx={100} cy={8} r={6} fill="#EF4444" />
+      </g>
+    );
+  }
+  if (themeId === "tennis") {
+    return (
+      <g>
+        <path
+          d="M40 92 C36 44 74 26 104 28 C140 30 168 52 160 94 C152 74 138 66 124 72 C116 60 96 60 84 70 C72 62 52 70 40 92 Z"
+          fill="#D9A441"
+        />
+        <path d="M70 42 C80 36 92 34 102 34" stroke="#F2C66D" strokeWidth={5} strokeLinecap="round" fill="none" />
+        <rect x={36} y={66} width={128} height={14} rx={7} fill="#EF4444" />
+        <rect x={36} y={71} width={128} height={4} fill="#FFFFFF" opacity={0.8} />
       </g>
     );
   }
@@ -133,6 +171,25 @@ function Torso({ themeId, outfit }: { themeId: ThemeId; outfit: Outfit }) {
           <rect x={58} y={190} width={84} height={4} fill="#E5E7EB" />
           <rect x={97} y={142} width={6} height={68} fill="#0F1E4D" />
           <circle cx={112} cy={158} r={6} fill="#FBBF24" />
+        </g>
+      )}
+      {themeId === "espace" && (
+        <g>
+          <rect x={80} y={160} width={40} height={26} rx={5} fill="#CBD5E1" />
+          <circle cx={90} cy={169} r={4} fill="#EF4444" />
+          <circle cx={100} cy={169} r={4} fill="#22C55E" />
+          <circle cx={110} cy={169} r={4} fill="#3B82F6" />
+          <rect x={86} y={177} width={28} height={4} rx={2} fill="#64748B" />
+          <circle cx={128} cy={150} r={9} fill="#4F46E5" />
+          <path d="M128 144 L130 148.5 L134.8 149 L131.2 152.2 L132.3 157 L128 154.5 L123.7 157 L124.8 152.2 L121.2 149 L126 148.5 Z" fill="#FFFFFF" />
+          <rect x={58} y={198} width={84} height={6} fill="#94A3B8" />
+        </g>
+      )}
+      {themeId === "tennis" && (
+        <g>
+          <path d="M84 140 L100 154 L116 140 L112 138 L100 148 L88 138 Z" fill="#65A30D" />
+          <rect x={58} y={176} width={84} height={6} fill="#65A30D" />
+          <rect x={58} y={194} width={84} height={14} fill="#1E3A8A" />
         </g>
       )}
       {themeId === "course" && (
@@ -264,6 +321,8 @@ export default function Mascot({
       {themeId === "course" && (
         <image href="/art/checkered-flag.png" x={138} y={200} width={54} height={54} />
       )}
+      {themeId === "espace" && <image href="/art/rocket.png" x={140} y={196} width={56} height={56} />}
+      {themeId === "tennis" && <image href="/art/tennis.png" x={136} y={192} width={60} height={60} />}
     </svg>
   );
 }

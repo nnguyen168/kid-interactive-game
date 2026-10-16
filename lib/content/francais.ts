@@ -58,6 +58,21 @@ const THEME_VOCAB: Record<ThemeId, VocabEntry[]> = {
     v("le chrono", "stopwatch", "chro-no", [], "o", 2, true),
     v("la coupe", "trophy", "cou-pe", ["ou"]),
   ],
+  espace: [
+    v("la fusée", "rocket", "fu-sée", [], "é", 2),
+    v("la planète", "ringed-planet", "pla-nè-te", []),
+    v("l'astronaute", "astronaut", "as-tro-nau-te", []),
+    v("le satellite", "satellite", "sa-tel-li-te", []),
+    v("la comète", "comet", "co-mè-te", []),
+    v("le télescope", "telescope", "té-les-co-pe", []),
+  ],
+  tennis: [
+    v("la raquette", "tennis", "ra-quet-te", [], "ette"),
+    v("la casquette", "cap", "cas-quet-te", [], "ette"),
+    v("la médaille", "medal", "mé-dail-le", []),
+    v("la basket", "sneaker", "bas-ket", [], undefined, 2),
+    v("la coupe", "trophy", "cou-pe", ["ou"]),
+  ],
 };
 
 const GENERIC_VOCAB: VocabEntry[] = [

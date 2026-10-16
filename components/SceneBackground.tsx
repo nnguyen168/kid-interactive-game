@@ -246,6 +246,98 @@ function RaceTrackScene() {
   );
 }
 
+const spaceStars = (() => {
+  const r = seeded(31);
+  return Array.from({ length: 120 }, () => ({ x: r() * 1600, y: r() * 520, s: 1 + r() * 2.6, o: 0.4 + r() * 0.6 }));
+})();
+
+const craters = (() => {
+  const r = seeded(13);
+  return Array.from({ length: 14 }, () => ({ x: r() * 1600, y: 640 + r() * 240, rx: 30 + r() * 70 }));
+})();
+
+function SpaceScene() {
+  return (
+    <g>
+      {spaceStars.map((p, i) => (
+        <circle key={i} cx={p.x} cy={p.y} r={p.s} fill="#FFFFFF" opacity={p.o} />
+      ))}
+      {/* the Earth */}
+      <g transform="translate(1290 170)">
+        <circle r={110} fill="#2563EB" />
+        <path d="M-60 -60 C-20 -80 10 -40 -10 -10 C-30 20 -70 0 -80 -30 Z" fill="#22C55E" />
+        <path d="M20 10 C60 0 80 40 50 70 C30 90 0 60 20 10 Z" fill="#22C55E" />
+        <path d="M-90 30 C-60 40 -40 70 -60 90" stroke="#FFFFFF" strokeWidth={10} opacity={0.6} fill="none" strokeLinecap="round" />
+        <circle r={110} fill="none" stroke="#93C5FD" strokeWidth={10} opacity={0.5} />
+      </g>
+      <image href="/art/ringed-planet.png" x={180} y={90} width={150} height={150} />
+      {/* moon ground */}
+      <path d="M-20 600 Q400 540 800 590 T1620 570 L1620 900 L-20 900 Z" fill="#CBD5E1" />
+      <path d="M-20 660 Q500 610 900 660 T1620 650 L1620 900 L-20 900 Z" fill="#E2E8F0" />
+      {craters.map((c, i) => (
+        <g key={i}>
+          <ellipse cx={c.x} cy={c.y} rx={c.rx} ry={c.rx * 0.28} fill="#94A3B8" opacity={0.55} />
+          <ellipse cx={c.x} cy={c.y - c.rx * 0.06} rx={c.rx * 0.8} ry={c.rx * 0.2} fill="#CBD5E1" />
+        </g>
+      ))}
+      {/* moon base */}
+      {[1080, 1220].map((x, i) => (
+        <g key={x}>
+          <path d={`M${x - 80} 640 A80 80 0 0 1 ${x + 80} 640 Z`} fill="#F8FAFC" stroke="#94A3B8" strokeWidth={4} />
+          <rect x={x - 18} y={600} width={36} height={40} rx={8} fill="#334155" />
+          {i === 0 && <rect x={x + 80} y={618} width={60} height={16} fill="#E2E8F0" />}
+        </g>
+      ))}
+      {/* launch pad and rocket */}
+      <rect x={300} y={630} width={260} height={30} rx={8} fill="#64748B" />
+      <rect x={520} y={330} width={20} height={300} fill="#94A3B8" />
+      {[0, 1, 2, 3, 4].map((i) => (
+        <rect key={i} x={470} y={360 + i * 56} width={50} height={8} fill="#94A3B8" />
+      ))}
+      <image href="/art/rocket.png" x={300} y={330} width={300} height={300} />
+      <g transform="translate(760 600)">
+        <rect x={0} y={-90} width={6} height={90} fill="#94A3B8" />
+        <rect x={6} y={-90} width={60} height={38} fill="#2563EB" />
+        <circle cx={36} cy={-71} r={10} fill="#FACC15" />
+      </g>
+    </g>
+  );
+}
+
+function TennisScene() {
+  return (
+    <g>
+      <path d="M-20 520 Q400 470 800 500 T1620 480 L1620 900 L-20 900 Z" fill="#4ADE80" />
+      {/* stands */}
+      <rect x={-20} y={420} width={1640} height={130} fill="#166534" />
+      {crowd.slice(0, 260).map((p, i) => (
+        <circle key={i} cx={(p.x * 1.03) % 1620} cy={436 + ((p.y - 430) % 104)} r={7} fill={p.c} />
+      ))}
+      <rect x={-20} y={540} width={1640} height={22} fill="#14532D" />
+      {/* green surround and the clay court */}
+      <rect x={-20} y={560} width={1640} height={340} fill="#15803D" />
+      <path d="M430 590 L1170 590 L1420 900 L180 900 Z" fill="#C2410C" />
+      <path d="M430 590 L1170 590 L1420 900 L180 900 Z" fill="none" stroke="#FFFFFF" strokeWidth={8} />
+      <path d="M520 590 L310 900 M1080 590 L1290 900" stroke="#FFFFFF" strokeWidth={6} />
+      <path d="M800 650 L800 820 M395 820 L1205 820 M470 650 L1130 650" stroke="#FFFFFF" strokeWidth={6} />
+      {/* net */}
+      <rect x={300} y={690} width={1000} height={70} fill="#0F172A" opacity={0.35} />
+      {Array.from({ length: 50 }, (_, i) => (
+        <line key={i} x1={300 + i * 20} y1={690} x2={300 + i * 20} y2={760} stroke="#FFFFFF" strokeWidth={1.5} opacity={0.6} />
+      ))}
+      {[0, 1, 2].map((i) => (
+        <line key={i} x1={300} y1={710 + i * 20} x2={1300} y2={710 + i * 20} stroke="#FFFFFF" strokeWidth={1.5} opacity={0.6} />
+      ))}
+      <rect x={290} y={684} width={1020} height={10} rx={4} fill="#F8FAFC" />
+      <rect x={284} y={684} width={14} height={90} fill="#334155" />
+      <rect x={1302} y={684} width={14} height={90} fill="#334155" />
+      <RoundTree x={90} y={560} s={1} />
+      <RoundTree x={1510} y={560} s={0.9} />
+      <image href="/art/tennis.png" x={1180} y={760} width={150} height={150} />
+    </g>
+  );
+}
+
 export default function SceneBackground({ themeId }: { themeId: ThemeId }) {
   const { sky } = THEMES[themeId];
   const gradientId = `sky-${themeId}`;
@@ -260,11 +352,13 @@ export default function SceneBackground({ themeId }: { themeId: ThemeId }) {
         </defs>
         <rect x={-400} y={-400} width={2400} height={1700} fill={`url(#${gradientId})`} />
         <Sun />
-        <Clouds />
+        {themeId !== "espace" && <Clouds />}
         {themeId === "chevalier" && <CastleScene />}
         {themeId === "pompier" && <FireStationScene />}
         {themeId === "foot" && <StadiumScene />}
         {themeId === "course" && <RaceTrackScene />}
+        {themeId === "espace" && <SpaceScene />}
+        {themeId === "tennis" && <TennisScene />}
       </svg>
     </div>
   );
