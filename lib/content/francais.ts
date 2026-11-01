@@ -73,6 +73,14 @@ const THEME_VOCAB: Record<ThemeId, VocabEntry[]> = {
     v("l'oignon", "onion", "oi-gnon", ["on"], "on", 2, true),
     v("les spaghettis", "spaghetti", "spa-ghet-tis", []),
   ],
+  police: [
+    v("le policier", "police-officer", "po-li-cier", [], "é", 3),
+    v("la loupe", "magnifier", "lou-pe", ["ou"]),
+    v("le diamant", "gem", "dia-mant", ["an"], "an"),
+    v("le cadenas", "lock", "ca-de-nas", ["an"], undefined, 3),
+    v("le détective", "detective", "dé-tec-ti-ve", []),
+    v("la sirène", "siren", "si-rène", []),
+  ],
   espace: [
     v("la fusée", "rocket", "fu-sée", [], "é", 2),
     v("la planète", "ringed-planet", "pla-nè-te", []),

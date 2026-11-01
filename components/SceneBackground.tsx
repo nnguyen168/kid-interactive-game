@@ -395,6 +395,53 @@ function KitchenScene() {
   );
 }
 
+function PoliceScene() {
+  return (
+    <g>
+      {/* town houses */}
+      {skyline.slice(0, 14).map((b, i) => (
+        <rect key={i} x={b.x} y={620 - b.h * 0.9} width={b.w} height={b.h * 0.9} fill={["#FDE68A", "#FCA5A5", "#BFDBFE", "#BBF7D0"][i % 4]} opacity={0.75} />
+      ))}
+      {/* the police station */}
+      <g transform="translate(980 300)">
+        <rect x={0} y={0} width={480} height={330} fill="#F8FAFC" />
+        <rect x={-14} y={-20} width={508} height={30} fill="#1E3A8A" />
+        <rect x={110} y={30} width={260} height={64} rx={10} fill="#1D4ED8" />
+        <text x={240} y={74} textAnchor="middle" fontSize={44} fontWeight={800} fill="#FFFFFF" fontFamily="Arial, sans-serif">
+          POLICE
+        </text>
+        {[40, 360].map((x) => (
+          <rect key={x} x={x} y={130} width={80} height={90} rx={6} fill="#93C5FD" stroke="#1E3A8A" strokeWidth={6} />
+        ))}
+        <rect x={190} y={170} width={100} height={160} rx={8} fill="#1E3A8A" />
+        <circle cx={240} cy={-46} r={20} fill="#3B82F6" />
+        <circle cx={240} cy={-46} r={44} fill="#60A5FA" opacity={0.3} />
+        <rect x={232} y={-28} width={16} height={10} fill="#1E3A8A" />
+      </g>
+      <RoundTree x={120} y={640} s={0.9} />
+      <RoundTree x={860} y={640} s={0.8} />
+      {/* pavement, road and zebra crossing */}
+      <rect x={0} y={630} width={1600} height={40} fill="#D1D5DB" />
+      <rect x={0} y={670} width={1600} height={230} fill="#4B5563" />
+      {Array.from({ length: 16 }, (_, i) => (
+        <rect key={i} x={i * 110 + 20} y={780} width={60} height={8} rx={4} fill="#F9FAFB" />
+      ))}
+      {Array.from({ length: 7 }, (_, i) => (
+        <rect key={`z${i}`} x={560 + i * 36} y={672} width={22} height={226} fill="#F9FAFB" opacity={0.9} />
+      ))}
+      {/* traffic light */}
+      <g transform="translate(470 470)">
+        <rect x={-6} y={60} width={12} height={110} fill="#334155" />
+        <rect x={-24} y={0} width={48} height={90} rx={10} fill="#1F2937" />
+        <circle cx={0} cy={18} r={11} fill="#7F1D1D" />
+        <circle cx={0} cy={45} r={11} fill="#713F12" />
+        <circle cx={0} cy={72} r={11} fill="#22C55E" />
+      </g>
+      <image href="/art/police-car.png" x={1110} y={610} width={220} height={220} />
+    </g>
+  );
+}
+
 export default function SceneBackground({ themeId }: { themeId: ThemeId }) {
   const { sky } = THEMES[themeId];
   const gradientId = `sky-${themeId}`;
@@ -417,6 +464,7 @@ export default function SceneBackground({ themeId }: { themeId: ThemeId }) {
         {themeId === "espace" && <SpaceScene />}
         {themeId === "tennis" && <TennisScene />}
         {themeId === "cuisine" && <KitchenScene />}
+        {themeId === "police" && <PoliceScene />}
       </svg>
     </div>
   );

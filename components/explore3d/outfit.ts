@@ -92,7 +92,37 @@ function chefKit(head: THREE.Object3D) {
   head.add(scarf, knot);
 }
 
+/** The French police peaked cap (casquette), navy with a gold badge. */
+function policeCap(head: THREE.Object3D) {
+  const cap = new THREE.Group();
+  const crown = new THREE.Mesh(new THREE.CylinderGeometry(0.74, 0.64, 0.42, 32), mat("#1e3a8a", { roughness: 0.5 }));
+  const band = new THREE.Mesh(new THREE.CylinderGeometry(0.645, 0.645, 0.12, 32), mat("#0f172a"));
+  band.position.y = -0.18;
+  const stripe = new THREE.Mesh(new THREE.CylinderGeometry(0.65, 0.65, 0.04, 32), mat("#e2e8f0"));
+  stripe.position.y = -0.18;
+  const visor = new THREE.Mesh(new THREE.CylinderGeometry(0.6, 0.6, 0.05, 32, 1, false, -Math.PI / 2, Math.PI), mat("#0f172a", { roughness: 0.2, metalness: 0.3 }));
+  visor.position.set(0, -0.24, 0.3);
+  visor.rotation.x = 0.18;
+  const badge = new THREE.Mesh(new THREE.CylinderGeometry(0.14, 0.14, 0.04, 6), mat("#facc15", { metalness: 0.7, roughness: 0.25 }));
+  badge.rotation.x = Math.PI / 2;
+  badge.position.set(0, 0.04, 0.7);
+  cap.add(crown, band, stripe, visor, badge);
+  cap.position.set(0, 0.84, 0);
+  head.add(cap);
+}
+
 const LOOKS: Record<ThemeId, Look> = {
+  police: {
+    hide: KNIGHT_ONLY,
+    paint: {
+      Knight_Body: "#1e3a8a",
+      Knight_ArmLeft: "#1e3a8a",
+      Knight_ArmRight: "#1e3a8a",
+      Knight_LegLeft: "#172554",
+      Knight_LegRight: "#172554",
+    },
+    dress: (head) => policeCap(head),
+  },
   cuisine: {
     hide: KNIGHT_ONLY,
     paint: {
@@ -218,8 +248,54 @@ function racingHelmet(head: THREE.Object3D) {
 
 /** Clones the knight rig and dresses it up for the chosen theme. */
 export function dressHero(source: THREE.Object3D, themeId: ThemeId, paint?: Record<string, string>) {
+  return applyLook(source, paint ? { ...LOOKS[themeId], paint } : LOOKS[themeId]);
+}
+
+/** A cartoon robber for the police game: dark jumper, eye mask, beanie and a sack. */
+export function dressRobber(source: THREE.Object3D, beanie: string) {
+  return applyLook(source, {
+    hide: KNIGHT_ONLY,
+    paint: {
+      Knight_Body: "#1f2937",
+      Knight_ArmLeft: "#1f2937",
+      Knight_ArmRight: "#1f2937",
+      Knight_LegLeft: "#475569",
+      Knight_LegRight: "#475569",
+    },
+    dress: (head, chest) => {
+      const cap = new THREE.Mesh(new THREE.SphereGeometry(0.66, 28, 14, 0, Math.PI * 2, 0, Math.PI / 2), mat(beanie, { roughness: 0.9 }));
+      cap.position.set(0, 0.62, -0.02);
+      const pompom = new THREE.Mesh(new THREE.SphereGeometry(0.16, 12, 10), mat("#f8fafc", { roughness: 1 }));
+      pompom.position.set(0, 1.28, -0.02);
+      const rim = new THREE.Mesh(new THREE.CylinderGeometry(0.67, 0.67, 0.14, 32, 1, true), mat(beanie, { roughness: 0.9, side: THREE.DoubleSide }));
+      rim.position.set(0, 0.66, -0.02);
+      // The classic black eye mask.
+      const mask = new THREE.Mesh(new THREE.CylinderGeometry(0.61, 0.6, 0.16, 32, 1, true), mat("#0f172a", { side: THREE.DoubleSide }));
+      mask.position.set(0, 0.37, 0.01);
+      head.add(cap, pompom, rim, mask);
+      // Cartoon eye holes in the mask, so the robber still has a face.
+      for (const side of [-1, 1]) {
+        const eye = new THREE.Group();
+        const white = new THREE.Mesh(new THREE.CircleGeometry(0.09, 20), mat("#ffffff"));
+        const pupil = new THREE.Mesh(new THREE.CircleGeometry(0.045, 16), mat("#0f172a"));
+        pupil.position.z = 0.004;
+        eye.add(white, pupil);
+        eye.position.set(side * 0.2, 0.37, 0.596);
+        eye.rotation.y = side * 0.33;
+        head.add(eye);
+      }
+      if (chest) {
+        const sack = new THREE.Mesh(new THREE.SphereGeometry(0.4, 16, 12), mat("#d6b88a", { roughness: 1 }));
+        sack.scale.set(1, 1.15, 0.8);
+        sack.position.set(0.15, 0.3, -0.85);
+        chest.add(sack);
+      }
+    },
+  });
+}
+
+function applyLook(source: THREE.Object3D, look: Look) {
   const hero = SkeletonUtils.clone(source);
-  const look = paint ? { ...LOOKS[themeId], paint } : LOOKS[themeId];
   for (const name of [...ALWAYS_HIDDEN, ...look.hide]) {
     const node = hero.getObjectByName(name);
     if (node) node.visible = false;

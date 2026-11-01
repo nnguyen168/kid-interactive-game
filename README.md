@@ -2,7 +2,7 @@
 
 A small French-language educational game built for a 15-minute Friday-night ritual
 with a 5-year-old learning maths and French in *CP* (first grade). Pick a hero —
-Loukas the knight, firefighter, footballer, racing driver, astronaut, tennis player or cook — learn a little, discover
+Loukas the knight, firefighter, footballer, racing driver, astronaut, tennis player, cook or police officer — learn a little, discover
 how the world works, then play.
 
 - **Les nombres** — counting (tap each object to count it out loud), number words up
@@ -49,6 +49,12 @@ how the world works, then play.
     places every game) and fly onto the counter when picked up. Then *Cuisiner*:
     crêpes flip in the pan, frites and spaghettis bubble in the pot, and pizza,
     cupcakes and roast chicken bake in the wood oven. A hen clucks around the square.
+  - The police officer patrols a town park next to the police station. Three
+    cartoon robbers (masks, bobble hats, swag bags) hide behind bushes in new places
+    every game, each holding what he stole: candy, a teddy bear or a cake. They run
+    away when Loukas comes close but soon get out of breath; once next to one,
+    *Attraper* catches him and he gives the toy back. Near the police car, *Sirène*
+    flashes the lights, plays the French "pin-pon" and makes every robber freeze.
   - Once a glowing fact spot has been read it turns into a small green ✓ pad and
     stays quiet for the rest of the game; a new game makes them all available again.
 - **L'aventure** — the guided 15-minute session: learn → story → challenge → reward.

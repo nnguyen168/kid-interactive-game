@@ -25,6 +25,7 @@ const OUTFITS: Record<ThemeId, Outfit> = {
   espace: { torso: "#F1F5F9", arm: "#E2E8F0", leg: "#E2E8F0", boot: "#64748B" },
   tennis: { torso: "#FFFFFF", arm: "#FFFFFF", leg: "#FFFFFF", boot: "#E2E8F0" },
   cuisine: { torso: "#FFFFFF", arm: "#FFFFFF", leg: "#334155", boot: "#111827" },
+  police: { torso: "#1E3A8A", arm: "#1E3A8A", leg: "#172554", boot: "#111827" },
 };
 
 function Arm({ side, outfit, themeId }: { side: "l" | "r"; outfit: Outfit; themeId: ThemeId }) {
@@ -108,6 +109,21 @@ function Headgear({ themeId }: { themeId: ThemeId }) {
         <circle cx={150} cy={58} r={6} fill="#FFFFFF" opacity={0.8} />
         <rect x={86} y={10} width={28} height={10} rx={5} fill="#E2E8F0" />
         <circle cx={100} cy={8} r={6} fill="#EF4444" />
+      </g>
+    );
+  }
+  if (themeId === "police") {
+    return (
+      <g>
+        <path d="M40 92 C40 74 46 66 56 64 L56 76 C50 80 46 86 44 94 Z" fill="#6B4423" />
+        <path d="M160 92 C160 74 154 66 144 64 L144 76 C150 80 154 86 156 94 Z" fill="#6B4423" />
+        {/* peaked police cap */}
+        <path d="M34 62 C34 30 66 14 100 14 C134 14 166 30 166 62 Z" fill="#1E3A8A" />
+        <rect x={38} y={56} width={124} height={18} rx={4} fill="#172554" />
+        <rect x={38} y={60} width={124} height={6} fill="#E2E8F0" opacity={0.85} />
+        <path d="M44 74 C70 90 130 90 156 74 L156 72 L44 72 Z" fill="#0F172A" />
+        <path d="M100 28 L106 38 L117 39 L109 47 L111 58 L100 52 L89 58 L91 47 L83 39 L94 38 Z" fill="#FACC15" stroke="#CA8A04" strokeWidth={2} />
+        <path d="M54 34 C64 24 78 20 90 19" stroke="#FFFFFF" strokeWidth={5} strokeLinecap="round" opacity={0.4} fill="none" />
       </g>
     );
   }
@@ -200,6 +216,18 @@ function Torso({ themeId, outfit }: { themeId: ThemeId; outfit: Outfit }) {
           <circle cx={128} cy={150} r={9} fill="#4F46E5" />
           <path d="M128 144 L130 148.5 L134.8 149 L131.2 152.2 L132.3 157 L128 154.5 L123.7 157 L124.8 152.2 L121.2 149 L126 148.5 Z" fill="#FFFFFF" />
           <rect x={58} y={198} width={84} height={6} fill="#94A3B8" />
+        </g>
+      )}
+      {themeId === "police" && (
+        <g>
+          <path d="M84 140 L100 158 L116 140" stroke="#93C5FD" strokeWidth={8} fill="none" strokeLinejoin="round" />
+          <rect x={96} y={152} width={8} height={30} fill="#0F172A" />
+          <path d="M120 160 L126 168 L136 168 L130 175 L132 185 L124 180 L116 185 L118 175 L112 168 L122 168 Z" fill="#FACC15" />
+          <rect x={64} y={186} width={72} height={14} rx={3} fill="#FFFFFF" />
+          <text x={100} y={197} textAnchor="middle" fontSize={11} fontWeight={800} fill="#1E3A8A" fontFamily="Arial, sans-serif">
+            POLICE
+          </text>
+          <rect x={58} y={204} width={84} height={6} fill="#0F172A" />
         </g>
       )}
       {themeId === "cuisine" && (
@@ -355,6 +383,7 @@ export default function Mascot({
       {themeId === "espace" && <image href="/art/rocket.png" x={140} y={196} width={56} height={56} />}
       {themeId === "tennis" && <image href="/art/tennis.png" x={136} y={192} width={60} height={60} />}
       {themeId === "cuisine" && <image href="/art/spoon.png" x={140} y={190} width={58} height={58} />}
+      {themeId === "police" && <image href="/art/magnifier.png" x={142} y={196} width={54} height={54} />}
     </svg>
   );
 }

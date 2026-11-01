@@ -21,7 +21,7 @@ const DEFAULT_STATE: ProgressState = {
   badges: [],
   sessionsCompleted: 0,
   lastSessionDate: null,
-  explored: { chevalier: [], pompier: [], foot: [], course: [], espace: [], tennis: [], cuisine: [] },
+  explored: { chevalier: [], pompier: [], foot: [], course: [], espace: [], tennis: [], cuisine: [], police: [] },
 };
 
 // Stars needed to reach level 2 and level 3.

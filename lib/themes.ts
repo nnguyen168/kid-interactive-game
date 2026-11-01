@@ -162,6 +162,29 @@ export const THEMES: Record<ThemeId, Theme> = {
     badgeArt: "cook",
     challenge: { mover: "cooking", target: "cupcake", win: "Le gâteau est prêt ! Miam, bravo chef !" },
   },
+  police: {
+    id: "police",
+    name: "Policier",
+    mascotName: "Loukas le Policier",
+    greeting: "Salut ! Je suis Loukas le Policier. On part en patrouille pour aider tout le monde ?",
+    iconArt: "police-officer",
+    colors: {
+      primary: "#1D4ED8",
+      secondary: "#FACC15",
+      soft: "#DBEAFE",
+      text: "#1E3A8A",
+    },
+    sky: { top: "#60A5FA", bottom: "#E0F2FE" },
+    items: [
+      { art: "police-car", singular: "voiture de police", plural: "voitures de police" },
+      { art: "magnifier", singular: "loupe", plural: "loupes" },
+      { art: "siren", singular: "gyrophare", plural: "gyrophares" },
+      { art: "gem", singular: "diamant", plural: "diamants" },
+    ],
+    badgeName: "médaille du policier",
+    badgeArt: "police-officer",
+    challenge: { mover: "police-car", target: "money-bag", win: "Le voleur est attrapé ! Bravo policier !" },
+  },
 };
 
-export const THEME_ORDER: ThemeId[] = ["chevalier", "pompier", "foot", "course", "espace", "tennis", "cuisine"];
+export const THEME_ORDER: ThemeId[] = ["chevalier", "pompier", "foot", "course", "espace", "tennis", "cuisine", "police"];

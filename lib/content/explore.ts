@@ -58,6 +58,12 @@ export const EXPLORE_FACTS: Record<ThemeId, ExploreFact[]> = {
     { id: "lait", art: "milk", fact: "Le lait vient des vaches. Avec le lait, on fabrique aussi le beurre, le fromage et les yaourts." },
     { id: "chocolat", art: "chocolate", fact: "Le chocolat est fait avec les graines du cacaoyer, un arbre qui pousse dans les pays chauds." },
   ],
+  police: [
+    { id: "dixsept", art: "siren", fact: "En France, pour appeler la police en cas d'urgence, on compose le 17. C'est un numéro à retenir !" },
+    { id: "uniforme", art: "police-officer", fact: "Les policiers portent un uniforme bleu marine pour qu'on les reconnaisse facilement quand on a besoin d'aide." },
+    { id: "voiture", art: "police-car", fact: "La voiture de police a une sirène et des gyrophares bleus : tout le monde la laisse passer quand il y a une urgence." },
+    { id: "chien", art: "dog", fact: "Certains policiers travaillent avec des chiens : grâce à leur super flair, ils retrouvent des objets perdus." },
+  ],
 };
 
 export const MISSIONS: Record<ThemeId, Mission> = {
@@ -109,5 +115,12 @@ export const MISSIONS: Record<ThemeId, Mission> = {
     goalArt: "cooking",
     goalCount: 10,
     win: "Deux bons plats ! Tu es un grand chef, bravo Loukas !",
+  },
+  police: {
+    intro: "Alerte au parc ! Trois petits voleurs ont pris des bonbons, un nounours et un gâteau. Approche-toi et appuie sur Attraper pour les arrêter !",
+    goalLabel: "Voleurs",
+    goalArt: "money-bag",
+    goalCount: 3,
+    win: "Les trois voleurs sont attrapés et tout est rendu ! Bravo policier !",
   },
 };

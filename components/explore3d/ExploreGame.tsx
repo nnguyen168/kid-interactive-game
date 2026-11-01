@@ -20,6 +20,7 @@ import { city } from "./worlds/city";
 import { kingdom } from "./worlds/kingdom";
 import { market } from "./worlds/market";
 import { moon } from "./worlds/moon";
+import { policePark } from "./worlds/police";
 import { tennisCourt } from "./worlds/tennis";
 import { raceway } from "./worlds/raceway";
 import { stadium } from "./worlds/stadium";
@@ -32,6 +33,7 @@ const WORLDS: Record<ThemeId, WorldDef> = {
   espace: moon,
   tennis: tennisCourt,
   cuisine: market,
+  police: policePark,
 };
 
 const PROMPTS: Record<ActionPrompt, { label: string; art: ArtKey; color?: string }> = {
@@ -45,6 +47,8 @@ const PROMPTS: Record<ActionPrompt, { label: string; art: ArtKey; color?: string
   launch: { label: "Décoller !", art: "rocket", color: "#ef4444" },
   hit: { label: "Frapper !", art: "tennis", color: "#65a30d" },
   cook: { label: "Cuisiner !", art: "cooking", color: "#f97316" },
+  catch: { label: "Attraper !", art: "police-officer", color: "#1d4ed8" },
+  siren: { label: "Sirène !", art: "siren", color: "#ef4444" },
 };
 
 /**

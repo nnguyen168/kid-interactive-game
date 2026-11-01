@@ -113,6 +113,13 @@ export const sfx = {
     tone(760, 0, 0.18, "triangle", 0.09, 980);
     tone(980, 0.16, 0.32, "triangle", 0.08, 560);
   },
+  /** The French two-tone "pin-pon" police siren. */
+  siren() {
+    for (let i = 0; i < 4; i++) {
+      tone(440, i * 0.8, 0.38, "square", 0.045);
+      tone(587, i * 0.8 + 0.4, 0.38, "square", 0.045);
+    }
+  },
   cheer() {
     noise(0, 1.8, 0.12, 1100, 0.5);
     noise(0.05, 1.6, 0.08, 2400, 0.8);
