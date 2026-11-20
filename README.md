@@ -57,6 +57,15 @@ how the world works, then play.
     flashes the lights, plays the French "pin-pon" and makes every robber freeze.
   - Once a glowing fact spot has been read it turns into a small green ✓ pad and
     stays quiet for the rest of the game; a new game makes them all available again.
+- **Révision** — practice for what the child has not mastered yet at school, with
+  whichever hero is chosen. The parent picks the topic in *Espace parents* (the gear):
+  la soustraction (tonight's) or l'addition. It opens with a short worked example, then
+  10 questions climb a 9-step ladder: crossing out objects, hopping back on a number
+  line, written sums, little story problems, the hidden number (8 − ? = 5), up to 20,
+  taking away 10, and going through 10 (13 − 5). Two right answers in a row climb a
+  step, two misses go back one. After a wrong answer a helper appears (pictures or a
+  number line) with a spoken tip. The step reached is saved, so the next révision
+  starts just below it; the result screen tells the parent where the child got to.
 - **L'aventure** — the guided 15-minute session: learn → story → challenge → reward.
 
 Designed for a child who is just learning to read: every question is read aloud

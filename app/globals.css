@@ -224,6 +224,23 @@ button {
   100% { transform: translate(var(--dx), var(--dy)) scale(1); opacity: 0; }
 }
 
+/* Révision: objects being taken away, and hops drawn on the number line. */
+.cross-out {
+  animation: cross-out 0.4s ease-out both;
+}
+@keyframes cross-out {
+  0% { opacity: 1; filter: none; }
+  100% { opacity: 0.25; filter: grayscale(1); }
+}
+.draw-hop {
+  stroke-dasharray: 1;
+  stroke-dashoffset: 1;
+  animation: draw-hop 0.4s ease-out forwards;
+}
+@keyframes draw-hop {
+  to { stroke-dashoffset: 0; }
+}
+
 .confetti-piece {
   animation-name: confetti-fall;
   animation-timing-function: cubic-bezier(0.3, 0.6, 0.6, 1);

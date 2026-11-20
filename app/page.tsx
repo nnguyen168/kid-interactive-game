@@ -17,6 +17,7 @@ import { ArtKey } from "@/lib/art";
 import { Subject, ThemeId } from "@/lib/types";
 import { sfx } from "@/lib/sfx";
 import { speak } from "@/lib/speech";
+import { REVISION_TOPICS, RevisionTopicId } from "@/lib/content/revision";
 
 // The title screen is shown once per page load (it also unlocks audio).
 let titleScreenSeen = false;
@@ -99,6 +100,38 @@ function HubTile({ tile, level, index }: { tile: Tile; level?: number; index: nu
   );
 }
 
+/** A wide banner for tonight's révision; the parent picks the topic in Espace parents. */
+function RevisionBanner({ topicId, step }: { topicId: RevisionTopicId; step: number }) {
+  const topic = REVISION_TOPICS[topicId];
+  const shown = Math.min(step, topic.steps.length - 1);
+  return (
+    <Link
+      href="/revision"
+      onClick={() => sfx.pop()}
+      data-nav
+      className={`wiggle-hover rise-in relative col-span-full flex items-center gap-3 rounded-[2rem] px-4 py-3 text-white sm:gap-5 sm:px-6 lg:rounded-[2.4rem] lg:py-4 ${CANDY_PRESS}`}
+      style={candyStyle("#7C3AED")}
+    >
+      <span className="pointer-events-none absolute inset-x-6 top-2 h-[24%] rounded-full bg-white/20" />
+      <span className="wiggle-target relative mr-2 flex shrink-0 items-center">
+        <Art name="abacus" className="h-14 w-14 drop-shadow-[0_5px_0_rgba(0,0,0,0.15)] sm:h-16 sm:w-16 xl:h-20 xl:w-20" eager />
+        <span className="absolute -bottom-1 -right-2 flex h-8 w-8 items-center justify-center rounded-full bg-white shadow-[0_3px_0_rgba(0,0,0,0.15)] sm:h-9 sm:w-9">
+          <Art name={topic.art} className="h-6 w-6 sm:h-7 sm:w-7" eager />
+        </span>
+      </span>
+      <span className="relative flex min-w-0 flex-col">
+        <span className="text-2xl font-bold leading-tight sm:text-3xl xl:text-4xl" style={{ textShadow: "0 2px 0 rgba(0,0,0,0.25)" }}>
+          Révision
+        </span>
+        <span className="text-base font-semibold leading-tight text-violet-100 sm:text-lg xl:text-xl">Ce soir : {topic.name}</span>
+      </span>
+      <span className="relative ml-auto hidden rounded-full bg-black/15 px-3 py-1 text-sm font-bold sm:block lg:text-base">
+        Étape {shown + 1}/{topic.steps.length}
+      </span>
+    </Link>
+  );
+}
+
 export default function Home() {
   const { theme, themeId, setThemeId, ready: themeReady } = useTheme();
   const { progress, totalStars, ready } = useProgress();
@@ -170,6 +203,7 @@ export default function Home() {
         </section>
 
         <section className="grid grid-cols-2 gap-4 sm:grid-cols-3 sm:gap-5 lg:gap-6">
+          <RevisionBanner topicId={progress.revision.topic} step={ready ? (progress.revision.step[progress.revision.topic] ?? 0) : 0} />
           {tiles.map((tile, i) => (
             <HubTile key={tile.href} tile={tile} index={i} level={tile.subject && ready ? progress.level[tile.subject] : undefined} />
           ))}

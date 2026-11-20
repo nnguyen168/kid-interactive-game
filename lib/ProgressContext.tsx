@@ -2,6 +2,7 @@
 
 import { createContext, useContext, useEffect, useRef, useState, ReactNode } from "react";
 import { Level, Subject, ThemeId } from "./types";
+import type { RevisionTopicId } from "./content/revision";
 
 const STORAGE_KEY = "kid-app-progress";
 
@@ -13,6 +14,8 @@ export type ProgressState = {
   sessionsCompleted: number;
   lastSessionDate: string | null;
   explored: Record<ThemeId, string[]>;
+  /** Révision: the topic chosen by the parent and the step reached in each topic. */
+  revision: { topic: RevisionTopicId; step: Record<RevisionTopicId, number> };
 };
 
 const DEFAULT_STATE: ProgressState = {
@@ -22,6 +25,7 @@ const DEFAULT_STATE: ProgressState = {
   sessionsCompleted: 0,
   lastSessionDate: null,
   explored: { chevalier: [], pompier: [], foot: [], course: [], espace: [], tennis: [], cuisine: [], police: [] },
+  revision: { topic: "soustraction", step: { soustraction: 0, addition: 0 } },
 };
 
 // Stars needed to reach level 2 and level 3.
@@ -46,6 +50,8 @@ type ProgressContextValue = {
   /** Stars earned since the page was opened; starts at zero on every visit. */
   totalStars: number;
   collectHotspot: (themeId: ThemeId, hotspotId: string) => void;
+  setRevisionTopic: (topic: RevisionTopicId) => void;
+  setRevisionStep: (topic: RevisionTopicId, step: number) => void;
 };
 
 const ProgressContext = createContext<ProgressContextValue | null>(null);
@@ -65,7 +71,9 @@ export function ProgressProvider({ children }: { children: ReactNode }) {
       if (stored) {
         const parsed = JSON.parse(stored) as Partial<ProgressState>;
         // Merge nested maps too, so data saved before a new theme existed still loads.
-        const loaded = { ...DEFAULT_STATE, ...parsed, explored: { ...DEFAULT_STATE.explored, ...parsed.explored } };
+        const revision = { ...DEFAULT_STATE.revision, ...parsed.revision };
+        revision.step = { ...DEFAULT_STATE.revision.step, ...parsed.revision?.step };
+        const loaded = { ...DEFAULT_STATE, ...parsed, explored: { ...DEFAULT_STATE.explored, ...parsed.explored }, revision };
         latest.current = loaded;
         // Read after mount (not in a lazy useState initializer) so server and
         // client agree on the first render; only then adopt the stored value.
@@ -128,11 +136,21 @@ export function ProgressProvider({ children }: { children: ReactNode }) {
     persist({ ...p, explored: { ...p.explored, [themeId]: [...p.explored[themeId], hotspotId] } });
   }
 
+  function setRevisionTopic(topic: RevisionTopicId) {
+    const p = latest.current;
+    persist({ ...p, revision: { ...p.revision, topic } });
+  }
+
+  function setRevisionStep(topic: RevisionTopicId, step: number) {
+    const p = latest.current;
+    persist({ ...p, revision: { ...p.revision, step: { ...p.revision.step, [topic]: step } } });
+  }
+
   const totalStars = sessionStars;
 
   return (
     <ProgressContext.Provider
-      value={{ progress, ready, addStars, addBonusStars, addBadge, setLevel, recordSession, totalStars, collectHotspot }}
+      value={{ progress, ready, addStars, addBonusStars, addBadge, setLevel, recordSession, totalStars, collectHotspot, setRevisionTopic, setRevisionStep }}
     >
       {children}
     </ProgressContext.Provider>

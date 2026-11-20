@@ -17,6 +17,8 @@ export const ART_KEYS = [
   "potato", "onion", "garlic", "herb", "poultry-leg", "spaghetti", "fries", "flatbread", "olive",
   // Police theme.
   "police-officer", "police-car", "detective", "magnifier", "money-bag", "gem", "footprints", "lock",
+  // Révision.
+  "abacus", "minus", "plus",
 ] as const;
 
 export type ArtKey = (typeof ART_KEYS)[number];

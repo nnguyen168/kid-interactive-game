@@ -31,7 +31,7 @@ const KINDS_BY_LEVEL: Record<Level, MathsKind[]> = {
 const CHOICES_BY_LEVEL: Record<Level, number> = { 1: 3, 2: 4, 3: 4 };
 
 /** Wrong answers close to the right one, so guessing does not work. */
-function buildChoices(target: number, count: number, min = 0, max = target + 6): number[] {
+export function buildChoices(target: number, count: number, min = 0, max = target + 6): number[] {
   const near = shuffle(
     [-1, 1, -2, 2, -3, 3, 10, -10].map((d) => target + d).filter((n) => n >= min && n <= max && n !== target),
   );
