@@ -185,6 +185,29 @@ export const THEMES: Record<ThemeId, Theme> = {
     badgeArt: "police-officer",
     challenge: { mover: "police-car", target: "money-bag", win: "Le voleur est attrapé ! Bravo policier !" },
   },
+  docteur: {
+    id: "docteur",
+    name: "Docteur",
+    mascotName: "Loukas le Docteur",
+    greeting: "Salut ! Je suis Loukas le Docteur. Avec mon ambulance, je soigne tous les petits bobos !",
+    iconArt: "health-worker",
+    colors: {
+      primary: "#0D9488",
+      secondary: "#EF4444",
+      soft: "#CCFBF1",
+      text: "#134E4A",
+    },
+    sky: { top: "#67E8F9", bottom: "#ECFEFF" },
+    items: [
+      { art: "ambulance", singular: "ambulance", plural: "ambulances" },
+      { art: "adhesive-bandage", singular: "pansement", plural: "pansements" },
+      { art: "thermometer", singular: "thermomètre", plural: "thermomètres" },
+      { art: "stethoscope", singular: "stéthoscope", plural: "stéthoscopes" },
+    ],
+    badgeName: "médaille du docteur",
+    badgeArt: "health-worker",
+    challenge: { mover: "ambulance", target: "hospital", win: "L'ambulance est arrivée à l'hôpital ! Bravo docteur !" },
+  },
 };
 
-export const THEME_ORDER: ThemeId[] = ["chevalier", "pompier", "foot", "course", "espace", "tennis", "cuisine", "police"];
+export const THEME_ORDER: ThemeId[] = ["chevalier", "pompier", "foot", "course", "espace", "tennis", "cuisine", "police", "docteur"];

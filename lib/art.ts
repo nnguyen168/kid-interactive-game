@@ -17,6 +17,8 @@ export const ART_KEYS = [
   "potato", "onion", "garlic", "herb", "poultry-leg", "spaghetti", "fries", "flatbread", "olive",
   // Police theme.
   "police-officer", "police-car", "detective", "magnifier", "money-bag", "gem", "footprints", "lock",
+  // Doctor theme.
+  "health-worker", "ambulance", "hospital", "adhesive-bandage", "thermometer", "stethoscope", "tooth", "ice", "soap", "microbe", "toothbrush",
   // Révision.
   "abacus", "minus", "plus",
 ] as const;

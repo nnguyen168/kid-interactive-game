@@ -24,7 +24,7 @@ const DEFAULT_STATE: ProgressState = {
   badges: [],
   sessionsCompleted: 0,
   lastSessionDate: null,
-  explored: { chevalier: [], pompier: [], foot: [], course: [], espace: [], tennis: [], cuisine: [], police: [] },
+  explored: { chevalier: [], pompier: [], foot: [], course: [], espace: [], tennis: [], cuisine: [], police: [], docteur: [] },
   revision: { topic: "soustraction", step: { soustraction: 0, addition: 0 } },
 };
 

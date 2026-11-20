@@ -111,7 +111,55 @@ function policeCap(head: THREE.Object3D) {
   head.add(cap);
 }
 
+/** The doctor's headband with a round mirror, a stethoscope and a red cross on the coat. */
+function doctorKit(head: THREE.Object3D, chest: THREE.Object3D | undefined) {
+  const band = new THREE.Mesh(new THREE.TorusGeometry(0.66, 0.05, 8, 40), mat("#334155"));
+  band.rotation.x = Math.PI / 2 - 0.25;
+  band.position.set(0, 0.66, -0.02);
+  const mirror = new THREE.Group();
+  const rim = new THREE.Mesh(new THREE.CylinderGeometry(0.22, 0.22, 0.06, 28), mat("#cbd5e1", { metalness: 0.3, roughness: 0.3 }));
+  rim.rotation.x = Math.PI / 2;
+  const glass = new THREE.Mesh(new THREE.CylinderGeometry(0.17, 0.17, 0.07, 28), mat("#e0f2fe", { metalness: 0.2, roughness: 0.1 }));
+  glass.rotation.x = Math.PI / 2;
+  const hole = new THREE.Mesh(new THREE.CylinderGeometry(0.05, 0.05, 0.08, 16), mat("#334155"));
+  hole.rotation.x = Math.PI / 2;
+  mirror.add(rim, glass, hole);
+  mirror.position.set(0, 0.7, 0.64);
+  mirror.rotation.x = -0.35;
+  // Brown hair under the headband.
+  const hair = new THREE.Mesh(new THREE.SphereGeometry(0.64, 28, 14, 0, Math.PI * 2, 0, Math.PI / 2), mat("#7c4a21", { roughness: 0.9 }));
+  hair.scale.y = 0.75;
+  hair.position.set(0, 0.6, -0.04);
+  // Stethoscope round the neck, its chest piece hanging in front.
+  const tube = new THREE.Mesh(new THREE.TorusGeometry(0.46, 0.045, 8, 32, Math.PI * 1.4), mat("#475569"));
+  tube.rotation.set(Math.PI / 2, 0, Math.PI * 0.8);
+  tube.position.set(0, -0.32, 0);
+  const piece = new THREE.Mesh(new THREE.CylinderGeometry(0.11, 0.11, 0.06, 20), mat("#cbd5e1", { metalness: 0.8, roughness: 0.2 }));
+  piece.rotation.x = Math.PI / 2;
+  piece.position.set(0.1, -0.44, 0.4);
+  head.add(band, mirror, hair, tube, piece);
+  if (chest) {
+    const cross = new THREE.Group();
+    const v = new THREE.Mesh(new THREE.BoxGeometry(0.08, 0.24, 0.04), mat("#ef4444"));
+    const h = new THREE.Mesh(new THREE.BoxGeometry(0.24, 0.08, 0.04), mat("#ef4444"));
+    cross.add(v, h);
+    cross.position.set(0.24, 0.02, 0.32);
+    chest.add(cross);
+  }
+}
+
 const LOOKS: Record<ThemeId, Look> = {
+  docteur: {
+    hide: KNIGHT_ONLY,
+    paint: {
+      Knight_Body: "#f8fafc",
+      Knight_ArmLeft: "#f8fafc",
+      Knight_ArmRight: "#f8fafc",
+      Knight_LegLeft: "#0f766e",
+      Knight_LegRight: "#0f766e",
+    },
+    dress: (head, chest) => doctorKit(head, chest),
+  },
   police: {
     hide: KNIGHT_ONLY,
     paint: {
@@ -249,6 +297,26 @@ function racingHelmet(head: THREE.Object3D) {
 /** Clones the knight rig and dresses it up for the chosen theme. */
 export function dressHero(source: THREE.Object3D, themeId: ThemeId, paint?: Record<string, string>) {
   return applyLook(source, paint ? { ...LOOKS[themeId], paint } : LOOKS[themeId]);
+}
+
+/** A child from the park (the doctor's patients): bright T-shirt, shorts and hair. */
+export function dressKid(source: THREE.Object3D, shirt: string, hairColor: string) {
+  return applyLook(source, {
+    hide: KNIGHT_ONLY,
+    paint: {
+      Knight_Body: shirt,
+      Knight_ArmLeft: shirt,
+      Knight_ArmRight: shirt,
+      Knight_LegLeft: "#1e40af",
+      Knight_LegRight: "#1e40af",
+    },
+    dress: (head) => {
+      const hair = new THREE.Mesh(new THREE.SphereGeometry(0.66, 28, 14, 0, Math.PI * 2, 0, Math.PI / 2), mat(hairColor, { roughness: 0.9 }));
+      hair.scale.y = 0.85;
+      hair.position.set(0, 0.56, -0.05);
+      head.add(hair);
+    },
+  });
 }
 
 /** A cartoon robber for the police game: dark jumper, eye mask, beanie and a sack. */

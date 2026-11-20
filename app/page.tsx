@@ -195,7 +195,7 @@ export default function Home() {
             speakText={theme.greeting}
             autoSpeak={false}
           />
-          <div className="grid grid-cols-4 justify-items-center gap-x-3 gap-y-2 rounded-[2rem] bg-white/60 px-3 pb-3 pt-4 backdrop-blur-sm sm:gap-x-6 sm:px-5">
+          <div className="grid grid-cols-3 justify-items-center gap-x-5 gap-y-2 sm:grid-cols-5 lg:grid-cols-3 rounded-[2rem] bg-white/60 px-3 pb-3 pt-4 backdrop-blur-sm sm:gap-x-6 sm:px-5">
             {THEME_ORDER.map((id) => (
               <HeroPortrait key={id} themeId={id} selected={id === themeId} onPick={() => pickHero(id)} />
             ))}

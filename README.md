@@ -2,7 +2,7 @@
 
 A small French-language educational game built for a 15-minute Friday-night ritual
 with a 5-year-old learning maths and French in *CP* (first grade). Pick a hero —
-Loukas the knight, firefighter, footballer, racing driver, astronaut, tennis player, cook or police officer — learn a little, discover
+Loukas the knight, firefighter, footballer, racing driver, astronaut, tennis player, cook, police officer or doctor — learn a little, discover
 how the world works, then play.
 
 - **Les nombres** — counting (tap each object to count it out loud), number words up
@@ -55,6 +55,13 @@ how the world works, then play.
     away when Loukas comes close but soon get out of breath; once next to one,
     *Attraper* catches him and he gives the toy back. Near the police car, *Sirène*
     flashes the lights, plays the French "pin-pon" and makes every robber freeze.
+  - The doctor looks after three children in a park next to the hospital, each with
+    a small everyday bobo shown above their head (a grazed knee, a fever, a bump on
+    the head, toothache or a cough; three of the five, in new places every game).
+    *Soigner* treats them — a plaster, the thermometer, an ice cube, a look at the
+    teeth, the stethoscope — with a simple health tip, and a heart replaces the bobo.
+    Then *En route !* at the ambulance: Loukas climbs in and drives it, siren on,
+    to the hospital's emergency doors. Before that, *Sirène* just flashes and sounds it.
   - Once a glowing fact spot has been read it turns into a small green ✓ pad and
     stays quiet for the rest of the game; a new game makes them all available again.
 - **Révision** — practice for what the child has not mastered yet at school, with

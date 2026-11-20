@@ -64,6 +64,12 @@ export const EXPLORE_FACTS: Record<ThemeId, ExploreFact[]> = {
     { id: "voiture", art: "police-car", fact: "La voiture de police a une sirène et des gyrophares bleus : tout le monde la laisse passer quand il y a une urgence." },
     { id: "chien", art: "dog", fact: "Certains policiers travaillent avec des chiens : grâce à leur super flair, ils retrouvent des objets perdus." },
   ],
+  docteur: [
+    { id: "quinze", art: "ambulance", fact: "Le 15, c'est le numéro du SAMU. On l'appelle quand quelqu'un est très malade ou blessé : une ambulance arrive vite !" },
+    { id: "savon", art: "soap", fact: "Pour chasser les microbes, on se lave les mains avec du savon, en frottant bien entre les doigts. Comme ça, on tombe moins malade !" },
+    { id: "coeur", art: "stethoscope", fact: "Avec son stéthoscope, le docteur écoute ton cœur. Il fait boum-boum, boum-boum, sans jamais s'arrêter, même quand tu dors !" },
+    { id: "dents", art: "toothbrush", fact: "On se brosse les dents le matin et le soir, pendant deux minutes, pour garder un beau sourire." },
+  ],
 };
 
 export const MISSIONS: Record<ThemeId, Mission> = {
@@ -122,5 +128,12 @@ export const MISSIONS: Record<ThemeId, Mission> = {
     goalArt: "money-bag",
     goalCount: 3,
     win: "Les trois voleurs sont attrapés et tout est rendu ! Bravo policier !",
+  },
+  docteur: {
+    intro: "Au parc, trois enfants ont un petit bobo ! Approche-toi et appuie sur Soigner. Ensuite, ramène l'ambulance à l'hôpital, sirène allumée !",
+    goalLabel: "Soins",
+    goalArt: "adhesive-bandage",
+    goalCount: 4,
+    win: "Tout le monde est soigné, et l'ambulance est rentrée à l'hôpital ! Bravo docteur !",
   },
 };

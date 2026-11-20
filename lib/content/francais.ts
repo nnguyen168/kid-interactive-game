@@ -81,6 +81,16 @@ const THEME_VOCAB: Record<ThemeId, VocabEntry[]> = {
     v("le détective", "detective", "dé-tec-ti-ve", []),
     v("la sirène", "siren", "si-rène", []),
   ],
+  docteur: [
+    v("le docteur", "health-worker", "doc-teur", [], undefined, 2),
+    v("l'ambulance", "ambulance", "am-bu-lan-ce", ["an"]),
+    v("l'hôpital", "hospital", "hô-pi-tal", [], undefined, 3),
+    v("le pansement", "adhesive-bandage", "pan-se-ment", ["an"], "an"),
+    v("la dent", "tooth", "dent", ["an"], "an", 1),
+    v("le savon", "soap", "sa-von", ["on"], "on", 2),
+    v("le glaçon", "ice", "gla-çon", ["on"], "on", 2),
+    v("le microbe", "microbe", "mi-cro-be", []),
+  ],
   espace: [
     v("la fusée", "rocket", "fu-sée", [], "é", 2),
     v("la planète", "ringed-planet", "pla-nè-te", []),

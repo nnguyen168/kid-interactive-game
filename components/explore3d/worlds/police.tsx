@@ -333,7 +333,8 @@ function PoliceMission({ onScore, onPrompt, world }: MissionProps) {
 
 /* ---------- the town park and the police station ---------- */
 
-function useSignTexture() {
+/** A painted sign (white letters on a coloured board) as a texture. */
+export function useSignTexture(text = "POLICE", background = "#1e3a8a") {
   return useMemo(() => {
     if (typeof document === "undefined") return null;
     const c = document.createElement("canvas");
@@ -341,17 +342,17 @@ function useSignTexture() {
     c.height = 128;
     const ctx = c.getContext("2d");
     if (!ctx) return null;
-    ctx.fillStyle = "#1e3a8a";
+    ctx.fillStyle = background;
     ctx.fillRect(0, 0, 512, 128);
     ctx.fillStyle = "#ffffff";
     ctx.font = "bold 92px system-ui, sans-serif";
     ctx.textAlign = "center";
     ctx.textBaseline = "middle";
-    ctx.fillText("POLICE", 256, 70);
+    ctx.fillText(text, 256, 70, 480);
     const t = new THREE.CanvasTexture(c);
     t.colorSpace = THREE.SRGBColorSpace;
     return t;
-  }, []);
+  }, [text, background]);
 }
 
 function RoofLight({ position }: { position: Vec3 }) {
@@ -469,15 +470,19 @@ function Fountain() {
 }
 
 /** A low green hedge that marks the edge of the park. */
-function Hedges() {
+export function Hedges({ bounds = BOUNDS }: { bounds?: typeof BOUNDS }) {
   const pieces = useMemo(() => {
-    const list: { p: Vec3; s: Vec3 }[] = [];
-    const w = BOUNDS.maxX - BOUNDS.minX + 3;
-    list.push({ p: [0, 0.5, BOUNDS.maxZ + 1.3], s: [w, 1, 1] });
-    list.push({ p: [BOUNDS.minX - 1.3, 0.5, 0.5], s: [1, 1, BOUNDS.maxZ - BOUNDS.minZ + 3] });
-    list.push({ p: [BOUNDS.maxX + 1.3, 0.5, 0.5], s: [1, 1, BOUNDS.maxZ - BOUNDS.minZ + 3] });
+    const w = bounds.maxX - bounds.minX + 3;
+    const d = bounds.maxZ - bounds.minZ + 3;
+    const midX = (bounds.minX + bounds.maxX) / 2;
+    const midZ = (bounds.minZ + bounds.maxZ) / 2;
+    const list: { p: Vec3; s: Vec3 }[] = [
+      { p: [midX, 0.5, bounds.maxZ + 1.3], s: [w, 1, 1] },
+      { p: [bounds.minX - 1.3, 0.5, midZ], s: [1, 1, d] },
+      { p: [bounds.maxX + 1.3, 0.5, midZ], s: [1, 1, d] },
+    ];
     return list;
-  }, []);
+  }, [bounds]);
   return (
     <>
       {pieces.map((h, i) => (
@@ -510,7 +515,7 @@ const BUSHES: Vec3[] = HIDING_SPOTS.map(([x, z]) => {
 });
 
 /** A round, leafy low-poly bush, big enough for a robber to crouch behind. */
-function Bush({ position, seed }: { position: Vec3; seed: number }) {
+export function Bush({ position, seed }: { position: Vec3; seed: number }) {
   const blobs = useMemo(() => {
     const r = seeded(seed);
     return [

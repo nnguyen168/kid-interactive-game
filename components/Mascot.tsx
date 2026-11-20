@@ -26,6 +26,7 @@ const OUTFITS: Record<ThemeId, Outfit> = {
   tennis: { torso: "#FFFFFF", arm: "#FFFFFF", leg: "#FFFFFF", boot: "#E2E8F0" },
   cuisine: { torso: "#FFFFFF", arm: "#FFFFFF", leg: "#334155", boot: "#111827" },
   police: { torso: "#1E3A8A", arm: "#1E3A8A", leg: "#172554", boot: "#111827" },
+  docteur: { torso: "#FFFFFF", arm: "#FFFFFF", leg: "#0F766E", boot: "#F1F5F9" },
 };
 
 function Arm({ side, outfit, themeId }: { side: "l" | "r"; outfit: Outfit; themeId: ThemeId }) {
@@ -109,6 +110,23 @@ function Headgear({ themeId }: { themeId: ThemeId }) {
         <circle cx={150} cy={58} r={6} fill="#FFFFFF" opacity={0.8} />
         <rect x={86} y={10} width={28} height={10} rx={5} fill="#E2E8F0" />
         <circle cx={100} cy={8} r={6} fill="#EF4444" />
+      </g>
+    );
+  }
+  if (themeId === "docteur") {
+    return (
+      <g>
+        {/* brown hair, and the doctor's headband with its round mirror */}
+        <path
+          d="M40 92 C36 44 74 26 104 28 C140 30 168 52 160 94 C152 74 138 66 124 72 C116 60 96 60 84 70 C72 62 52 70 40 92 Z"
+          fill="#7C4A21"
+        />
+        <path d="M70 42 C80 36 92 34 102 34" stroke="#A76A3A" strokeWidth={5} strokeLinecap="round" fill="none" />
+        <path d="M42 70 C60 50 140 50 158 70" stroke="#334155" strokeWidth={7} fill="none" strokeLinecap="round" />
+        <circle cx={100} cy={52} r={18} fill="#CBD5E1" stroke="#94A3B8" strokeWidth={3} />
+        <circle cx={100} cy={52} r={11} fill="#F8FAFC" />
+        <circle cx={100} cy={52} r={4} fill="#475569" />
+        <path d="M92 44 C95 41 99 40 102 40" stroke="#FFFFFF" strokeWidth={3} strokeLinecap="round" fill="none" />
       </g>
     );
   }
@@ -216,6 +234,22 @@ function Torso({ themeId, outfit }: { themeId: ThemeId; outfit: Outfit }) {
           <circle cx={128} cy={150} r={9} fill="#4F46E5" />
           <path d="M128 144 L130 148.5 L134.8 149 L131.2 152.2 L132.3 157 L128 154.5 L123.7 157 L124.8 152.2 L121.2 149 L126 148.5 Z" fill="#FFFFFF" />
           <rect x={58} y={198} width={84} height={6} fill="#94A3B8" />
+        </g>
+      )}
+      {themeId === "docteur" && (
+        <g>
+          {/* teal scrubs under the white coat */}
+          <path d="M82 139 L100 166 L118 139 Z" fill="#14B8A6" />
+          <path d="M82 139 L96 170 L92 210 M118 139 L104 170 L108 210" stroke="#E2E8F0" strokeWidth={3} fill="none" />
+          {/* stethoscope around the neck */}
+          <path d="M80 142 C74 166 80 182 92 186 M120 142 C126 166 120 182 108 186" stroke="#475569" strokeWidth={4} fill="none" strokeLinecap="round" />
+          <path d="M92 186 C96 192 104 192 108 186" stroke="#475569" strokeWidth={4} fill="none" />
+          <circle cx={100} cy={196} r={7} fill="#94A3B8" stroke="#475569" strokeWidth={3} />
+          {/* red cross badge and a pocket with a pen */}
+          <rect x={120} y={156} width={14} height={14} rx={3} fill="#FFFFFF" stroke="#FCA5A5" strokeWidth={1.5} />
+          <path d="M127 159 L127 167 M123 163 L131 163" stroke="#EF4444" strokeWidth={3.5} strokeLinecap="round" />
+          <rect x={66} y={174} width={18} height={14} rx={3} fill="#F1F5F9" stroke="#CBD5E1" strokeWidth={1.5} />
+          <rect x={72} y={166} width={4} height={12} rx={2} fill="#3B82F6" />
         </g>
       )}
       {themeId === "police" && (
@@ -383,6 +417,7 @@ export default function Mascot({
       {themeId === "espace" && <image href="/art/rocket.png" x={140} y={196} width={56} height={56} />}
       {themeId === "tennis" && <image href="/art/tennis.png" x={136} y={192} width={60} height={60} />}
       {themeId === "cuisine" && <image href="/art/spoon.png" x={140} y={190} width={58} height={58} />}
+      {themeId === "docteur" && <image href="/art/adhesive-bandage.png" x={142} y={198} width={50} height={50} />}
       {themeId === "police" && <image href="/art/magnifier.png" x={142} y={196} width={54} height={54} />}
     </svg>
   );

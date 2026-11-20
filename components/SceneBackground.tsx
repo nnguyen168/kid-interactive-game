@@ -442,6 +442,55 @@ function PoliceScene() {
   );
 }
 
+function HospitalScene() {
+  return (
+    <g>
+      {/* town houses */}
+      {skyline.slice(0, 14).map((b, i) => (
+        <rect key={i} x={b.x} y={620 - b.h * 0.85} width={b.w} height={b.h * 0.85} fill={["#FDE68A", "#FBCFE8", "#BAE6FD", "#BBF7D0"][i % 4]} opacity={0.75} />
+      ))}
+      {/* the hospital, with a helipad on the roof */}
+      <g transform="translate(940 250)">
+        <rect x={0} y={0} width={540} height={380} fill="#F8FAFC" />
+        <rect x={-12} y={-18} width={564} height={26} fill="#0F766E" />
+        <rect x={150} y={-54} width={240} height={36} rx={4} fill="#CBD5E1" />
+        <text x={270} y={-28} textAnchor="middle" fontSize={30} fontWeight={800} fill="#475569" fontFamily="Arial, sans-serif">
+          H
+        </text>
+        <rect x={130} y={26} width={280} height={60} rx={10} fill="#0D9488" />
+        <text x={270} y={68} textAnchor="middle" fontSize={40} fontWeight={800} fill="#FFFFFF" fontFamily="Arial, sans-serif">
+          HÔPITAL
+        </text>
+        {/* big red cross */}
+        <g transform="translate(60 40)">
+          <rect x={0} y={0} width={56} height={56} rx={8} fill="#FFFFFF" stroke="#FECACA" strokeWidth={4} />
+          <rect x={20} y={8} width={16} height={40} rx={3} fill="#EF4444" />
+          <rect x={8} y={20} width={40} height={16} rx={3} fill="#EF4444" />
+        </g>
+        {[30, 130, 330, 430].map((x) =>
+          [110, 200].map((y) => <rect key={`${x}-${y}`} x={x} y={y} width={80} height={64} rx={6} fill="#A5F3FC" stroke="#0F766E" strokeWidth={5} />),
+        )}
+        <rect x={210} y={200} width={120} height={180} rx={8} fill="#99F6E4" stroke="#0F766E" strokeWidth={6} />
+        <rect x={267} y={204} width={6} height={176} fill="#0F766E" />
+        <rect x={180} y={170} width={180} height={26} rx={6} fill="#EF4444" />
+        <text x={270} y={190} textAnchor="middle" fontSize={20} fontWeight={800} fill="#FFFFFF" fontFamily="Arial, sans-serif">
+          URGENCES
+        </text>
+      </g>
+      <RoundTree x={120} y={640} s={0.9} />
+      <RoundTree x={820} y={640} s={0.8} />
+      {/* pavement and road */}
+      <rect x={0} y={630} width={1600} height={40} fill="#D1D5DB" />
+      <rect x={0} y={670} width={1600} height={230} fill="#4B5563" />
+      {Array.from({ length: 16 }, (_, i) => (
+        <rect key={i} x={i * 110 + 20} y={780} width={60} height={8} rx={4} fill="#F9FAFB" />
+      ))}
+      <image href="/art/ambulance.png" x={1080} y={590} width={250} height={250} />
+      <image href="/art/stethoscope.png" x={430} y={560} width={90} height={90} />
+    </g>
+  );
+}
+
 export default function SceneBackground({ themeId }: { themeId: ThemeId }) {
   const { sky } = THEMES[themeId];
   const gradientId = `sky-${themeId}`;
@@ -465,6 +514,7 @@ export default function SceneBackground({ themeId }: { themeId: ThemeId }) {
         {themeId === "tennis" && <TennisScene />}
         {themeId === "cuisine" && <KitchenScene />}
         {themeId === "police" && <PoliceScene />}
+        {themeId === "docteur" && <HospitalScene />}
       </svg>
     </div>
   );
